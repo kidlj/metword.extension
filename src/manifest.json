@@ -1,0 +1,44 @@
+{
+	"name": "遇见单词",
+	"description": "不背单词，遇见单词。标记你遇到的单词，在下次遇见时获得提醒。",
+	"version": "0.0.1",
+	"manifest_version": 2,
+	"homepage_url": "https://www.metwords.com",
+	"icons": {
+		"48": "./icons/logo@48px.png",
+		"96": "./icons/logo@96px.png",
+		"256": "./icons/logo@256px.png"
+	},
+	"permissions": [
+		"activeTab",
+		"http://127.0.0.1/*",
+		"http://words.metaphor.com/*",
+		"https://www.metwords.com/*"
+	],
+	"background": {
+		"scripts": [
+			"./dist/background_script.js"
+		]
+	},
+	"browser_action": {},
+	"content_scripts": [
+		{
+			"all_frames": false,
+			"js": [
+				"./dist/content_script.js"
+			],
+			"css": [
+				"./dist/content_script.css"
+			],
+			"matches": [
+				"*://*/*"
+			],
+			"run_at": "document_idle"
+		}
+	],
+	"web_accessible_resources": [
+		"*.html",
+		"*.js",
+		"*.css"
+	]
+}
