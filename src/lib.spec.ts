@@ -49,7 +49,7 @@ export class MyTestSuite {
     }
 }
 
-@FTestSuite()
+@TestSuite()
 export class RangeTestSuite {
     @Test()
     testGetWordRanges() {
@@ -117,5 +117,20 @@ export class RangeTestSuite {
                 }]
             ]
         ))
+    }
+}
+
+@FTestSuite()
+export class MyTestClass {
+    @Test()
+    public sum_onePlusThree_returnsFour() {
+        // Arrange
+        const a = 1;
+        const b = 3;
+
+        let result = a + b
+
+        // Assert
+        expect.toBeEqual(result, 4);
     }
 }
