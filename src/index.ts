@@ -38,6 +38,9 @@ function markWord(range: WordRange) {
     let span = document.createElement("span")
     span.classList.add("metword")
     span.setAttribute("times", range.times.toString())
-    span.style.backgroundColor = "yellow"
+    span.style.textDecorationLine = "underline"
+    span.style.textDecorationColor = "red"
+    span.style.textDecorationStyle = "solid"
+    span.style.textUnderlinePosition = "under"
     range.range.surroundContents(span)
 }
