@@ -80,28 +80,30 @@ export function getWordIndexes(s: string): Array<WordIndex> {
 	const indexes = new Array<WordIndex>()
 	let inWord = false
 	let start = 0
-	let end = s.length
+	let end = start
 	for (let i = 0; i < s.length; i++) {
 		let c = s[i]
-		if (isWordCharacter(c) && inWord == false && (i == 0 || isSpaceCharacter(s[i - 1]))) {
+		if (isWordCharacter(c) && inWord == false && (i == 0 || isWordDelimiter(s[i - 1]))) {
 			inWord = true
 			start = i
 		}
+
 		if (isWordDelimiter(c) && inWord == true) {
 			inWord = false
 			end = i
-			let word = s.slice(start, end).toLowerCase()
-			let wordIndex = {
-				word: word,
-				start: start,
-				end: end
-			}
-			indexes.push(wordIndex)
 		}
 
-		if (i == s.length - 1 && inWord == true) {
+		if (isWordCharacter(c) && i == s.length - 1 && inWord == true) {
 			inWord = false
 			end = s.length
+		}
+
+		if (!isWordCharacter(c)) {
+			inWord = false
+		}
+
+		// at least 2 characters long
+		if (end - start >= 2) {
 			let word = s.slice(start, end).toLowerCase()
 			let wordIndex = {
 				word: word,
@@ -109,9 +111,9 @@ export function getWordIndexes(s: string): Array<WordIndex> {
 				end: end
 			}
 			indexes.push(wordIndex)
-		}
-		if (!isWordCharacter(c)) {
-			inWord = false
+
+			// reset end
+			end = start
 		}
 
 	}
@@ -129,6 +131,6 @@ function isSpaceCharacter(s: string): boolean {
 }
 
 function isWordDelimiter(s: string): boolean {
-	let re = /^[\s\.,!?;:]$/
+	let re = /^[\s\.,!?;:'")(\]\[]$/
 	return re.test(s)
 }
