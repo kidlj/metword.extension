@@ -1,4 +1,6 @@
-import { getWordRanges, WordRange } from './lib'
+import { getWordIndexes, getWordRanges, WordRange } from './lib'
+
+const queryURL = "http://127.0.0.1:8080/word?word="
 
 async function start() {
     console.log("Metwords worker started")
@@ -26,6 +28,20 @@ async function start() {
     } catch (err) {
         console.trace("errored", err)
     }
+
+    document.addEventListener('mouseup', listenMouseup)
+    document.addEventListener('mousedown', listenMouseDown)
+
+    const markWrap = document.createElement("markword")
+    markWrap.setAttribute("id", "wordmark-popup")
+    const bodyCollection = document.getElementsByTagName("body")
+    if (bodyCollection.length != 1) {
+        return
+    }
+    const body = bodyCollection[0]
+    body.style.position = "relative"
+    body.style.height = "100%"
+    body.appendChild(markWrap)
 }
 
 start()
@@ -43,4 +59,49 @@ function markWord(range: WordRange) {
     span.style.textDecorationStyle = "solid"
     span.style.textUnderlinePosition = "under"
     range.range.surroundContents(span)
+}
+
+const listenMouseup = async (e: MouseEvent) => {
+    const selection = window.getSelection()
+    if (selection == null) return
+
+    if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        if (range.collapsed) {
+            return
+        }
+        let selectText = selection.toString().trim();
+        const words = getWordIndexes(selectText)
+        if (words.length != 1) {
+            return
+        }
+        const query = queryURL + words[0].word
+        const resp = await fetch(query)
+        const parser = new DOMParser()
+        const doc = parser.parseFromString(await resp.text(), "text/html")
+        const node = doc.getElementById("words")!
+
+        const target = range.getBoundingClientRect()
+
+        const markWrap = document.getElementById("wordmark-popup")!
+        markWrap.innerHTML = node.innerHTML
+        markWrap.style.display = "block"
+
+        var top = target.y + window.scrollY + target.height + 5
+        if (target.y + markWrap.clientHeight > window.innerHeight) {
+            top = top - markWrap.clientHeight - target.height - 10
+        }
+        markWrap.style.top = top + "px"
+
+        var left = target.x
+        if (left + markWrap.clientWidth > window.innerWidth) {
+            left = left - markWrap.clientWidth
+        }
+        markWrap.style.left = left + "px"
+    }
+}
+
+const listenMouseDown = (e: MouseEvent) => {
+    const markWrap = document.getElementById("wordmark-popup")!
+    markWrap.style.display = "none"
 }

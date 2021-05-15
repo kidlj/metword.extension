@@ -1,5 +1,16 @@
-span .metword {
+/* span.metword {
     text-decoration: underline;
     text-decoration-color: "yellow";
     text-decoration-style: "dotted";
+} */
+
+#wordmark-popup {
+    position:absolute;
+    display:none;
+    background-color:rgb(255, 255, 255);
+    color:black;
+    padding:10px;
+    font-size:14px;
+    width: 500px;
+    border: 1px solid gray;
 }

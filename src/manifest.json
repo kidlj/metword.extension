@@ -21,7 +21,9 @@
             "js": [
                 "./dist/main.js"
             ],
-            "css": [],
+            "css": [
+                "./style.css"
+            ],
             "matches": [
                 "<all_urls>"
             ],
