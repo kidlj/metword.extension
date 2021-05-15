@@ -1,0 +1,36 @@
+{
+    "name": "遇见单词",
+    "description": "遇见单词，基于单词遇见频率的英语学习工具",
+    "version": "0.0.1",
+    "manifest_version": 2,
+    "homepage_url": "https://www.metwords.com",
+    "permissions": [
+        "storage",
+        "unlimitedStorage",
+        "tabs",
+        "http://127.0.0.1/*",
+        "https://www.metwords.com/*"
+    ],
+    "background": {
+        "scripts": []
+    },
+    "browser_action": {},
+    "content_scripts": [
+        {
+            "all_frames": false,
+            "js": [
+                "./dist/main.js"
+            ],
+            "css": [],
+            "matches": [
+                "<all_urls>"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
+    "web_accessible_resources": [
+        "*.html",
+        "*.js",
+        "*.css"
+    ]
+}
