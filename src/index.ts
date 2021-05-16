@@ -169,6 +169,7 @@ function getSceneSentence(range: Range, word: string): string {
             if (j == word.length - 1) {
                 found = true
                 start = start
+                i = i + j
             }
         }
         if (found == true && delimiter.test(text[i])) {
