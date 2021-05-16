@@ -12,7 +12,6 @@ async function start() {
             return
         }
         const result = JSON.parse(await res.text())
-        console.log("success:", result.success)
         const mets = result.mets
         let ranges = new Map<string, WordRange>()
         ranges = getWordRanges(document.getRootNode(), ranges)
@@ -29,7 +28,7 @@ async function start() {
             markWord(range)
         }
     } catch (err) {
-        console.trace("errored", err)
+        console.log("Metwords extension: get words error", err)
     }
 
     document.addEventListener('mouseup', listenMouseup)
