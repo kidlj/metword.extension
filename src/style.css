@@ -4,7 +4,7 @@
     text-decoration-style: "dotted";
 } */
 
-#wordmark-popup {
+#metwords-tip {
     position:absolute;
     display:none;
     background-color:rgb(255, 255, 255);

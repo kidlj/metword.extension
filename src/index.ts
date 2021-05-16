@@ -35,15 +35,13 @@ async function start() {
     document.addEventListener('mouseup', listenMouseup)
     document.addEventListener('mousedown', listenMouseDown)
 
-    const markWrap = document.createElement("markword")
-    markWrap.setAttribute("id", "wordmark-popup")
+    const markWrap = document.createElement("div")
+    markWrap.setAttribute("id", "metwords-tip")
     const bodyCollection = document.getElementsByTagName("body")
     if (bodyCollection.length != 1) {
         return
     }
     const body = bodyCollection[0]
-    body.style.position = "relative"
-    body.style.height = "100%"
     body.appendChild(markWrap)
 }
 
@@ -89,25 +87,25 @@ const listenMouseup = async (e: MouseEvent) => {
 
         const target = range.getBoundingClientRect()
 
-        const markWrap = document.getElementById("wordmark-popup")!
-        markWrap.innerHTML = node.innerHTML
-        markWrap.style.display = "block"
+        const tip = document.getElementById("metwords-tip")!
+        tip.innerHTML = node.innerHTML
+        tip.style.display = "block"
 
         var top = target.y + window.scrollY + target.height + 5
-        if (target.y + markWrap.clientHeight > window.innerHeight) {
-            top = top - markWrap.clientHeight - target.height - 10
+        if (target.y + tip.clientHeight > window.innerHeight) {
+            top = top - tip.clientHeight - target.height - 10
         }
-        markWrap.style.top = top + "px"
+        tip.style.top = top + "px"
 
         var left = target.x
-        if (left + markWrap.clientWidth > window.innerWidth) {
-            left = left - markWrap.clientWidth
+        if (left + tip.clientWidth > window.innerWidth) {
+            left = left - tip.clientWidth
         }
-        markWrap.style.left = left + "px"
+        tip.style.left = left + "px"
     }
 }
 
 const listenMouseDown = (e: MouseEvent) => {
-    const markWrap = document.getElementById("wordmark-popup")!
+    const markWrap = document.getElementById("metwords-tip")!
     markWrap.style.display = "none"
 }
