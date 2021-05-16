@@ -157,9 +157,11 @@ function getSceneSentence(range: Range, word: string): string {
     let start = 0
     let end = text.length
     let found = false
-    const delimiter = /^[.!?]$/
+    const delimiter = /^[.!?。！？]$/
+    const space = /^[\s]$/
+    const chineseDelimeter = /^[。！？]$/
     for (let i = 0; i < text.length; i++) {
-        if (delimiter.test(text[i]) && found == false) {
+        if (delimiter.test(text[i]) && found == false && (space.test(text[i + 1]) || chineseDelimeter.test(text[i]))) {
             start = i
         }
         for (let j = 0; j < word.length; j++) {
@@ -171,7 +173,7 @@ function getSceneSentence(range: Range, word: string): string {
                 i = i + j
             }
         }
-        if (found == true && delimiter.test(text[i])) {
+        if (found == true && delimiter.test(text[i]) && (space.test(text[i + 1]) || chineseDelimeter.test(text[i]))) {
             end = i + 1
             break
         }
