@@ -1,13 +1,14 @@
 import { getWordIndexes, getWordRanges, WordRange } from './lib'
 
+const metsURL = "http://127.0.0.1:8080/word/mets"
 const queryURL = "http://127.0.0.1:8080/word?word="
+const meetURL = "http://127.0.0.1:8080/word/meet"
 
 async function start() {
     console.log("Metwords worker started")
-    let url = "http://127.0.0.1:8080/word/mets"
 
     try {
-        const res = await fetch(url)
+        const res = await fetch(metsURL)
         if (res.status != 200) {
             return
         }
@@ -16,14 +17,12 @@ async function start() {
         let ranges = new Map<string, WordRange>()
         ranges = getWordRanges(document.getRootNode(), ranges)
         ranges.forEach((val, key) => {
-            console.log(key)
             if (mets[key] == undefined) {
                 ranges.delete(key)
             } else {
                 val.times = mets[key]
             }
         })
-        console.log(ranges)
         for (let range of ranges.values()) {
             markWord(range)
         }
@@ -62,49 +61,86 @@ function markWord(range: WordRange) {
 }
 
 const listenMouseup = async (e: MouseEvent) => {
+    const tip = document.getElementById("metwords-tip")!
+    if ((<Node>tip).contains(<Node>e.target)) {
+        return
+    }
     const selection = window.getSelection()
     if (selection == null) return
 
-    if (selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        if (range.collapsed) {
-            return
-        }
-        let selectText = selection.toString().trim();
-        const words = getWordIndexes(selectText)
-        if (words.length != 1) {
-            return
-        }
-        const query = queryURL + words[0].word
-        const resp = await fetch(query)
-        if (resp.status != 200) {
-            return
-        }
-        const parser = new DOMParser()
-        const doc = parser.parseFromString(await resp.text(), "text/html")
-        const node = doc.getElementById("words")!
+    if (selection.rangeCount == 0) return
+    const range = selection.getRangeAt(0);
+    if (range.collapsed) {
+        return
+    }
+    let selectText = selection.toString().trim();
+    const words = getWordIndexes(selectText)
+    if (words.length != 1) {
+        return
+    }
+    const query = queryURL + words[0].word
+    const resp = await fetch(query)
+    if (resp.status != 200) {
+        return
+    }
+    const html = await resp.text()
 
-        const target = range.getBoundingClientRect()
+    console.log("start:", range.startContainer)
+    console.log("end:", range.endContainer)
+    if (range.startContainer.nodeType != Node.TEXT_NODE) {
+        return
+    }
 
-        const tip = document.getElementById("metwords-tip")!
-        tip.innerHTML = node.innerHTML
-        tip.style.display = "block"
+    tip.innerHTML = html
+    tip.style.display = "block"
 
-        var top = target.y + window.scrollY + target.height + 5
-        if (target.y + tip.clientHeight > window.innerHeight) {
-            top = top - tip.clientHeight - target.height - 10
+    const target = range.getBoundingClientRect()
+    var top = target.y + window.scrollY + target.height + 5
+    if (target.y + tip.clientHeight > window.innerHeight) {
+        const shouldTop = top - tip.clientHeight - target.height - 10
+        if (shouldTop > 0) {
+            top = shouldTop
         }
-        tip.style.top = top + "px"
+    }
+    tip.style.top = top + "px"
 
-        var left = target.x
-        if (left + tip.clientWidth > window.innerWidth) {
-            left = left - tip.clientWidth
+    var left = target.x
+    if (left + tip.clientWidth > window.innerWidth) {
+        left = left - tip.clientWidth
+    }
+    tip.style.left = left + "px"
+
+    const button = tip.getElementsByTagName("button")[0]
+    button.onclick = async (e: Event) => {
+        const id = button.getAttribute("value")!
+        const text = range.startContainer.nodeValue!
+        const url = window.location.href
+
+        const form = new FormData()
+        form.append("id", id)
+        form.append("url", url)
+        form.append("text", text)
+
+        try {
+            const meetResult = await fetch(meetURL, {
+                method: "POST",
+                body: form
+            })
+            if (meetResult.status != 200) {
+                console.log("meet word return:", status)
+                return
+            }
+            button.setAttribute("disabled", "true")
+        } catch (err) {
+            console.log("meet word failed", err)
         }
-        tip.style.left = left + "px"
     }
 }
 
 const listenMouseDown = (e: MouseEvent) => {
-    const markWrap = document.getElementById("metwords-tip")!
-    markWrap.style.display = "none"
+    const tip = document.getElementById("metwords-tip")!
+    if ((<Node>tip).contains(<Node>e.target)) {
+        return
+    }
+    tip.style.display = "none"
 }
