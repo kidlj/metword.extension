@@ -46,13 +46,11 @@ const skips = new Map<string, boolean>([
 ])
 
 export function getWordRanges(n: Node, m: Map<string, WordRange>): Map<string, WordRange> {
-	// ELEMENT_NODE
-	if (n.nodeType == 1 && skips.get(n.nodeName) == true) {
+	if (n.nodeType == Node.ELEMENT_NODE && skips.get(n.nodeName) == true) {
 		return m
 	}
 
-	// TEXT_NODE
-	if (n.nodeType == 3) {
+	if (n.nodeType == Node.TEXT_NODE) {
 		let wordIndexes = getWordIndexes(n.nodeValue!)
 		wordIndexes.forEach((v: WordIndex) => {
 			if (m.get(v.word) == undefined) {
