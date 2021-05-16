@@ -67,7 +67,7 @@ export function getWordRanges(n: Node, m: Map<string, WordRange>): Map<string, W
 		})
 	}
 
-	for (let c = n.firstChild; c != null; c = c!.nextSibling) {
+	for (let c = n.firstChild; c != null; c = c.nextSibling) {
 		m = getWordRanges(c, m)
 	}
 
