@@ -125,12 +125,7 @@ function isWordCharacter(s: string): boolean {
 	return re.test(s)
 }
 
-function isSpaceCharacter(s: string): boolean {
-	let re = /^\s$/
-	return re.test(s)
-}
-
 function isWordDelimiter(s: string): boolean {
-	let re = /^[\s\.,!?;:'")(\]\[]$/
+	let re = /^[\s.,!?;:'")(\]\[]$/
 	return re.test(s)
 }
