@@ -8,6 +8,9 @@ async function start() {
 
     try {
         const res = await fetch(url)
+        if (res.status != 200) {
+            return
+        }
         const result = JSON.parse(await res.text())
         console.log("success:", result.success)
         const mets = result.mets
@@ -77,6 +80,9 @@ const listenMouseup = async (e: MouseEvent) => {
         }
         const query = queryURL + words[0].word
         const resp = await fetch(query)
+        if (resp.status != 200) {
+            return
+        }
         const parser = new DOMParser()
         const doc = parser.parseFromString(await resp.text(), "text/html")
         const node = doc.getElementById("words")!

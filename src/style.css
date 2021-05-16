@@ -11,6 +11,8 @@
     color:black;
     padding:10px;
     font-size:14px;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.5em;
     width: 500px;
     border: 1px solid gray;
 }
