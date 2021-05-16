@@ -110,29 +110,32 @@ const listenMouseup = async (e: MouseEvent) => {
     }
     tip.style.left = left + "px"
 
-    const button = tip.getElementsByTagName("button")[0]
-    button.onclick = async (e: Event) => {
-        const id = button.getAttribute("value")!
-        const text = range.startContainer.nodeValue!
-        const url = window.location.href
+    const buttons = tip.getElementsByTagName("button")
+    for (const button of buttons) {
+        button.onclick = async (e: Event) => {
+            const id = button.getAttribute("value")!
+            const text = getSceneSentence(range, selectText)
+            console.log("sentence:", text)
+            const url = window.location.href
 
-        const form = new FormData()
-        form.append("id", id)
-        form.append("url", url)
-        form.append("text", text)
+            const form = new FormData()
+            form.append("id", id)
+            form.append("url", url)
+            form.append("text", text)
 
-        try {
-            const meetResult = await fetch(meetURL, {
-                method: "POST",
-                body: form
-            })
-            if (meetResult.status != 200) {
-                console.log("meet word return:", status)
-                return
+            try {
+                const meetResult = await fetch(meetURL, {
+                    method: "POST",
+                    body: form
+                })
+                if (meetResult.status != 200) {
+                    console.log("meet word return:", status)
+                    return
+                }
+                button.setAttribute("disabled", "true")
+            } catch (err) {
+                console.log("meet word failed", err)
             }
-            button.setAttribute("disabled", "true")
-        } catch (err) {
-            console.log("meet word failed", err)
         }
     }
 }
@@ -143,4 +146,50 @@ const listenMouseDown = (e: MouseEvent) => {
         return
     }
     tip.style.display = "none"
+}
+
+function getSceneSentence(range: Range, word: string): string {
+    let parent = range.startContainer.parentNode!
+    if (parent.nodeType == Node.ELEMENT_NODE && parent.nodeName == "SPAN") {
+        parent = parent.parentNode!
+    }
+    const text = getText(parent, "")
+    let start = 0
+    let end = text.length
+    let found = false
+    const delimiter = /^[.!?]$/
+    for (let i = 0; i < text.length; i++) {
+        if (delimiter.test(text[i]) && found == false) {
+            start = i
+        }
+        for (let j = 0; j < word.length; j++) {
+            if (text[i + j] != word[j]) {
+                break
+            }
+            if (j == word.length - 1) {
+                found = true
+                start = start
+            }
+        }
+        if (found == true && delimiter.test(text[i])) {
+            end = i + 1
+            break
+        }
+    }
+    if (start == 0) {
+        return text.slice(start, end).trim()
+    }
+    return text.slice(start + 1, end).trim()
+}
+
+function getText(node: Node, text: string): string {
+    if (node.nodeType == Node.TEXT_NODE) {
+        text = text + node.nodeValue
+    }
+
+    for (let c = node.firstChild; c != null; c = c.nextSibling) {
+        text = getText(c, text)
+    }
+
+    return text
 }
