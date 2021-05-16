@@ -184,7 +184,15 @@ function getSceneSentence(range: Range, word: string): string {
     return text.slice(start + 1, end).trim()
 }
 
+const skips = new Map<string, boolean>([
+    ["SUP", true]
+])
+
 function getText(node: Node, text: string): string {
+    if (node.nodeType == Node.ELEMENT_NODE && skips.get(node.nodeName) == true) {
+        return text + " "
+    }
+
     if (node.nodeType == Node.TEXT_NODE) {
         text = text + node.nodeValue
     }
