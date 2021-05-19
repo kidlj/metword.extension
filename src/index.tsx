@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './style.css';
 import Tip from './Tip';
-import { getWordIndexes, getWordRanges, WordRange } from './lib'
+import { getSceneSentence, getWordIndexes, getWordRanges, WordRange } from './lib'
 
 const metsURL = "http://127.0.0.1:8080/word/mets"
 
@@ -71,19 +71,20 @@ const listenMouseup = async (e: MouseEvent) => {
     if (selection == null) return
 
     if (selection.rangeCount == 0) return
-    const range = selection.getRangeAt(0);
+    const range = selection.getRangeAt(0)
     if (range.collapsed) {
         return
     }
-    let selectText = selection.toString().trim();
+    let selectText = selection.toString()
     const words = getWordIndexes(selectText)
     if (words.length != 1) {
         return
     }
     const word = words[0].word
 
-    console.log("start:", range.startContainer)
-    console.log("end:", range.endContainer)
+    console.log("startContainer:", range.startContainer)
+    console.log("endContainer:", range.endContainer)
+    console.log("sentence:", getSceneSentence(range, selectText))
     if (range.startContainer.nodeType != Node.TEXT_NODE) {
         return
     }

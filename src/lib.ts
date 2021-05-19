@@ -128,20 +128,26 @@ function isWordDelimiter(s: string): boolean {
     return re.test(s)
 }
 
+// NOTE: This is a "good enough" algorithm, with some cases that may fail.
 export function getSceneSentence(range: Range, word: string): string {
-    let parent = range.startContainer.parentNode!
-    if (parent.nodeType == Node.ELEMENT_NODE && parent.nodeName == "SPAN") {
-        parent = parent.parentNode!
+    let parent = range.commonAncestorContainer
+    if (range.startContainer == range.endContainer) {
+        parent = range.startContainer.parentNode!
     }
-    const text = getText(parent, "")
+    let result = {
+        text: "",
+        start: false
+    }
+    result = getText(parent, range, result)
+    const text = result.text
     let start = 0
     let end = text.length
     let found = false
     const delimiter = /^[.!?。！？]$/
-    const space = /^[\s]$/
+    const close = /^[\s"')()]$/
     const chineseDelimeter = /^[。！？]$/
     for (let i = 0; i < text.length; i++) {
-        if (delimiter.test(text[i]) && found == false && (space.test(text[i + 1]) || chineseDelimeter.test(text[i]))) {
+        if (delimiter.test(text[i]) && found == false && (close.test(text[i + 1]) || chineseDelimeter.test(text[i]))) {
             start = i
         }
         for (let j = 0; j < word.length; j++) {
@@ -153,7 +159,7 @@ export function getSceneSentence(range: Range, word: string): string {
                 i = i + j
             }
         }
-        if (found == true && delimiter.test(text[i]) && (space.test(text[i + 1]) || chineseDelimeter.test(text[i]))) {
+        if (found == true && delimiter.test(text[i]) && (close.test(text[i + 1]) || chineseDelimeter.test(text[i]))) {
             end = i + 1
             break
         }
@@ -165,21 +171,42 @@ export function getSceneSentence(range: Range, word: string): string {
 }
 
 const paddings = new Map<string, boolean>([
-    ["SUP", true]
+    ["SUP", true],
+    ["BR", true]
 ])
 
-function getText(node: Node, text: string): string {
-    if (node.nodeType == Node.ELEMENT_NODE && paddings.get(node.nodeName) == true) {
-        return text + " "
+type result = {
+    text: string
+    start: boolean
+}
+
+function getText(n: Node, range: Range, r: result): result {
+    // Some articles use <br> to divide paragraphs.
+    if (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "BR" && r.start == false) {
+        return {
+            text: "",
+            start: r.start
+        }
     }
 
-    if (node.nodeType == Node.TEXT_NODE) {
-        text = text + node.nodeValue
+    if (n.nodeType == Node.ELEMENT_NODE && paddings.get(n.nodeName) == true) {
+        return {
+            text: r.text + " ",
+            start: r.start
+        }
     }
 
-    for (let c = node.firstChild; c != null; c = c.nextSibling) {
-        text = getText(c, text)
+    if (n == range.startContainer) {
+        r.start = true
     }
 
-    return text
+    if (n.nodeType == Node.TEXT_NODE) {
+        r.text = r.text + n.nodeValue
+    }
+
+    for (let c = n.firstChild; c != null; c = c.nextSibling) {
+        r = getText(c, range, r)
+    }
+
+    return r
 }
