@@ -5,7 +5,7 @@ import TerserPlugin from 'terser-webpack-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
 module.exports = {
-    entry: './src/index.ts',
+    entry: './src/index.tsx',
     output: {
         filename: 'main.js',
         path: path.resolve(__dirname, './src/dist/'),
@@ -16,7 +16,11 @@ module.exports = {
     module: {
         rules: [
             // all files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'
-            { test: /\.tsx?$/, use: ["ts-loader"], exclude: /node_modules/ },
+            {
+                test: /\.tsx?$/,
+                use: ["ts-loader"],
+                exclude: /node_modules/
+            },
             {
                 test: /\.css$/i,
                 exclude: /node_modules/,
