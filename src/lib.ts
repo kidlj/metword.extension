@@ -144,7 +144,7 @@ export function getSceneSentence(range: Range, word: string): string {
     let end = text.length
     let found = false
     const delimiter = /^[.!?。！？]$/
-    const close = /^[\s"')()]$/
+    const close = /^[\s"')]$/
     const chineseDelimeter = /^[。！？]$/
     for (let i = 0; i < text.length; i++) {
         if (delimiter.test(text[i]) && found == false && (close.test(text[i + 1]) || chineseDelimeter.test(text[i]))) {
