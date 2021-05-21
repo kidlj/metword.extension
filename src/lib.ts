@@ -141,9 +141,9 @@ function isWordDelimiter(s: string): boolean {
     return re.test(s)
 }
 
-// This is a 'good enough' algorithm that get the sentence a 'selection' resides in.
-// It only relies on sentence delimiters, so in some cases period in middle name like 'Mellon C. Collie' produces wrong sentence.
-// This is a known limit and acceptable to me. To keep code simple, I choose not to fix it.
+// This is a 'good enough' algorithm that gets the sentence a 'selection' resides in.
+// It only relies on sentence delimiters, so in some cases periods like in 'Mellon C. Collie' produce wrong sentence.
+// This is a known bug and results are acceptable to me. To keep code simple, I choose not to fix it.
 export function getSceneSentence(parent: Node, selectText: string): string {
     const word = paddingText + selectText
     console.log("word is:", word)
@@ -153,8 +153,10 @@ export function getSceneSentence(parent: Node, selectText: string): string {
     let end = text.length
     let found = false
     const delimiter = /^[.!?。！？]$/
+    const close = /^[\s"')]$/
+    const chineseDelimeter = /^[。！？]$/
     for (let i = 0; i < text.length; i++) {
-        if (delimiter.test(text[i]) && found == false) {
+        if (delimiter.test(text[i]) && found == false && (close.test(text[i + 1]) || chineseDelimeter.test(text[i]))) {
             start = i + 1
         }
         for (let j = 0; j < word.length; j++) {
@@ -166,7 +168,7 @@ export function getSceneSentence(parent: Node, selectText: string): string {
                 i = i + j
             }
         }
-        if (found == true && delimiter.test(text[i])) {
+        if (found == true && delimiter.test(text[i]) && (close.test(text[i + 1]) || chineseDelimeter.test(text[i]))) {
             end = i + 1
             break
         }
