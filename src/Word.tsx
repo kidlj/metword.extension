@@ -75,7 +75,7 @@ class Word extends React.Component<WordProps, WordState> {
         // After markSelection, range.startContainer and .endContainer changed, 
         // so we can't rely on it anymore.
         // Instead, we rely on the extra "parent" prop, which doesn't change.
-        this.markSelection(range)
+        this.markSelection(range, selectText)
         const selectedNode = this.getSelectedNode(parent)!
         console.log("after mark: startContainer:", range.startContainer)
         console.log("after mark: endContainer:", range.endContainer)
@@ -118,7 +118,7 @@ class Word extends React.Component<WordProps, WordState> {
         })
     }
 
-    markSelection(range: Range) {
+    markSelection(range: Range, selectText: string) {
         let wr = {
             times: this.state.times + 1,
             range: range
@@ -132,7 +132,7 @@ class Word extends React.Component<WordProps, WordState> {
         // next sibling must be the selection containing node
         const node = range.startContainer.nextSibling! as Node
         console.log("nextSibling is:", node)
-        const marked = this.getMarkNode(node)
+        const marked = this.getMarkNode(node, selectText)
         console.log("marked is:", marked)
         if (marked == null) {
             markWord(wr, true)
@@ -144,13 +144,15 @@ class Word extends React.Component<WordProps, WordState> {
         }
     }
 
-    getMarkNode(n: Node): Node | null {
-        if (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "SPAN" && (n as HTMLElement).getAttribute("class") == "metword") {
+    getMarkNode(n: Node, selectText: string): Node | null {
+        if (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "SPAN" &&
+            (n as HTMLElement).getAttribute("class") == "metword" &&
+            n.firstChild!.nodeValue == selectText) {
             return n
         }
 
         for (let c = n.firstChild; c != null; c = c.nextSibling) {
-            const n = this.getMarkNode(c)
+            const n = this.getMarkNode(c, selectText)
             if (n != null) {
                 return n
             }
