@@ -6,7 +6,8 @@ const queryURL = "http://127.0.0.1:8080/word?word="
 interface TipProps {
     selectText: string
     word: string
-    range: Range
+    range: Range,
+    parent: Node
 }
 
 interface TipState {
@@ -21,7 +22,7 @@ class Tip extends React.Component<TipProps, TipState> {
         return (
             <div className="words">
                 {
-                    this.state.words.map((w: any) => (<Word word={w} selectText={this.props.selectText} range={this.props.range} />))
+                    this.state.words.map((w: any) => (<Word word={w} selectText={this.props.selectText} range={this.props.range} parent={this.props.parent} />))
                 }
             </div>
         )

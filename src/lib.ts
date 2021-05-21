@@ -116,10 +116,13 @@ export function getWordIndexes(s: string): Array<WordIndex> {
     return indexes
 }
 
-export function markWord(range: WordRange) {
+export function markWord(range: WordRange, selected: boolean) {
     let span = document.createElement("span")
     span.classList.add("metword")
     span.setAttribute("times", range.times.toString())
+    if (selected) {
+        span.setAttribute("selected", "true")
+    }
     span.style.textDecorationLine = "underline"
     span.style.textDecorationColor = "red"
     span.style.textDecorationStyle = "solid"
@@ -138,27 +141,21 @@ function isWordDelimiter(s: string): boolean {
     return re.test(s)
 }
 
-// NOTE: This is a "good enough" algorithm, with some cases that may fail.
-export function getSceneSentence(range: Range, word: string): string {
-    let parent = range.commonAncestorContainer
-    if (range.startContainer == range.endContainer) {
-        parent = range.startContainer.parentNode!
-    }
-    let result = {
-        text: "",
-        start: false
-    }
-    result = getText(parent, range, result)
-    const text = result.text
+// This is a 'good enough' algorithm that get the sentence a 'selection' resides in.
+// It only relies on sentence delimiters, so in some cases period in middle name like 'Mellon C. Collie' produces wrong sentence.
+// This is a known limit and acceptable to me. To keep code simple, I choose not to fix it.
+export function getSceneSentence(parent: Node, selectText: string): string {
+    const word = paddingText + selectText
+    console.log("word is:", word)
+    const text = getText(parent, "")
+    console.log("text is:", text)
     let start = 0
     let end = text.length
     let found = false
     const delimiter = /^[.!?。！？]$/
-    const close = /^[\s"')]$/
-    const chineseDelimeter = /^[。！？]$/
     for (let i = 0; i < text.length; i++) {
-        if (delimiter.test(text[i]) && found == false && (close.test(text[i + 1]) || chineseDelimeter.test(text[i]))) {
-            start = i
+        if (delimiter.test(text[i]) && found == false) {
+            start = i + 1
         }
         for (let j = 0; j < word.length; j++) {
             if (text[i + j] != word[j]) {
@@ -169,15 +166,13 @@ export function getSceneSentence(range: Range, word: string): string {
                 i = i + j
             }
         }
-        if (found == true && delimiter.test(text[i]) && (close.test(text[i + 1]) || chineseDelimeter.test(text[i]))) {
+        if (found == true && delimiter.test(text[i])) {
             end = i + 1
             break
         }
     }
-    if (start == 0) {
-        return text.slice(start, end).trim()
-    }
-    return text.slice(start + 1, end).trim()
+
+    return text.slice(start, end).trim().replace(paddingText, "")
 }
 
 const paddings = new Map<string, boolean>([
@@ -185,38 +180,27 @@ const paddings = new Map<string, boolean>([
     ["BR", true]
 ])
 
-type result = {
-    text: string
-    start: boolean
-}
+const paddingText = "hellometwordsthisisarandomstring"
 
-function getText(n: Node, range: Range, r: result): result {
-    // Some articles use <br> to divide paragraphs.
-    if (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "BR" && r.start == false) {
-        return {
-            text: "",
-            start: r.start
-        }
+function getText(n: Node, text: string): string {
+    // selection marked element
+    if (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "SPAN" &&
+        (n as HTMLElement).getAttribute("class") == "metword" &&
+        (n as HTMLElement).getAttribute("selected") == "true") {
+        return text + paddingText + n.firstChild!.nodeValue
     }
 
     if (n.nodeType == Node.ELEMENT_NODE && paddings.get(n.nodeName) == true) {
-        return {
-            text: r.text + " ",
-            start: r.start
-        }
-    }
-
-    if (n == range.startContainer) {
-        r.start = true
+        return text + " "
     }
 
     if (n.nodeType == Node.TEXT_NODE) {
-        r.text = r.text + n.nodeValue
+        return text + n.nodeValue
     }
 
     for (let c = n.firstChild; c != null; c = c.nextSibling) {
-        r = getText(c, range, r)
+        text = getText(c, text)
     }
 
-    return r
+    return text
 }

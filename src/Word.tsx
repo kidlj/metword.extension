@@ -1,13 +1,14 @@
 
 import React from 'react'
-import { getSceneSentence } from './lib'
+import { getSceneSentence, markWord, WordRange } from './lib'
 
 const meetURL = "http://127.0.0.1:8080/word/meet"
 
 interface WordProps {
     word: WordObject
     selectText: string
-    range: Range
+    range: Range,
+    parent: Node
 }
 
 interface WordObject {
@@ -44,7 +45,7 @@ class Word extends React.Component<WordProps, WordState> {
                 <div className="head">
                     <span className="headword">{word.name}</span>
                     <span className="met-times">{this.state.times}</span>
-                    <button className="plus-one" key={word.id} disabled={this.state.met} onClick={() => this.plusOne(word.id, this.props.selectText, this.props.range)}>+1</button>
+                    <button className="plus-one" key={word.id} disabled={this.state.met} onClick={() => this.plusOne(word.id, this.props.selectText, this.props.range, this.props.parent)}>+1</button>
                 </div>
                 <div className="phonetic">
                     <span>US /{word.usPhonetic}/ UK /{word.ukPhonetic}/</span>
@@ -67,9 +68,22 @@ class Word extends React.Component<WordProps, WordState> {
         )
     }
 
-    async plusOne(id: string, selectText: string, range: Range) {
-        const text = getSceneSentence(range, selectText)
-        console.log("sentence:", text)
+    async plusOne(id: string, selectText: string, range: Range, parent: Node) {
+        console.log("before mark: startContainer:", range.startContainer)
+        console.log("before mark: endContainer:", range.endContainer)
+        console.log("before mark: parent:", parent)
+        // After markSelection, range.startContainer and .endContainer changed, 
+        // so we can't rely on it anymore.
+        // Instead, we rely on the extra "parent" prop, which doesn't change.
+        this.markSelection(range)
+        const selectedNode = this.getSelectedNode(parent)!
+        console.log("after mark: startContainer:", range.startContainer)
+        console.log("after mark: endContainer:", range.endContainer)
+        console.log("after mark: parent:", parent)
+        const text = getSceneSentence(parent, selectText)
+        console.log("sentence:", text);
+        // After getting sentencce cancel the selected attribute
+        (selectedNode as HTMLElement).removeAttribute("selected")
         const url = window.location.href
         try {
             const body = {
@@ -102,6 +116,64 @@ class Word extends React.Component<WordProps, WordState> {
                 url: url
             })
         })
+    }
+
+    markSelection(range: Range) {
+        let wr = {
+            times: this.state.times + 1,
+            range: range
+        }
+        // pure text selection in text node
+        if (range.startContainer == range.endContainer) {
+            markWord(wr, true)
+            return
+        }
+
+        // next sibling must be the selection containing node
+        const node = range.startContainer.nextSibling! as Node
+        console.log("nextSibling is:", node)
+        const marked = this.getMarkNode(node)
+        console.log("marked is:", marked)
+        if (marked == null) {
+            markWord(wr, true)
+        } else {
+            const ele = marked as HTMLElement
+            const times = this.state.times + 1
+            ele.setAttribute("times", times + "")
+            ele.setAttribute("selected", "true")
+        }
+    }
+
+    getMarkNode(n: Node): Node | null {
+        if (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "SPAN" && (n as HTMLElement).getAttribute("class") == "metword") {
+            return n
+        }
+
+        for (let c = n.firstChild; c != null; c = c.nextSibling) {
+            const n = this.getMarkNode(c)
+            if (n != null) {
+                return n
+            }
+        }
+
+        return null
+    }
+
+    getSelectedNode(n: Node): Node | null {
+        if (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "SPAN" &&
+            (n as HTMLElement).getAttribute("class") == "metword" &&
+            (n as HTMLElement).getAttribute("selected") == "true") {
+            return n
+        }
+
+        for (let c = n.firstChild; c != null; c = c.nextSibling) {
+            const n = this.getSelectedNode(c)
+            if (n != null) {
+                return n
+            }
+        }
+
+        return null
     }
 }
 

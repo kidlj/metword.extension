@@ -26,7 +26,7 @@ async function start() {
             }
         })
         for (let range of ranges.values()) {
-            markWord(range)
+            markWord(range, false)
         }
     } catch (err) {
         console.log("Metwords extension: get words error", err)
@@ -64,6 +64,13 @@ const listenMouseup = async (e: MouseEvent) => {
     if (range.collapsed) {
         return
     }
+    console.log("---- startContainer:", range.startContainer)
+    console.log("---- endContainer:", range.endContainer)
+    let parent = range.commonAncestorContainer
+    if (range.startContainer == range.endContainer) {
+        parent = range.startContainer.parentNode!
+    }
+    console.log("---- parent:", parent)
     let selectText = selection.toString()
     const words = getWordIndexes(selectText)
     if (words.length != 1) {
@@ -71,9 +78,6 @@ const listenMouseup = async (e: MouseEvent) => {
     }
     const word = words[0].word
 
-    console.log("startContainer:", range.startContainer)
-    console.log("endContainer:", range.endContainer)
-    console.log("sentence:", getSceneSentence(range, selectText))
     if (range.startContainer.nodeType != Node.TEXT_NODE) {
         return
     }
@@ -99,7 +103,7 @@ const listenMouseup = async (e: MouseEvent) => {
 
     ReactDOM.render(
         <React.StrictMode>
-            <Tip word={word} selectText={selectText} range={range} />
+            <Tip word={word} selectText={selectText} range={range} parent={parent} />
         </React.StrictMode>,
         tip
     )
