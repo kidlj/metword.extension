@@ -1,5 +1,4 @@
 export interface WordRange {
-    node: Node,
     times: number,
     range: Range,
 }
@@ -59,7 +58,6 @@ export function getWordRanges(n: Node, m: Map<string, WordRange>): Map<string, W
                 range.setEnd(n, v.end)
 
                 m.set(v.word, {
-                    node: n,
                     times: 0,
                     range: range
                 })
@@ -117,6 +115,18 @@ export function getWordIndexes(s: string): Array<WordIndex> {
     }
     return indexes
 }
+
+export function markWord(range: WordRange) {
+    let span = document.createElement("span")
+    span.classList.add("metword")
+    span.setAttribute("times", range.times.toString())
+    span.style.textDecorationLine = "underline"
+    span.style.textDecorationColor = "red"
+    span.style.textDecorationStyle = "solid"
+    span.style.textUnderlinePosition = "under"
+    range.range.surroundContents(span)
+}
+
 
 function isWordCharacter(s: string): boolean {
     let re = /^[a-zA-Z]$/

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './style.css';
 import Tip from './Tip';
-import { getSceneSentence, getWordIndexes, getWordRanges, WordRange } from './lib'
+import { getSceneSentence, getWordIndexes, getWordRanges, WordRange, markWord } from './lib'
 
 const metsURL = "http://127.0.0.1:8080/word/mets"
 
@@ -49,17 +49,6 @@ start()
 
 document.onload = function (e: Event) {
     start()
-}
-
-function markWord(range: WordRange) {
-    let span = document.createElement("span")
-    span.classList.add("metword")
-    span.setAttribute("times", range.times.toString())
-    span.style.textDecorationLine = "underline"
-    span.style.textDecorationColor = "red"
-    span.style.textDecorationStyle = "solid"
-    span.style.textUnderlinePosition = "under"
-    range.range.surroundContents(span)
 }
 
 const listenMouseup = async (e: MouseEvent) => {
