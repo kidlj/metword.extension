@@ -37,11 +37,7 @@ async function start() {
 
     const tipWrap = document.createElement("div")
     tipWrap.setAttribute("id", "metwords-tip")
-    const bodyCollection = document.getElementsByTagName("body")
-    if (bodyCollection.length != 1) {
-        return
-    }
-    const body = bodyCollection[0]
+    const body = document.getElementsByTagName("body").item(0)!
     body.appendChild(tipWrap)
 }
 
