@@ -119,15 +119,16 @@ export function getWordIndexes(s: string): Array<WordIndex> {
 export function markWord(range: WordRange, selected: boolean) {
     let span = document.createElement("span")
     span.classList.add("metword")
-    span.setAttribute("times", range.times.toString())
     if (selected) {
         span.setAttribute("selected", "true")
     }
-    span.style.textDecorationLine = "underline"
-    span.style.textDecorationColor = "red"
-    span.style.textDecorationStyle = "solid"
-    span.style.textUnderlinePosition = "under"
+    const color = "red"
     range.range.surroundContents(span)
+    const style = window.getComputedStyle(span)
+    const height = parseFloat(style.lineHeight) * 0.85 + "px"
+    span.style.setProperty("--met-line-height", height)
+    span.style.setProperty("--met-color", color)
+    span.setAttribute("met-times", "-".repeat(range.times))
 }
 
 

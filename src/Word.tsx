@@ -130,17 +130,16 @@ class Word extends React.Component<WordProps, WordState> {
         }
 
         // next sibling must be the selection containing node
-        const node = range.startContainer.nextSibling! as Node
-        console.log("nextSibling is:", node)
-        const marked = this.getMarkNode(node, selectText)
-        console.log("marked is:", marked)
-        if (marked == null) {
-            markWord(wr, true)
-        } else {
-            const ele = marked as HTMLElement
+        const next = range.startContainer.nextSibling! as Node
+        // const marked = this.getMarkNode(node, selectText)
+        // console.log("marked is:", marked)
+        if (next == null && this.getMarkNode(range.startContainer.parentNode!, selectText) != null) {
+            const ele = range.startContainer.parentNode as HTMLElement
             const times = this.state.times + 1
-            ele.setAttribute("times", times + "")
+            ele.setAttribute("met-times", "-".repeat(times))
             ele.setAttribute("selected", "true")
+        } else {
+            markWord(wr, true)
         }
     }
 

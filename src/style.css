@@ -16,3 +16,18 @@
     width: 500px;
     border: 1px solid gray;
 }
+
+span.metword {
+    position: relative;
+    z-index: 0;
+    display: inline;
+}
+
+span.metword::before {
+    content: attr(met-times) " ";
+    color: var(--met-color);
+    position: absolute;
+    z-index: -1;
+    line-height: 0px;
+    top: var(--met-line-height);
+}
