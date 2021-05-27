@@ -27,7 +27,7 @@ span.metword::before {
     content: attr(met-times) " ";
     color: var(--met-color);
     position: absolute;
-    z-index: -1;
+    z-index: -7665;
     line-height: 0px;
     top: 100%;
 }
