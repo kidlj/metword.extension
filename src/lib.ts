@@ -117,15 +117,20 @@ export function getWordIndexes(s: string): Array<WordIndex> {
 }
 
 export function markWord(range: WordRange, selected: boolean) {
-    let span = document.createElement("span")
-    span.classList.add("metword")
-    if (selected) {
-        span.setAttribute("selected", "true")
+    try {
+        let span = document.createElement("span")
+        span.classList.add("metword")
+        if (selected) {
+            span.setAttribute("selected", "true")
+        }
+        const color = "red"
+        // This clause may raise InvalidStateError
+        range.range.surroundContents(span)
+        span.style.setProperty("--met-color", color)
+        span.setAttribute("met-times", "-".repeat(range.times))
+    } catch (e) {
+        console.log(e)
     }
-    const color = "red"
-    range.range.surroundContents(span)
-    span.style.setProperty("--met-color", color)
-    span.setAttribute("met-times", "-".repeat(range.times))
 }
 
 
