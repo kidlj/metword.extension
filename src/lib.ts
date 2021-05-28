@@ -11,6 +11,12 @@ interface WordIndex {
 
 const skipTags = new Map<string, boolean>([
     ["HEAD", true],
+    ["H1", true],
+    ["H2", true],
+    ["H3", true],
+    ["H4", true],
+    ["H5", true],
+    ["H6", true],
     ["SCRIPT", true],
     ["STYLE", true],
     ["PRE", true],
