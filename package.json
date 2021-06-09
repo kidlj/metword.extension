@@ -1,5 +1,5 @@
 {
-    "name": "metaphor",
+    "name": "metwords-extensions",
     "version": "1.0.0",
     "description": "Metwords",
     "private": true,
@@ -8,19 +8,18 @@
         "prod": "npm run production",
         "production": "export NODE_ENV=production && npx webpack --mode='production'",
         "dev": "npm run development",
-        "development": "npx webpack --mode='development'",
-        "test": "testyts"
+        "development": "npx webpack --mode='development'"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/metwords/metaphor.git"
     },
     "author": "Jian Li",
-    "license": "ISC",
+    "license": "Metaphor",
     "bugs": {
-        "url": "https://github.com/metwords/metaphor/issues"
+        "url": "https://github.com/metwords/extensions/issues"
     },
-    "homepage": "https://github.com/metwords/metaphor#readme",
+    "homepage": "https://github.com/metwords/extensions#readme",
     "dependencies": {
         "react": "^17.0.2",
         "react-dom": "^17.0.2"
