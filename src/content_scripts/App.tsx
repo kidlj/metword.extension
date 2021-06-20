@@ -3,19 +3,18 @@ import ReactDOM from 'react-dom';
 import './style.css';
 import Tip from './Tip';
 import { getWordIndexes, getWordRanges, WordRange, markWord } from './lib'
+import { browser } from 'webextension-polyfill-ts';
 
-const metsURL = "http://127.0.0.1:8080/word/mets"
+async function getMets() {
+	const mets = await browser.runtime.sendMessage({
+		action: "getMets"
+	})
+	return mets
+}
 
 async function start() {
-	console.log("Metwords worker started")
-
 	try {
-		const res = await fetch(metsURL)
-		if (res.status != 200) {
-			return
-		}
-		const result = JSON.parse(await res.text())
-		const mets = result.mets
+		const mets = await getMets()
 		let ranges = new Map<string, WordRange>()
 		ranges = getWordRanges(document.getRootNode(), ranges)
 		ranges.forEach((val, key) => {

@@ -5,6 +5,8 @@ import TerserPlugin from 'terser-webpack-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
 module.exports = {
+	// `eval()` not allowed in background scripts, source map generates `eval`s.
+	devtool: false,
 	entry: {
 		content_script: './src/content_scripts/App.tsx',
 		background_script: './src/background_scripts/index.ts'

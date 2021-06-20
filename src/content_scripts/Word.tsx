@@ -1,8 +1,7 @@
 
 import React from 'react'
-import { getSceneSentence, markWord, WordRange } from './lib'
-
-const meetURL = "http://127.0.0.1:8080/word/meet"
+import { browser } from 'webextension-polyfill-ts'
+import { getSceneSentence, markWord } from './lib'
 
 interface WordProps {
 	word: WordObject
@@ -68,6 +67,22 @@ class Word extends React.Component<WordProps, WordState> {
 		)
 	}
 
+	async queryPlusOne(scene: any) {
+		try {
+			const success = await browser.runtime.sendMessage({
+				action: "plusOne",
+				scene: scene
+			})
+			if (!success) {
+				return false
+			}
+
+			return true
+		} catch (err) {
+			return false
+		}
+	}
+
 	async plusOne(id: string, selectText: string, range: Range, parent: Node) {
 		console.log("before mark: startContainer:", range.startContainer)
 		console.log("before mark: endContainer:", range.endContainer)
@@ -85,28 +100,14 @@ class Word extends React.Component<WordProps, WordState> {
 		// After getting sentencce cancel the selected attribute
 		(selectedNode as HTMLElement).removeAttribute("selected")
 		const url = window.location.href
-		try {
-			const body = {
-				id: id,
-				url: url,
-				text: text
-			}
-			let payload = JSON.stringify(body)
-			let jsonHeaders = new Headers({
-				'Content-Type': 'application/json'
-			})
-
-			const meetResult = await fetch(meetURL, {
-				method: "POST",
-				body: payload,
-				headers: jsonHeaders
-			})
-			if (meetResult.status != 200) {
-				console.log("meet word return:", status)
-				return
-			}
-		} catch (err) {
-			console.log("meet word failed", err)
+		const scene = {
+			id: id,
+			url: url,
+			text: text
+		}
+		const success = await this.queryPlusOne(scene)
+		if (!success) {
+			return
 		}
 		this.setState({
 			times: this.state.times + 1,
