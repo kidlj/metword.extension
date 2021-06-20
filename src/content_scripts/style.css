@@ -1,9 +1,3 @@
-/* span.metword {
-    text-decoration: underline;
-    text-decoration-color: "yellow";
-    text-decoration-style: "dotted";
-} */
-
 #metwords-tip {
     position:absolute;
     display:none;
