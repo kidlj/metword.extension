@@ -14,6 +14,11 @@ async function getMets() {
 
 async function start() {
 	try {
+		// switch
+		const store = await browser.storage.local.get("disabled")
+		if (store.disabled == true) {
+			return
+		}
 		const mets = await getMets()
 		let ranges = new Map<string, WordRange>()
 		ranges = getWordRanges(document.getRootNode(), ranges)
@@ -112,3 +117,13 @@ const listenMouseDown = (e: MouseEvent) => {
 	ReactDOM.unmountComponentAtNode(tip)
 	tip.style.display = "none"
 }
+
+browser.storage.onChanged.addListener(({ disabled }) => {
+	if (disabled.newValue == true) {
+		document.removeEventListener('mouseup', listenMouseup)
+		document.removeEventListener('mousedown', listenMouseDown)
+
+		const tip = document.getElementById("metwords-tip")!
+		tip.style.display = "none"
+	}
+})

@@ -71,3 +71,31 @@ async function getMets() {
 		return {}
 	}
 }
+
+const hideMark = `span.metword::before { display: none; }`
+
+async function toggleDisabled() {
+	try {
+		const store = await browser.storage.local.get("disabled")
+		if (store.disabled == undefined) {
+			await browser.storage.local.set({
+				"disabled": true
+			})
+			await browser.tabs.insertCSS({ code: hideMark })
+		} else if (store.disabled = true) {
+			await browser.storage.local.remove("disabled")
+			await browser.tabs.removeCSS({ code: hideMark })
+			await browser.tabs.reload()
+			// TODO: waiting for user feedback to decide implementation
+			// await browser.notifications.create("test notification", {
+			// 	type: "basic",
+			// 	title: "reload needed",
+			// 	message: "please reload page",
+			// })
+		}
+	} catch (err) {
+		console.log(err)
+	}
+}
+
+browser.browserAction.onClicked.addListener(toggleDisabled)
