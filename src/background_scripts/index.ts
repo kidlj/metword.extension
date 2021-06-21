@@ -3,6 +3,7 @@ import { browser } from "webextension-polyfill-ts"
 const metsURL = "http://127.0.0.1:8080/word/mets"
 const queryURL = "http://127.0.0.1:8080/word?word="
 const meetURL = "http://127.0.0.1:8080/word/meet"
+const loginURL = "http://127.0.0.1:8080/login"
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
@@ -27,13 +28,19 @@ async function plusOne(scene: any) {
 			'Content-Type': 'application/json'
 		})
 
-		const meetResult = await fetch(meetURL, {
+		const resp = await fetch(meetURL, {
 			method: "POST",
 			body: payload,
 			headers: jsonHeaders
 		})
-		if (meetResult.status != 200) {
-			console.log("meet word return:", status)
+		if (resp.status == 401) {
+			await browser.tabs.create({
+				url: loginURL,
+				active: true
+			})
+			return
+		}
+		if (resp.status != 200) {
 			return false
 		}
 		return true
@@ -47,6 +54,13 @@ async function queryWord(word: string) {
 	try {
 		const query = queryURL + word
 		const resp = await fetch(query)
+		if (resp.status == 401) {
+			await browser.tabs.create({
+				url: loginURL,
+				active: true
+			})
+			return
+		}
 		if (resp.status != 200) {
 			return []
 		}
@@ -60,11 +74,19 @@ async function queryWord(word: string) {
 
 async function getMets() {
 	try {
-		const res = await fetch(metsURL)
-		if (res.status != 200) {
+		const resp = await fetch(metsURL)
+		if (resp.status == 401) {
+			console.log("debug -------", resp.status)
+			await browser.tabs.create({
+				url: loginURL,
+				active: true
+			})
 			return
 		}
-		const result = JSON.parse(await res.text())
+		if (resp.status != 200) {
+			return
+		}
+		const result = JSON.parse(await resp.text())
 		return result.mets
 	} catch (err) {
 		console.log("Metwords extension: get words error", err)

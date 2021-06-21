@@ -5,6 +5,8 @@ import Tip from './Tip';
 import { getWordIndexes, getWordRanges, WordRange, markWord } from './lib'
 import { browser } from 'webextension-polyfill-ts';
 
+const loginURL = "http://127.0.0.1:8080/login"
+
 async function getMets() {
 	const mets = await browser.runtime.sendMessage({
 		action: "getMets"
@@ -17,6 +19,10 @@ async function start() {
 		// switch
 		const store = await browser.storage.local.get("disabled")
 		if (store.disabled == true) {
+			return
+		}
+		// to break infinite login tab loop
+		if (window.location.href == loginURL) {
 			return
 		}
 		const mets = await getMets()
