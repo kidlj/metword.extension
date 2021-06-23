@@ -4,6 +4,10 @@
 	"version": "0.0.1",
 	"manifest_version": 2,
 	"homepage_url": "https://www.metwords.com",
+	"icons": {
+		"48": "./icons/metwords_96.png",
+		"96": "./icons/metwords_96.png"
+	},
 	"permissions": [
 		"storage",
 		"activeTab",

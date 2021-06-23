@@ -76,6 +76,10 @@ const listenMouseup = async (e: MouseEvent) => {
 	if (range.startContainer == range.endContainer) {
 		parent = range.startContainer.parentNode!
 	}
+	// fix Safari range
+	if (parent.firstChild == parent.lastChild) {
+		parent = parent.parentNode!
+	}
 	console.log("---- parent:", parent)
 	let selectText = selection.toString()
 	const words = getWordIndexes(selectText)

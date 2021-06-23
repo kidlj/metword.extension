@@ -137,7 +137,7 @@ class Word extends React.Component<WordProps, WordState> {
 		if (next == null && this.getMarkNode(range.startContainer.parentNode!, selectText) != null) {
 			const ele = range.startContainer.parentNode as HTMLElement
 			const times = this.state.times + 1
-			ele.setAttribute("met-times", "-".repeat(times))
+			ele.setAttribute("data-times", "-".repeat(times))
 			ele.setAttribute("selected", "true")
 		} else {
 			markWord(wr, true)
