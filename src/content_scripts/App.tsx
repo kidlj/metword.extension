@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './style.css';
 import Tip from './Tip';
-import { getWordIndexes, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
+import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
 import { browser } from 'webextension-polyfill-ts';
 
 const loginURL = "http://127.0.0.1:8080/login"
@@ -70,8 +70,16 @@ const listenMouseup = async (e: MouseEvent) => {
 	if (range.collapsed) {
 		return
 	}
-	console.log("---- startContainer:", range.startContainer)
-	console.log("---- endContainer:", range.endContainer)
+	const selectText = selection.toString()
+	const word = getWord(selectText)
+	if (word == "") {
+		return
+	}
+
+	if (range.startContainer.nodeType != Node.TEXT_NODE) {
+		return
+	}
+
 	let parent = range.commonAncestorContainer
 	if (range.startContainer == range.endContainer) {
 		parent = range.startContainer.parentNode!
@@ -79,17 +87,6 @@ const listenMouseup = async (e: MouseEvent) => {
 	// fix Safari range
 	if (parent.firstChild == parent.lastChild) {
 		parent = parent.parentNode!
-	}
-	console.log("---- parent:", parent)
-	let selectText = selection.toString()
-	const words = getWordIndexes(selectText)
-	if (words.length != 1) {
-		return
-	}
-	const word = words[0].word
-
-	if (range.startContainer.nodeType != Node.TEXT_NODE) {
-		return
 	}
 
 	markSelected(range, selectText)
