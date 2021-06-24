@@ -125,15 +125,15 @@ export function getWordIndexes(s: string): Array<WordIndex> {
 const selectedID = "metword-selected"
 
 export function markWord(range: WordRange, selected: boolean) {
-	let span = document.createElement("span")
-	span.classList.add("metword")
+	let ele = document.createElement("xmetword")
+	ele.classList.add("x-metword-mark")
 	if (selected) {
-		span.setAttribute("id", selectedID)
+		ele.setAttribute("id", selectedID)
 	}
 	const color = "red"
-	range.range.surroundContents(span)
-	span.style.setProperty("--met-color", color)
-	span.setAttribute("data-times", "-".repeat(range.times))
+	range.range.surroundContents(ele)
+	ele.style.setProperty("--met-color", color)
+	ele.setAttribute("data-times", "-".repeat(range.times))
 }
 
 export function markSelected(range: Range, selectedText: string) {

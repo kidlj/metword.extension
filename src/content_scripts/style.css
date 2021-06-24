@@ -12,12 +12,13 @@
     z-index: 7665;
 }
 
-span.metword {
+xmetword.x-metword-mark {
     position: relative;
 	z-index: 0;
+	display: inline;
 }
 
-span.metword::before {
+xmetword.x-metword-mark::before {
     content: attr(data-times);
     color: var(--met-color);
     position: absolute;
