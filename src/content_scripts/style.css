@@ -16,6 +16,7 @@ xmetword.x-metword-mark {
     position: relative;
 	z-index: 0;
 	display: inline;
+	text-indent: 0;
 }
 
 xmetword.x-metword-mark::before {
