@@ -25,4 +25,5 @@ span.metword::before {
     line-height: 0px;
 	width: 100%;
     top: 100%;
+	text-align: left;
 }
