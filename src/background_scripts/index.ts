@@ -94,7 +94,7 @@ async function getMets() {
 	}
 }
 
-const hideMark = `xmetword.x-metword-mark::before { display: none; }`
+const hideMark = `xmetword.x-metword-mark::before { display: none !important; }`
 
 async function toggleDisabled() {
 	try {
