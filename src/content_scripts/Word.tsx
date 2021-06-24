@@ -1,12 +1,11 @@
 
 import React from 'react'
 import { browser } from 'webextension-polyfill-ts'
-import { getSceneSentence, markWord } from './lib'
+import { getSceneSentence, getSelectedElement } from './lib'
 
 interface WordProps {
 	word: WordObject
 	selectText: string
-	range: Range,
 	parent: Node
 }
 
@@ -44,7 +43,7 @@ class Word extends React.Component<WordProps, WordState> {
 				<div className="head">
 					<span className="headword">{word.name}</span>
 					<span className="met-times">{this.state.times}</span>
-					<button className="plus-one" key={word.id} disabled={this.state.met} onClick={() => this.plusOne(word.id, this.props.selectText, this.props.range, this.props.parent)}>+1</button>
+					<button className="plus-one" key={word.id} disabled={this.state.met} onClick={() => this.plusOne(word.id, this.props.selectText, this.props.parent)}>+1</button>
 				</div>
 				<div className="phonetic">
 					<span>US /{word.usPhonetic}/ UK /{word.ukPhonetic}/</span>
@@ -83,22 +82,15 @@ class Word extends React.Component<WordProps, WordState> {
 		}
 	}
 
-	async plusOne(id: string, selectText: string, range: Range, parent: Node) {
-		console.log("before mark: startContainer:", range.startContainer)
-		console.log("before mark: endContainer:", range.endContainer)
-		console.log("before mark: parent:", parent)
-		// After markSelection, range.startContainer and .endContainer changed, 
-		// so we can't rely on it anymore.
-		// Instead, we rely on the extra "parent" prop, which doesn't change.
-		this.markSelection(range, selectText)
-		const selectedNode = this.getSelectedNode(parent)!
-		console.log("after mark: startContainer:", range.startContainer)
-		console.log("after mark: endContainer:", range.endContainer)
-		console.log("after mark: parent:", parent)
+	async plusOne(id: string, selectText: string, parent: Node) {
+		// times += 1
+		const selectedElement = getSelectedElement()!
+		const times = this.state.times + 1
+		selectedElement.setAttribute("data-times", "-".repeat(times))
+
 		const text = getSceneSentence(parent, selectText)
 		console.log("sentence:", text);
-		// After getting sentencce cancel the selected attribute
-		(selectedNode as HTMLElement).removeAttribute("selected")
+
 		const url = window.location.href
 		const scene = {
 			id: id,
@@ -117,65 +109,6 @@ class Word extends React.Component<WordProps, WordState> {
 				url: url
 			})
 		})
-	}
-
-	markSelection(range: Range, selectText: string) {
-		let wr = {
-			times: this.state.times + 1,
-			range: range
-		}
-		// pure text selection in text node
-		if (range.startContainer == range.endContainer) {
-			markWord(wr, true)
-			return
-		}
-
-		// next sibling must be the selection containing node
-		const next = range.startContainer.nextSibling! as Node
-		// const marked = this.getMarkNode(node, selectText)
-		// console.log("marked is:", marked)
-		if (next == null && this.getMarkNode(range.startContainer.parentNode!, selectText) != null) {
-			const ele = range.startContainer.parentNode as HTMLElement
-			const times = this.state.times + 1
-			ele.setAttribute("data-times", "-".repeat(times))
-			ele.setAttribute("selected", "true")
-		} else {
-			markWord(wr, true)
-		}
-	}
-
-	getMarkNode(n: Node, selectText: string): Node | null {
-		if (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "SPAN" &&
-			(n as HTMLElement).getAttribute("class") == "metword" &&
-			n.firstChild!.nodeValue == selectText) {
-			return n
-		}
-
-		for (let c = n.firstChild; c != null; c = c.nextSibling) {
-			const n = this.getMarkNode(c, selectText)
-			if (n != null) {
-				return n
-			}
-		}
-
-		return null
-	}
-
-	getSelectedNode(n: Node): Node | null {
-		if (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "SPAN" &&
-			(n as HTMLElement).getAttribute("class") == "metword" &&
-			(n as HTMLElement).getAttribute("selected") == "true") {
-			return n
-		}
-
-		for (let c = n.firstChild; c != null; c = c.nextSibling) {
-			const n = this.getSelectedNode(c)
-			if (n != null) {
-				return n
-			}
-		}
-
-		return null
 	}
 }
 

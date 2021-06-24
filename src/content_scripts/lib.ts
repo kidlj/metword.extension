@@ -122,11 +122,13 @@ export function getWordIndexes(s: string): Array<WordIndex> {
 	return indexes
 }
 
+const selectedID = "metword-selected"
+
 export function markWord(range: WordRange, selected: boolean) {
 	let span = document.createElement("span")
 	span.classList.add("metword")
 	if (selected) {
-		span.setAttribute("selected", "true")
+		span.setAttribute("id", selectedID)
 	}
 	const color = "red"
 	range.range.surroundContents(span)
@@ -134,6 +136,25 @@ export function markWord(range: WordRange, selected: boolean) {
 	span.setAttribute("data-times", "-".repeat(range.times))
 }
 
+export function markSelected(range: Range, selectedText: string) {
+	const parent = range.startContainer.parentNode!
+	if (isMarkedNode(parent, selectedText)) {
+		(parent as HTMLElement).setAttribute("id", selectedID)
+		return
+	}
+
+	markWord({ range: range, times: 0 }, true)
+}
+
+function isMarkedNode(n: Node, selectedText: string): boolean {
+	return (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "SPAN" &&
+		(n as HTMLElement).getAttribute("class") == "metword" &&
+		n.firstChild!.nodeValue == selectedText)
+}
+
+export function getSelectedElement(): HTMLElement | null {
+	return document.getElementById(selectedID)
+}
 
 function isWordCharacter(s: string): boolean {
 	let re = /^[a-zA-Z]$/
@@ -189,9 +210,7 @@ const paddingText = "hellometwordsthisisarandomstring"
 
 function getText(n: Node, text: string): string {
 	// selection marked element
-	if (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "SPAN" &&
-		(n as HTMLElement).getAttribute("class") == "metword" &&
-		(n as HTMLElement).getAttribute("selected") == "true") {
+	if (n == getSelectedElement()) {
 		return text + paddingText + n.firstChild!.nodeValue
 	}
 

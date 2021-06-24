@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './style.css';
 import Tip from './Tip';
-import { getWordIndexes, getWordRanges, WordRange, markWord } from './lib'
+import { getWordIndexes, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
 import { browser } from 'webextension-polyfill-ts';
 
 const loginURL = "http://127.0.0.1:8080/login"
@@ -92,6 +92,8 @@ const listenMouseup = async (e: MouseEvent) => {
 		return
 	}
 
+	markSelected(range, selectText)
+
 	// display tip
 	tip.style.display = "block"
 
@@ -113,7 +115,7 @@ const listenMouseup = async (e: MouseEvent) => {
 
 	ReactDOM.render(
 		<React.StrictMode>
-			<Tip word={word} selectText={selectText} range={range} parent={parent} />
+			<Tip word={word} selectText={selectText} parent={parent} />
 		</React.StrictMode>,
 		tip
 	)
@@ -123,6 +125,10 @@ const listenMouseDown = (e: MouseEvent) => {
 	const tip = document.getElementById("metwords-tip")!
 	if ((tip as Node).contains(e.target as Node)) {
 		return
+	}
+	const selectedElement = getSelectedElement()
+	if (selectedElement != null) {
+		selectedElement.removeAttribute("id")
 	}
 	ReactDOM.unmountComponentAtNode(tip)
 	tip.style.display = "none"

@@ -6,7 +6,6 @@ import Word from './Word'
 interface TipProps {
 	selectText: string
 	word: string
-	range: Range,
 	parent: Node
 }
 
@@ -22,7 +21,7 @@ class Tip extends React.Component<TipProps, TipState> {
 		return (
 			<div className="words">
 				{
-					this.state.words.map((w: any) => (<Word word={w} selectText={this.props.selectText} range={this.props.range} parent={this.props.parent} />))
+					this.state.words.map((w: any) => (<Word word={w} selectText={this.props.selectText} parent={this.props.parent} />))
 				}
 			</div>
 		)
