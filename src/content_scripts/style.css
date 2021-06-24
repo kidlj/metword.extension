@@ -23,5 +23,6 @@ span.metword::before {
     position: absolute;
     z-index: -7665;
     line-height: 0px;
+	width: 100%;
     top: 100%;
 }
