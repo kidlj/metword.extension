@@ -51,11 +51,8 @@ async function start() {
 	body.appendChild(tipWrap)
 }
 
-start()
-
-document.onload = function (e: Event) {
-	start()
-}
+// waiting a while for client side rendered dom ready
+setTimeout(start, 1000)
 
 const listenMouseup = async (e: MouseEvent) => {
 	const tip = document.getElementById("metwords-tip")!
