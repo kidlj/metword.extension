@@ -147,8 +147,8 @@ export function markSelected(range: Range, selectedText: string) {
 }
 
 function isMarkedNode(n: Node, selectedText: string): boolean {
-	return (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "SPAN" &&
-		(n as HTMLElement).getAttribute("class") == "metword" &&
+	return (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "XMETWORD" &&
+		(n as HTMLElement).getAttribute("class") == "x-metword-mark" &&
 		n.firstChild!.nodeValue == selectedText)
 }
 
