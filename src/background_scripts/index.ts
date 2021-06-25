@@ -109,6 +109,7 @@ async function toggleDisabled() {
 			await browser.tabs.removeCSS({ code: hideMark })
 			await browser.tabs.reload()
 			// TODO: waiting for user feedback to decide implementation
+			// NOTE: Safari manifests don't support 'notifications'.
 			// await browser.notifications.create("test notification", {
 			// 	type: "basic",
 			// 	title: "reload needed",
