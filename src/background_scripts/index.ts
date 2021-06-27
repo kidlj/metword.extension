@@ -1,9 +1,9 @@
 import { browser } from "webextension-polyfill-ts"
 
-const metsURL = "http://127.0.0.1:8080/word/mets"
-const queryURL = "http://127.0.0.1:8080/word?word="
-const meetURL = "http://127.0.0.1:8080/word/meet"
-const loginURL = "http://127.0.0.1:8080/login"
+const metsURL = "http://words.metaphor.com:8080/meet/times"
+const queryURL = "http://words.metaphor.com:8080/word?word="
+const meetURL = "http://words.metaphor.com:8080/meet"
+const loginURL = "http://words.metaphor.com:8080/account/login"
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {

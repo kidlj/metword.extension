@@ -5,7 +5,7 @@ import Tip from './Tip';
 import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
 import { browser } from 'webextension-polyfill-ts';
 
-const loginURL = "http://127.0.0.1:8080/login"
+const loginURL = "http://words.metaphor.com:8080/account/login"
 
 async function getMets() {
 	const mets = await browser.runtime.sendMessage({
