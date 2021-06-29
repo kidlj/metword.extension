@@ -5,7 +5,8 @@ import Tip from './Tip';
 import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
 import { browser } from 'webextension-polyfill-ts';
 
-const loginURL = "http://words.metaphor.com:8080/account/login"
+// 500ms
+const waitDuration = 500
 
 async function getMeets() {
 	const meets = await browser.runtime.sendMessage({
@@ -48,7 +49,7 @@ async function start() {
 }
 
 // waiting a while for client side rendered dom ready
-setTimeout(start, 1000)
+setTimeout(start, waitDuration)
 
 const listenMouseup = async (e: MouseEvent) => {
 	const tip = document.getElementById("metwords-tip")!
