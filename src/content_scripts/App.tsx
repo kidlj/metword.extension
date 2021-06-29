@@ -5,8 +5,8 @@ import Tip from './Tip';
 import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
 import { browser } from 'webextension-polyfill-ts';
 
-// 500ms
-const waitDuration = 500
+// 1s
+const waitDuration = 1000
 
 async function getMeets() {
 	const meets = await browser.runtime.sendMessage({
