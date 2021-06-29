@@ -21,10 +21,6 @@ async function start() {
 		if (store.disabled == true) {
 			return
 		}
-		// to break infinite login tab loop
-		if (window.location.href == loginURL) {
-			return
-		}
 		const meets = await getMeets()
 		let ranges = new Map<string, WordRange>()
 		ranges = getWordRanges(document.getRootNode(), ranges)
