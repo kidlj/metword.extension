@@ -15,6 +15,13 @@ browser.runtime.onMessage.addListener(async (msg) => {
 	}
 })
 
+var valid = false
+var meets: any = {}
+
+function invalidate() {
+	valid = false
+}
+
 async function plusOne(scene: any) {
 	try {
 		const body = {
@@ -35,6 +42,8 @@ async function plusOne(scene: any) {
 		if (resp.status != 200) {
 			return false
 		}
+		// invalidate cache
+		invalidate()
 		return true
 	} catch (err) {
 		console.log("meet word failed", err)
@@ -58,16 +67,21 @@ async function queryWord(word: string) {
 }
 
 async function getMeets() {
+	if (valid) {
+		return meets
+	}
 	try {
 		const resp = await fetch(meetsURL)
 		if (resp.status != 200) {
 			return
 		}
 		const result = JSON.parse(await resp.text())
-		return result.meets
+		meets = result.meets
+		valid = true
+		return meets
 	} catch (err) {
 		console.log("Metwords extension: get words error", err)
-		return {}
+		return meets
 	}
 }
 
@@ -81,6 +95,8 @@ async function toggleDisabled() {
 				"disabled": true
 			})
 			await browser.tabs.insertCSS({ code: hideMark })
+			// invalidate cache
+			invalidate()
 		} else if (store.disabled = true) {
 			await browser.storage.local.remove("disabled")
 			await browser.tabs.removeCSS({ code: hideMark })
