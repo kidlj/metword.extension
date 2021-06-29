@@ -7,11 +7,11 @@ import { browser } from 'webextension-polyfill-ts';
 
 const loginURL = "http://words.metaphor.com:8080/account/login"
 
-async function getMets() {
-	const mets = await browser.runtime.sendMessage({
-		action: "getMets"
+async function getMeets() {
+	const meets = await browser.runtime.sendMessage({
+		action: "getMeets"
 	})
-	return mets
+	return meets
 }
 
 async function start() {
@@ -25,14 +25,14 @@ async function start() {
 		if (window.location.href == loginURL) {
 			return
 		}
-		const mets = await getMets()
+		const meets = await getMeets()
 		let ranges = new Map<string, WordRange>()
 		ranges = getWordRanges(document.getRootNode(), ranges)
 		ranges.forEach((val, key) => {
-			if (mets[key] == undefined) {
+			if (meets[key] == undefined) {
 				ranges.delete(key)
 			} else {
-				val.times = mets[key]
+				val.times = meets[key]
 			}
 		})
 		for (let range of ranges.values()) {

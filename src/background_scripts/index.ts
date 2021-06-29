@@ -1,16 +1,15 @@
 import { browser } from "webextension-polyfill-ts"
 
-const metsURL = "http://words.metaphor.com:8080/meet/times"
+const meetsURL = "http://words.metaphor.com:8080/meet/times"
 const queryURL = "http://words.metaphor.com:8080/word?word="
 const meetURL = "http://words.metaphor.com:8080/meet"
-const loginURL = "http://words.metaphor.com:8080/account/login"
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
 		case "query":
 			return await queryWord(msg.word)
-		case 'getMets':
-			return await getMets()
+		case 'getMeets':
+			return await getMeets()
 		case 'plusOne':
 			return await plusOne(msg.scene)
 	}
@@ -33,13 +32,6 @@ async function plusOne(scene: any) {
 			body: payload,
 			headers: jsonHeaders
 		})
-		if (resp.status == 401) {
-			await browser.tabs.create({
-				url: loginURL,
-				active: true
-			})
-			return
-		}
 		if (resp.status != 200) {
 			return false
 		}
@@ -54,13 +46,6 @@ async function queryWord(word: string) {
 	try {
 		const query = queryURL + word
 		const resp = await fetch(query)
-		if (resp.status == 401) {
-			await browser.tabs.create({
-				url: loginURL,
-				active: true
-			})
-			return
-		}
 		if (resp.status != 200) {
 			return []
 		}
@@ -72,22 +57,14 @@ async function queryWord(word: string) {
 	}
 }
 
-async function getMets() {
+async function getMeets() {
 	try {
-		const resp = await fetch(metsURL)
-		if (resp.status == 401) {
-			console.log("debug -------", resp.status)
-			await browser.tabs.create({
-				url: loginURL,
-				active: true
-			})
-			return
-		}
+		const resp = await fetch(meetsURL)
 		if (resp.status != 200) {
 			return
 		}
 		const result = JSON.parse(await resp.text())
-		return result.mets
+		return result.meets
 	} catch (err) {
 		console.log("Metwords extension: get words error", err)
 		return {}
