@@ -11,7 +11,6 @@
 	"permissions": [
 		"storage",
 		"activeTab",
-		"tabs",
 		"http://127.0.0.1/*",
 		"http://words.metaphor.com/*",
 		"https://www.metwords.com/*"
