@@ -73,7 +73,7 @@ async function getMeets() {
 	try {
 		const resp = await fetch(meetsURL)
 		if (resp.status != 200) {
-			return
+			return meets
 		}
 		const result = JSON.parse(await resp.text())
 		meets = result.meets
