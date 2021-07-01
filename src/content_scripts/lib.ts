@@ -201,9 +201,22 @@ export function getSceneSentence(parent: Node, selectText: string): string {
 	return text.slice(start, end).trim().replace(paddingText, "")
 }
 
-const paddings = new Map<string, boolean>([
+const paddingSpace = new Map<string, boolean>([
 	["SUP", true],
-	["BR", true]
+	["BR", true],
+	["DIV", true],
+	["P", true],
+	["BLOCKQUOTE", true],
+	["PRE", true],
+])
+
+const paddingDelimeter = new Map<string, boolean>([
+	["H1", true],
+	["H2", true],
+	["H3", true],
+	["H4", true],
+	["H5", true],
+	["H6", true]
 ])
 
 const paddingText = "hellometwordsthisisarandomstring"
@@ -214,16 +227,20 @@ function getText(n: Node, text: string): string {
 		return text + paddingText + n.firstChild!.nodeValue
 	}
 
-	if (n.nodeType == Node.ELEMENT_NODE && paddings.get(n.nodeName) == true) {
-		return text + " "
-	}
-
 	if (n.nodeType == Node.TEXT_NODE) {
 		return text + n.nodeValue
 	}
 
 	for (let c = n.firstChild; c != null; c = c.nextSibling) {
 		text = getText(c, text)
+	}
+
+	if (n.nodeType == Node.ELEMENT_NODE && paddingSpace.get(n.nodeName) == true) {
+		return text + " "
+	}
+
+	if (n.nodeType == Node.ELEMENT_NODE && paddingDelimeter.get(n.nodeName) == true) {
+		return text + ". "
 	}
 
 	return text
