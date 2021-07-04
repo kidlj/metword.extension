@@ -207,7 +207,6 @@ const paddingSpace = new Map<string, boolean>([
 	["DIV", true],
 	["P", true],
 	["BLOCKQUOTE", true],
-	["PRE", true],
 ])
 
 const paddingDelimeter = new Map<string, boolean>([
