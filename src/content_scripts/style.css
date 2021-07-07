@@ -9,7 +9,40 @@
     line-height: 1.5em;
     width: 500px;
     border: 1px solid gray;
+	border-radius: 5px;
+	box-shadow: 5px 5px rgb(209, 203, 203);
     z-index: 7665;
+}
+
+#metwords-tip * {
+	all: unset;
+}
+
+#metwords-tip .headword {
+	font-size: 30px;
+	padding: 10px;
+	margin-right: 20px;
+}
+
+#metwords-tip .met-times {
+	font-size: 15px;
+	background-color: lightgray;
+	padding: 5px;
+	margin-right: 20px;
+}
+
+#metwords-tip .plus-one {
+	font-size: 15px;
+	margin-right: 10px;
+}
+
+#metwords-tip .phonetic {
+	display: block;
+}
+
+#metwords-tip li {
+	display: block;
+	list-style: none;
 }
 
 xmetword.x-metword-mark {

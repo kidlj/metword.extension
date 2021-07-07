@@ -42,7 +42,7 @@ class Word extends React.Component<WordProps, WordState> {
 			< div className="word" >
 				<div className="head">
 					<span className="headword">{word.name}</span>
-					<span className="met-times">{this.state.times}</span>
+					<span className="met-times">遇见 {this.state.times} 次</span>
 					<button className="plus-one" key={word.id} disabled={this.state.met} onClick={() => this.plusOne(word.id, this.props.selectText, this.props.parent)}>+1</button>
 				</div>
 				<div className="phonetic">
