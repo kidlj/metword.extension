@@ -57,7 +57,9 @@ class Word extends React.Component<WordProps, WordState> {
 					<ul>
 						{this.state.scenes.map((scene) => {
 							return <li className="scene">
-								<a href={scene.url}>{scene.sentence}</a>
+								<a href={scene.url}>
+									<span className="met-highlight" dangerouslySetInnerHTML={{ __html: scene.sentence }}></span>
+								</a>
 							</li>
 						})}
 					</ul>

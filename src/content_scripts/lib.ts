@@ -171,7 +171,7 @@ function isWordDelimiter(s: string): boolean {
 // This is a known bug and results are acceptable to me. To keep code simple, I choose not to fix it.
 export function getSceneSentence(parent: Node, selectText: string): string {
 	console.log("selectText is:", selectText)
-	const word = paddingText + selectText
+	const word = paddingLeft + selectText + paddingRight
 	const text = getText(parent, "")
 	let start = 0
 	let end = text.length
@@ -198,7 +198,7 @@ export function getSceneSentence(parent: Node, selectText: string): string {
 		}
 	}
 
-	return text.slice(start, end).trim().replace(paddingText, "")
+	return text.slice(start, end).trim()
 }
 
 const paddingSpace = new Map<string, boolean>([
@@ -218,12 +218,14 @@ const paddingDelimeter = new Map<string, boolean>([
 	["H6", true]
 ])
 
-const paddingText = "hellometwordsthisisarandomstring"
+// for highlighting and exact matching
+const paddingLeft = "<xmet>"
+const paddingRight = "</xmet>"
 
 function getText(n: Node, text: string): string {
 	// selection marked element
 	if (n == getSelectedElement()) {
-		return text + paddingText + n.firstChild!.nodeValue
+		return text + paddingLeft + n.firstChild!.nodeValue + paddingRight
 	}
 
 	if (n.nodeType == Node.TEXT_NODE) {

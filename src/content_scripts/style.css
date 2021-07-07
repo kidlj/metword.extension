@@ -31,6 +31,10 @@
 	margin-right: 20px;
 }
 
+#metwords-tip xmet {
+	color: red;
+}
+
 #metwords-tip .plus-one {
 	font-size: 15px;
 	margin-right: 10px;
