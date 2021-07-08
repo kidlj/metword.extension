@@ -72,7 +72,7 @@
 #metwords-tip ul {
 	display: block;
 	list-style-position: inside;
-	list-style-type: " - ";
+	list-style-type: square;
 }
 
 #metwords-tip .defs ul {
