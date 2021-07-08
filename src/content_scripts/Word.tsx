@@ -10,7 +10,7 @@ interface WordProps {
 }
 
 interface WordObject {
-	id: string
+	id: number
 	name: string
 	usPhonetic: string
 	ukPhonetic: string
@@ -27,6 +27,7 @@ interface WordState {
 }
 
 interface Scene {
+	id: number
 	sentence: string
 	url: string
 }
@@ -46,7 +47,7 @@ class Word extends React.Component<WordProps, WordState> {
 	}
 	render() {
 		const word = this.props.word
-		let getText = this.state.known ? "✓" : "Get"
+		const getText = this.state.known ? "✓" : "Get"
 		return (
 			<div className="word" >
 				<div className="head">
@@ -70,11 +71,14 @@ class Word extends React.Component<WordProps, WordState> {
 				<div className="scenes">
 					<ul>
 						{this.state.scenes.map((scene) => {
-							return <li className="scene">
-								<a href={scene.url}>
-									<span className="met-highlight" dangerouslySetInnerHTML={{ __html: scene.sentence }}></span>
-								</a>
-							</li>
+							return (
+								<li className="scene" key={scene.id}>
+									<a href={scene.url}>
+										<span className="met-scene" dangerouslySetInnerHTML={{ __html: scene.sentence }}></span>
+									</a>
+									<span className="met-forget" onClick={() => this.forgetScene(scene.id)}>✗</span>
+								</li>
+							)
 						})}
 					</ul>
 				</div>
@@ -82,23 +86,7 @@ class Word extends React.Component<WordProps, WordState> {
 		)
 	}
 
-	async queryPlusOne(scene: any) {
-		try {
-			const success = await browser.runtime.sendMessage({
-				action: "plusOne",
-				scene: scene
-			})
-			if (!success) {
-				return false
-			}
-
-			return true
-		} catch (err) {
-			return false
-		}
-	}
-
-	async plusOne(id: string, selectText: string, parent: Node) {
+	async plusOne(id: number, selectText: string, parent: Node) {
 		// times += 1
 		const selectedElement = getSelectedElement()!
 		const times = this.state.times + 1
@@ -113,8 +101,11 @@ class Word extends React.Component<WordProps, WordState> {
 			url: url,
 			text: text
 		}
-		const success = await this.queryPlusOne(scene)
-		if (!success) {
+		const result = await browser.runtime.sendMessage({
+			action: "plusOne",
+			scene: scene
+		})
+		if (!result.success) {
 			return
 		}
 		this.setState({
@@ -122,13 +113,14 @@ class Word extends React.Component<WordProps, WordState> {
 			met: true,
 			known: false,
 			scenes: this.state.scenes.concat({
-				sentence: text,
-				url: url
+				id: result.scene.id,
+				sentence: result.scene.text,
+				url: result.scene.url,
 			})
 		})
 	}
 
-	async queryKnow(id: string) {
+	async queryKnow(id: number) {
 		try {
 			const success = await browser.runtime.sendMessage({
 				action: "know",
@@ -144,7 +136,7 @@ class Word extends React.Component<WordProps, WordState> {
 		}
 	}
 
-	async know(id: string) {
+	async know(id: number) {
 		const success = await this.queryKnow(id)
 		if (!success) {
 			return
@@ -155,6 +147,38 @@ class Word extends React.Component<WordProps, WordState> {
 			known: true,
 		})
 	}
+
+	async queryForgetScene(id: number) {
+		try {
+			const success = await browser.runtime.sendMessage({
+				action: "forgetScene",
+				id: id,
+			})
+			if (!success) {
+				return false
+			}
+
+			return true
+		} catch (err) {
+			return false
+		}
+	}
+
+	async forgetScene(id: number) {
+		const success = await this.queryForgetScene(id)
+		if (!success) {
+			return
+		}
+		const times = this.state.times - 1
+		const selectedElement = getSelectedElement()!
+		selectedElement.setAttribute("data-times", "-".repeat(times))
+		const scenes = this.state.scenes.filter(scene => scene.id != id)
+		this.setState({
+			times: times,
+			scenes: scenes,
+		})
+	}
+
 }
 
 export default Word

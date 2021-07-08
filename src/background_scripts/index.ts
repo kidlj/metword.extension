@@ -4,6 +4,7 @@ const meetsURL = "http://words.metaphor.com:8080/meet/times"
 const queryURL = "http://words.metaphor.com:8080/word?word="
 const meetURL = "http://words.metaphor.com:8080/meet"
 const knowURL = "http://words.metaphor.com:8080/meet/know?id="
+const forgetSceneURL = "http://words.metaphor.com:8080/scene?id="
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
@@ -15,6 +16,8 @@ browser.runtime.onMessage.addListener(async (msg) => {
 			return await plusOne(msg.scene)
 		case 'know':
 			return await know(msg.id)
+		case 'forgetScene':
+			return await forgetScene(msg.id)
 	}
 })
 
@@ -43,22 +46,47 @@ async function plusOne(scene: any) {
 			headers: jsonHeaders
 		})
 		if (resp.status != 200) {
+			return {
+				success: false,
+			}
+		}
+		const result = await resp.json()
+		// invalidate cache
+		invalidate()
+		return {
+			success: true,
+			scene: result.scene,
+		}
+	} catch (err) {
+		console.log("meet word failed", err)
+		return {
+			success: false,
+		}
+	}
+}
+
+async function know(id: number) {
+	try {
+		const url = knowURL + id
+		const resp = await fetch(url, {
+			method: "POST",
+		})
+		if (resp.status != 200) {
 			return false
 		}
 		// invalidate cache
 		invalidate()
 		return true
 	} catch (err) {
-		console.log("meet word failed", err)
 		return false
 	}
 }
 
-async function know(id: string) {
+async function forgetScene(id: number) {
 	try {
-		const url = knowURL + id
+		const url = forgetSceneURL + id
 		const resp = await fetch(url, {
-			method: "POST",
+			method: "DELETE",
 		})
 		if (resp.status != 200) {
 			return false

@@ -48,13 +48,16 @@ class Tip extends React.Component<TipProps, TipState> {
 						known = true
 					}
 
-					w.edges.meets[0].edges.scenes.forEach((sc: any) => {
-						const scene: any = {
-							sentence: sc.text,
-							url: sc.url
-						}
-						scenes.push(scene)
-					})
+					if (w.edges.meets[0].edges.scenes != null) {
+						w.edges.meets[0].edges.scenes.forEach((sc: any) => {
+							const scene: any = {
+								id: sc.id,
+								sentence: sc.text,
+								url: sc.url
+							}
+							scenes.push(scene)
+						})
+					}
 				}
 				const word: any = {
 					id: w.id,

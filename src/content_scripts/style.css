@@ -81,9 +81,21 @@
 
 #metwords-tip ul li {
 	display: list-item;
+	margin-bottom: 2px;
 }
 
 #metwords-tip li a {
+	cursor: pointer;
+}
+
+#metwords-tip .met-forget {
+	font-size: 14px;
+	opacity: 0;
+	padding: 1px 10px;
+}
+
+#metwords-tip .met-forget:hover {
+	opacity: 100;
 	cursor: pointer;
 }
 
