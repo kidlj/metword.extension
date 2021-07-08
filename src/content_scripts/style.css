@@ -66,6 +66,7 @@
 
 #metwords-tip button:disabled {
 	background-color: lightgray;
+	cursor: default;
 }
 
 #metwords-tip ul {
