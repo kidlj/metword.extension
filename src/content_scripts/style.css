@@ -15,13 +15,34 @@
 }
 
 #metwords-tip * {
-	all: initial;
+	all: unset;
 	font-family: Arial, Helvetica, sans-serif;
+	font-weight: normal;
+}
+
+#metwords-tip .head {
+	margin-bottom: 10px;
+	display: block;
+}
+
+#metwords-tip .phonetic {
+	margin-bottom: 10px;
+	display: block;
+}
+
+#metwords-tip .defs {
+	margin-bottom: 10px;
+	display: block;
+}
+
+#metwords-tip .scenes {
+	margin-bottom: 10px;
+	display: block;
 }
 
 #metwords-tip .headword {
 	font-size: 30px;
-	padding: 10px;
+	padding: 2px;
 	margin-right: 20px;
 }
 
@@ -38,21 +59,31 @@
 	font-size: 15px;
 	margin-right: 10px;
 	background-color: lightgreen;
-	padding: 2px 10px;
+	padding: 1px 10px;
 	border-radius: 2px;
+	cursor: pointer;
 }
 
 #metwords-tip button:disabled {
 	background-color: lightgray;
 }
 
-#metwords-tip .phonetic {
+#metwords-tip ul {
 	display: block;
+	list-style-position: inside;
+	list-style-type: " - ";
 }
 
-#metwords-tip li {
-	display: block;
-	list-style: none;
+#metwords-tip .defs ul {
+	list-style-type: none;
+}
+
+#metwords-tip ul li {
+	display: list-item;
+}
+
+#metwords-tip li a {
+	cursor: pointer;
 }
 
 xmetword.x-metword-mark {

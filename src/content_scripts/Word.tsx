@@ -53,7 +53,7 @@ class Word extends React.Component<WordProps, WordState> {
 					<span className="headword">{word.name}</span>
 					<span className="met-times">遇见 {this.state.times} 次</span>
 
-					<button className="plusone-button" data-known={this.state.known} disabled={this.state.met} onClick={() => this.plusOne(word.id, this.props.selectText, this.props.parent)}>+1</button>
+					<button className="plus-button" data-known={this.state.known} disabled={this.state.met} onClick={() => this.plusOne(word.id, this.props.selectText, this.props.parent)}>+1</button>
 
 					{this.state.times > 0 &&
 						<button className="know-button" data-known={this.state.known} disabled={this.state.known} onClick={() => this.know(word.id)}>{getText}</button>
