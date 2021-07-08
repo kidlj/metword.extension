@@ -3,6 +3,7 @@ import { browser } from "webextension-polyfill-ts"
 const meetsURL = "http://words.metaphor.com:8080/meet/times"
 const queryURL = "http://words.metaphor.com:8080/word?word="
 const meetURL = "http://words.metaphor.com:8080/meet"
+const knowURL = "http://words.metaphor.com:8080/meet/know?id="
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
@@ -12,6 +13,8 @@ browser.runtime.onMessage.addListener(async (msg) => {
 			return await getMeets()
 		case 'plusOne':
 			return await plusOne(msg.scene)
+		case 'know':
+			return await know(msg.id)
 	}
 })
 
@@ -47,6 +50,23 @@ async function plusOne(scene: any) {
 		return true
 	} catch (err) {
 		console.log("meet word failed", err)
+		return false
+	}
+}
+
+async function know(id: string) {
+	try {
+		const url = knowURL + id
+		const resp = await fetch(url, {
+			method: "POST",
+		})
+		if (resp.status != 200) {
+			return false
+		}
+		// invalidate cache
+		invalidate()
+		return true
+	} catch (err) {
 		return false
 	}
 }

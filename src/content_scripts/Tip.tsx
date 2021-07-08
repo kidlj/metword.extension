@@ -42,7 +42,12 @@ class Tip extends React.Component<TipProps, TipState> {
 			const words: any[] = []
 			owords.forEach((w: any) => {
 				const scenes: any[] = []
+				let known = false
 				if (w.edges.meets != null) {
+					if (w.edges.meets[0].state == 10) {
+						known = true
+					}
+
 					w.edges.meets[0].edges.scenes.forEach((sc: any) => {
 						const scene: any = {
 							sentence: sc.text,
@@ -57,6 +62,7 @@ class Tip extends React.Component<TipProps, TipState> {
 					usPhonetic: w.us_phonetic,
 					ukPhonetic: w.uk_phonetic,
 					defs: w.def_zh,
+					known: known,
 					scenes: scenes
 				}
 				words.push(word)

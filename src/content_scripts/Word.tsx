@@ -15,11 +15,13 @@ interface WordObject {
 	usPhonetic: string
 	ukPhonetic: string
 	defs: string[]
+	known: boolean,
 	scenes: Scene[]
 }
 
 interface WordState {
 	met: boolean,
+	known: boolean,
 	times: number
 	scenes: Scene[]
 }
@@ -31,19 +33,31 @@ interface Scene {
 
 
 class Word extends React.Component<WordProps, WordState> {
-	state: WordState = {
-		times: this.props.word.scenes.length,
-		scenes: this.props.word.scenes,
-		met: false
+	constructor(props: WordProps) {
+		super(props)
+		// this.plusOne = this.plusOne.bind(this)
+		// this.know = this.know.bind(this)
+		this.state = {
+			times: this.props.word.scenes.length,
+			scenes: this.props.word.scenes,
+			met: false,
+			known: this.props.word.known,
+		}
 	}
 	render() {
 		const word = this.props.word
+		let getText = this.state.known ? "✓" : "Get"
 		return (
-			< div className="word" >
+			<div className="word" >
 				<div className="head">
 					<span className="headword">{word.name}</span>
 					<span className="met-times">遇见 {this.state.times} 次</span>
-					<button className="plus-one" key={word.id} disabled={this.state.met} onClick={() => this.plusOne(word.id, this.props.selectText, this.props.parent)}>+1</button>
+
+					<button className="plusone-button" data-known={this.state.known} disabled={this.state.met} onClick={() => this.plusOne(word.id, this.props.selectText, this.props.parent)}>+1</button>
+
+					{this.state.times > 0 &&
+						<button className="know-button" data-known={this.state.known} disabled={this.state.known} onClick={() => this.know(word.id)}>{getText}</button>
+					}
 				</div>
 				<div className="phonetic">
 					<span>US /{word.usPhonetic}/ UK /{word.ukPhonetic}/</span>
@@ -106,10 +120,39 @@ class Word extends React.Component<WordProps, WordState> {
 		this.setState({
 			times: this.state.times + 1,
 			met: true,
+			known: false,
 			scenes: this.state.scenes.concat({
 				sentence: text,
 				url: url
 			})
+		})
+	}
+
+	async queryKnow(id: string) {
+		try {
+			const success = await browser.runtime.sendMessage({
+				action: "know",
+				id: id,
+			})
+			if (!success) {
+				return false
+			}
+
+			return true
+		} catch (err) {
+			return false
+		}
+	}
+
+	async know(id: string) {
+		const success = await this.queryKnow(id)
+		if (!success) {
+			return
+		}
+		const selectedElement = getSelectedElement()!
+		selectedElement.setAttribute("data-times", "-".repeat(0))
+		this.setState({
+			known: true,
 		})
 	}
 }
