@@ -41,7 +41,13 @@ module.exports = {
 		nodeEnv: 'production', // only minify in production
 		minimizer: [
 			new CssMinimizerPlugin(), // minify css
-			new TerserPlugin(), // minify js 
+			new TerserPlugin({
+				terserOptions: {
+					format: {
+						ascii_only: true,
+					}
+				}
+			}), // minify js 
 		],
 	},
 	plugins: [
