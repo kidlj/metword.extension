@@ -99,6 +99,12 @@
 	cursor: pointer;
 }
 
+#metwords-tip .met-message a {
+	cursor: pointer;
+	color: red;
+	text-decoration: solid underline;
+}
+
 xmetword.x-metword-mark {
     position: relative;
 	z-index: 0;

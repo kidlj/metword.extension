@@ -5,6 +5,13 @@ const queryURL = "http://words.metaphor.com:8080/word?word="
 const meetURL = "http://words.metaphor.com:8080/meet"
 const knowURL = "http://words.metaphor.com:8080/meet/know?id="
 const forgetSceneURL = "http://words.metaphor.com:8080/scene?id="
+const loginURL = "http://words.metaphor.com:8080/account/login"
+
+const loginMessage = `<span>请<a href="${loginURL}" target="_blank">登录</a>后使用。</span>`
+const rateLimitMessage = "操作过于频繁。"
+const notFoundMessage = "未找到定义。"
+const errorMessage = "发生未知错误，请稍后再试。"
+const networkMessage = "网络连接错误，请稍后再试。"
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
@@ -45,9 +52,22 @@ async function plusOne(scene: any) {
 			body: payload,
 			headers: jsonHeaders
 		})
+		if (resp.status == 401) {
+			return {
+				success: false,
+				message: loginMessage
+			}
+		}
+		if (resp.status == 503) {
+			return {
+				success: false,
+				message: rateLimitMessage
+			}
+		}
 		if (resp.status != 200) {
 			return {
 				success: false,
+				message: errorMessage
 			}
 		}
 		const result = await resp.json()
@@ -58,9 +78,9 @@ async function plusOne(scene: any) {
 			scene: result.scene,
 		}
 	} catch (err) {
-		console.log("meet word failed", err)
 		return {
 			success: false,
+			message: networkMessage
 		}
 	}
 }
@@ -71,14 +91,34 @@ async function know(id: number) {
 		const resp = await fetch(url, {
 			method: "POST",
 		})
+		if (resp.status == 401) {
+			return {
+				success: false,
+				message: loginMessage
+			}
+		}
+		if (resp.status == 503) {
+			return {
+				success: false,
+				message: rateLimitMessage
+			}
+		}
 		if (resp.status != 200) {
-			return false
+			return {
+				success: false,
+				message: errorMessage
+			}
 		}
 		// invalidate cache
 		invalidate()
-		return true
+		return {
+			success: true,
+		}
 	} catch (err) {
-		return false
+		return {
+			success: false,
+			message: networkMessage
+		}
 	}
 }
 
@@ -88,14 +128,34 @@ async function forgetScene(id: number) {
 		const resp = await fetch(url, {
 			method: "DELETE",
 		})
+		if (resp.status == 401) {
+			return {
+				success: false,
+				message: loginMessage
+			}
+		}
+		if (resp.status == 503) {
+			return {
+				success: false,
+				message: rateLimitMessage
+			}
+		}
 		if (resp.status != 200) {
-			return false
+			return {
+				success: false,
+				message: errorMessage
+			}
 		}
 		// invalidate cache
 		invalidate()
-		return true
+		return {
+			success: true,
+		}
 	} catch (err) {
-		return false
+		return {
+			success: false,
+			message: networkMessage
+		}
 	}
 }
 
@@ -103,14 +163,40 @@ async function queryWord(word: string) {
 	try {
 		const query = queryURL + word
 		const resp = await fetch(query)
+		if (resp.status == 401) {
+			return {
+				success: false,
+				message: loginMessage
+			}
+		}
+		if (resp.status == 503) {
+			return {
+				success: false,
+				message: rateLimitMessage
+			}
+		}
+		if (resp.status == 404) {
+			return {
+				success: false,
+				message: notFoundMessage
+			}
+		}
 		if (resp.status != 200) {
-			return []
+			return {
+				success: false,
+				message: errorMessage
+			}
 		}
 		const result = await resp.json()
-		return result.words
+		return {
+			success: true,
+			words: result.words
+		}
 	} catch (err) {
-		console.log("query word error", err)
-		return []
+		return {
+			success: false,
+			message: networkMessage
+		}
 	}
 }
 

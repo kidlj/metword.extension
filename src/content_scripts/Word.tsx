@@ -2,6 +2,7 @@
 import React from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import { getSceneSentence, getSelectedElement } from './lib'
+import ErrorMessage from './ErrorMessage'
 
 interface WordProps {
 	word: WordObject
@@ -15,15 +16,16 @@ interface WordObject {
 	usPhonetic: string
 	ukPhonetic: string
 	defs: string[]
-	known: boolean,
+	known: boolean
 	scenes: Scene[]
 }
 
 interface WordState {
-	met: boolean,
-	known: boolean,
+	met: boolean
+	known: boolean
 	times: number
 	scenes: Scene[]
+	message: string | undefined
 }
 
 interface Scene {
@@ -43,11 +45,15 @@ class Word extends React.Component<WordProps, WordState> {
 			scenes: this.props.word.scenes,
 			met: false,
 			known: this.props.word.known,
+			message: undefined
 		}
 	}
 	render() {
 		const word = this.props.word
 		const getText = this.state.known ? "✓" : "Get"
+		if (this.state.message != undefined) {
+			return <ErrorMessage message={this.state.message}></ErrorMessage>
+		}
 		return (
 			<div className="word" >
 				<div className="head">
@@ -106,6 +112,9 @@ class Word extends React.Component<WordProps, WordState> {
 			scene: scene
 		})
 		if (!result.success) {
+			this.setState({
+				message: result.message
+			})
 			return
 		}
 		this.setState({
@@ -120,25 +129,15 @@ class Word extends React.Component<WordProps, WordState> {
 		})
 	}
 
-	async queryKnow(id: number) {
-		try {
-			const success = await browser.runtime.sendMessage({
-				action: "know",
-				id: id,
-			})
-			if (!success) {
-				return false
-			}
-
-			return true
-		} catch (err) {
-			return false
-		}
-	}
-
 	async know(id: number) {
-		const success = await this.queryKnow(id)
-		if (!success) {
+		const result = await browser.runtime.sendMessage({
+			action: "know",
+			id: id,
+		})
+		if (!result.success) {
+			this.setState({
+				message: result.message
+			})
 			return
 		}
 		const selectedElement = getSelectedElement()!
@@ -148,25 +147,15 @@ class Word extends React.Component<WordProps, WordState> {
 		})
 	}
 
-	async queryForgetScene(id: number) {
-		try {
-			const success = await browser.runtime.sendMessage({
-				action: "forgetScene",
-				id: id,
-			})
-			if (!success) {
-				return false
-			}
-
-			return true
-		} catch (err) {
-			return false
-		}
-	}
-
 	async forgetScene(id: number) {
-		const success = await this.queryForgetScene(id)
-		if (!success) {
+		const result = await browser.runtime.sendMessage({
+			action: "forgetScene",
+			id: id,
+		})
+		if (!result.success) {
+			this.setState({
+				message: result.message
+			})
 			return
 		}
 		const times = this.state.times - 1
