@@ -249,7 +249,8 @@ function getText(n: Node, text: string): string {
 
 export function getWord(selectedText: string): string {
 	const re = /^[a-zA-Z]+$/
-	if (selectedText.match(re)) {
+	// Safari needs to trim() selected text.
+	if (selectedText.trim().match(re)) {
 		return selectedText.toLowerCase()
 	}
 	return ""
