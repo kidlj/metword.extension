@@ -64,6 +64,7 @@ const listenMouseup = async (e: MouseEvent) => {
 	if (range.collapsed) {
 		return
 	}
+	// don't trim here.
 	const selectText = selection.toString()
 	const word = getWord(selectText)
 	if (word == "") {

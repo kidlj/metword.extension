@@ -149,7 +149,7 @@ export function markSelected(range: Range, selectedText: string) {
 function isMarkedNode(n: Node, selectedText: string): boolean {
 	return (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "XMETWORD" &&
 		(n as HTMLElement).getAttribute("class") == "x-metword-mark" &&
-		n.firstChild!.nodeValue == selectedText)
+		getText(n, "") == selectedText)
 }
 
 export function getSelectedElement(): HTMLElement | null {
@@ -252,7 +252,7 @@ function getText(n: Node, text: string): string {
 
 export function getWord(selectedText: string): string {
 	const re = /^[a-zA-Z]+$/
-	// Safari needs to trim() selected text.
+	// Safari needs to trim() selected text to drop the trailing space.
 	if (selectedText.trim().match(re)) {
 		return selectedText.toLowerCase()
 	}
