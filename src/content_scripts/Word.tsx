@@ -93,11 +93,6 @@ class Word extends React.Component<WordProps, WordState> {
 	}
 
 	async plusOne(id: number, selectText: string, parent: Node) {
-		// times += 1
-		const selectedElement = getSelectedElement()!
-		const times = this.state.times + 1
-		selectedElement.setAttribute("data-times", "-".repeat(times))
-
 		const text = getSceneSentence(parent, selectText)
 		console.log("sentence:", text);
 
@@ -117,6 +112,12 @@ class Word extends React.Component<WordProps, WordState> {
 			})
 			return
 		}
+
+		// times += 1
+		const selectedElement = getSelectedElement()!
+		const times = this.state.times + 1
+		selectedElement.setAttribute("data-times", "-".repeat(times))
+
 		this.setState({
 			times: this.state.times + 1,
 			met: true,
