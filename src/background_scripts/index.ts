@@ -1,9 +1,10 @@
+import { resultContent } from "@fluentui/react/lib/components/FloatingPicker/PeoplePicker/PeoplePicker.scss"
 import { browser } from "webextension-polyfill-ts"
 
 const meetsURL = "http://words.metaphor.com:8080/meet/times"
 const queryURL = "http://words.metaphor.com:8080/word?word="
 const meetURL = "http://words.metaphor.com:8080/meet"
-const knowURL = "http://words.metaphor.com:8080/meet/know?id="
+const knowURL = "http://words.metaphor.com:8080/meet/toggle?id="
 const forgetSceneURL = "http://words.metaphor.com:8080/scene?id="
 const loginURL = "http://words.metaphor.com:8080/account/login"
 
@@ -21,8 +22,8 @@ browser.runtime.onMessage.addListener(async (msg) => {
 			return await getMeets()
 		case 'plusOne':
 			return await plusOne(msg.scene)
-		case 'know':
-			return await know(msg.id)
+		case 'toggleKnown':
+			return await toggleKnown(msg.id)
 		case 'forgetScene':
 			return await forgetScene(msg.id)
 	}
@@ -85,7 +86,7 @@ async function plusOne(scene: any) {
 	}
 }
 
-async function know(id: number) {
+async function toggleKnown(id: number) {
 	try {
 		const url = knowURL + id
 		const resp = await fetch(url, {
@@ -109,10 +110,12 @@ async function know(id: number) {
 				message: errorMessage
 			}
 		}
+		const result = await resp.json()
 		// invalidate cache
 		invalidate()
 		return {
 			success: true,
+			state: result.state
 		}
 	} catch (err) {
 		return {

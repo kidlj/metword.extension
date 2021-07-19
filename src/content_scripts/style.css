@@ -1,28 +1,59 @@
 #metwords-tip {
     position:absolute;
     display:none;
-    background-color:rgb(255, 255, 255);
-    color:black;
-    padding:10px;
-    font-size:14px;
-    font-family: Arial, Helvetica, sans-serif;
-    line-height: 1.5em;
-    width: 500px;
-    border: 1px solid gray;
-	border-radius: 5px;
-	box-shadow: 5px 5px rgb(209, 203, 203);
-    z-index: 7665;
-}
-
-#metwords-tip * {
-	all: unset;
 	font-family: Arial, Helvetica, sans-serif;
 	font-weight: normal;
+	text-align: left;
+    background-color:rgb(255, 255, 255);
+    color:black;
+    padding: 10px 10px;
+    font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+    width: 600px;
+    border: 3px solid black;
+	border-radius: 20px;
+    z-index: 7665;
 }
 
 #metwords-tip .head {
 	margin-bottom: 10px;
-	display: block;
+	display: flex;
+	align-items: flex-end;
+}
+
+#metwords-tip .headword {
+	line-height: 1.0em;
+	font-size: 40px;
+	background-color: black;
+	color: white;
+	margin-right: 10px;
+}
+
+#metwords-tip .met-times {
+	font-size: 16px;
+	background-color: black;
+	color: white;
+	margin-right: 10px;
+}
+
+#metwords-tip .plus-button {
+	all: unset;
+	font-size: 20px;
+	line-height: 1.0em;
+	color: black;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+#metwords-tip .plus-button:disabled {
+	color: lightgray;
+	cursor: default;
+}
+
+#metwords-tip .known-switch {
+	/* line-height: 1.0em; */
+	margin-bottom: 0px;
+	margin-left: auto;
 }
 
 #metwords-tip .phonetic {
@@ -40,33 +71,8 @@
 	display: block;
 }
 
-#metwords-tip .headword {
-	font-size: 30px;
-	padding: 2px;
-	margin-right: 20px;
-}
-
-#metwords-tip .met-times {
-	font-size: 15px;
-	margin-right: 20px;
-}
-
 #metwords-tip xmet {
 	font-weight: bold;
-}
-
-#metwords-tip button {
-	font-size: 15px;
-	margin-right: 10px;
-	background-color: lightgreen;
-	padding: 1px 10px;
-	border-radius: 4px;
-	cursor: pointer;
-}
-
-#metwords-tip button:disabled {
-	background-color: lightgray;
-	cursor: default;
 }
 
 #metwords-tip ul {

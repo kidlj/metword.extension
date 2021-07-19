@@ -3,6 +3,7 @@ import React from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import { getSceneSentence, getSelectedElement } from './lib'
 import ErrorMessage from './ErrorMessage'
+import { Toggle } from '@fluentui/react';
 
 interface WordProps {
 	word: WordObject
@@ -60,10 +61,10 @@ class Word extends React.Component<WordProps, WordState> {
 					<span className="headword">{word.name}</span>
 					<span className="met-times">遇见 {this.state.times} 次</span>
 
-					<button className="plus-button" data-known={this.state.known} disabled={this.state.met} onClick={() => this.plusOne(word.id, this.props.selectText, this.props.parent)}>+1</button>
+					<button className="plus-button" disabled={this.state.met || this.state.known} onClick={() => this.plusOne(word.id, this.props.selectText, this.props.parent)}>+1</button>
 
 					{this.state.times > 0 &&
-						<button className="know-button" data-known={this.state.known} disabled={this.state.known} onClick={() => this.know(word.id)}>{getText}</button>
+						<Toggle className="known-switch" checked={this.state.known} onChange={() => { this.toggleKnown(word.id) }} offText="未掌握" onText="已掌握" />
 					}
 				</div>
 				<div className="phonetic">
@@ -121,7 +122,6 @@ class Word extends React.Component<WordProps, WordState> {
 		this.setState({
 			times: this.state.times + 1,
 			met: true,
-			known: false,
 			scenes: this.state.scenes.concat({
 				id: result.scene.id,
 				sentence: result.scene.text,
@@ -130,9 +130,9 @@ class Word extends React.Component<WordProps, WordState> {
 		})
 	}
 
-	async know(id: number) {
+	async toggleKnown(id: number) {
 		const result = await browser.runtime.sendMessage({
-			action: "know",
+			action: "toggleKnown",
 			id: id,
 		})
 		if (!result.success) {
@@ -141,11 +141,18 @@ class Word extends React.Component<WordProps, WordState> {
 			})
 			return
 		}
-		const selectedElement = getSelectedElement()!
-		selectedElement.setAttribute("data-times", "-".repeat(0))
-		this.setState({
-			known: true,
-		})
+		console.log("state is:", result.state)
+		// known
+		if (result.state == 10) {
+			this.setState({
+				known: true,
+			})
+			// active
+		} else if (result.state == 1) {
+			this.setState({
+				known: false,
+			})
+		}
 	}
 
 	async forgetScene(id: number) {
