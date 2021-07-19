@@ -39,8 +39,6 @@ interface Scene {
 class Word extends React.Component<WordProps, WordState> {
 	constructor(props: WordProps) {
 		super(props)
-		// this.plusOne = this.plusOne.bind(this)
-		// this.know = this.know.bind(this)
 		this.state = {
 			times: this.props.word.scenes.length,
 			scenes: this.props.word.scenes,
@@ -51,7 +49,13 @@ class Word extends React.Component<WordProps, WordState> {
 	}
 	render() {
 		const word = this.props.word
-		const getText = this.state.known ? "✓" : "Get"
+		const defs = word.defs.map((def) => {
+			let dotIndex = def.indexOf(".")
+			return {
+				prefix: def.substring(0, dotIndex + 1),
+				explain: def.substring(dotIndex + 1)
+			}
+		})
 		if (this.state.message != undefined) {
 			return <ErrorMessage message={this.state.message}></ErrorMessage>
 		}
@@ -59,23 +63,28 @@ class Word extends React.Component<WordProps, WordState> {
 			<div className="word" >
 				<div className="head">
 					<span className="headword">{word.name}</span>
-					<span className="met-times">遇见 {this.state.times} 次</span>
 
 					<button className="plus-button" disabled={this.state.met || this.state.known} onClick={() => this.plusOne(word.id, this.props.selectText, this.props.parent)}>+1</button>
 
-					{this.state.times > 0 &&
+					{(this.state.times > 0 || this.state.known) &&
 						<Toggle className="known-switch" checked={this.state.known} onChange={() => { this.toggleKnown(word.id) }} offText="未掌握" onText="已掌握" />
 					}
 				</div>
-				<div className="phonetic">
-					<span>US /{word.usPhonetic}/ UK /{word.ukPhonetic}/</span>
+				<div className="phonetics">
+					<span className="phonetic-label">US</span><span className="phonetic">[{word.usPhonetic}]</span>
+				</div>
+				<div className="phonetics">
+					<span className="phonetic-label">UK</span><span className="phonetic">[{word.ukPhonetic}]</span>
 				</div>
 				<div className="defs">
 					<ul>
-						{word.defs.map((def) => (<li className="def">{def}</li>))}
+						{defs.map((def) => (<li className="def"><span className="prefix">{def.prefix}</span><span className="explain">{def.explain}</span></li>))}
 					</ul>
 				</div>
 				<div className="scenes">
+					{this.state.times > 0 &&
+						<span className="met-times">遇见 {this.state.times} 次</span>
+					}
 					<ul>
 						{this.state.scenes.map((scene) => {
 							return (
@@ -89,7 +98,7 @@ class Word extends React.Component<WordProps, WordState> {
 						})}
 					</ul>
 				</div>
-			</div>
+			</div >
 		)
 	}
 

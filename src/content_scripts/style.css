@@ -4,14 +4,13 @@
 	font-family: Arial, Helvetica, sans-serif;
 	font-weight: normal;
 	text-align: left;
-    background-color:rgb(255, 255, 255);
+    background-color:white;
     color:black;
     padding: 10px 10px;
     font-family: Arial, Helvetica, sans-serif;
 	font-size: 14px;
     width: 600px;
-    border: 3px solid black;
-	border-radius: 20px;
+    border: 1px solid black;
     z-index: 7665;
 }
 
@@ -27,9 +26,11 @@
 	background-color: black;
 	color: white;
 	margin-right: 10px;
+	padding: 1px;
 }
 
 #metwords-tip .met-times {
+	line-height: 1.2em;
 	font-size: 16px;
 	background-color: black;
 	color: white;
@@ -38,7 +39,7 @@
 
 #metwords-tip .plus-button {
 	all: unset;
-	font-size: 20px;
+	font-size: 30px;
 	line-height: 1.0em;
 	color: black;
 	font-weight: bold;
@@ -51,24 +52,37 @@
 }
 
 #metwords-tip .known-switch {
-	/* line-height: 1.0em; */
 	margin-bottom: 0px;
 	margin-left: auto;
 }
 
-#metwords-tip .phonetic {
-	margin-bottom: 10px;
+#metwords-tip .phonetics {
+	line-height: 1.2em;
+	margin-bottom: 3px;
 	display: block;
 }
 
-#metwords-tip .defs {
-	margin-bottom: 10px;
-	display: block;
+#metwords-tip .phonetic-label {
+	font-family: monospace;
+	margin-right: 6px;
+}
+
+#metwords-tip .phonetic {
+	font-family: monospace;
 }
 
 #metwords-tip .scenes {
 	margin-bottom: 10px;
 	display: block;
+}
+
+#metwords-tip .scenes a {
+	color: black;
+	font-weight: 200;
+}
+
+#metwords-tip .scenes a:hover {
+	text-decoration: none;
 }
 
 #metwords-tip xmet {
@@ -79,19 +93,33 @@
 	display: block;
 	list-style-position: inside;
 	list-style-type: square;
+	line-height: 1.4em;
+	text-align: left;
+	padding: 0;
+	margin: 6px 0;
 }
 
 #metwords-tip .defs ul {
 	list-style-type: none;
+	margin-bottom: 10px;
+	max-width: max-content;
 }
 
-#metwords-tip ul li {
+#metwords-tip .defs ul li {
+	display: block;
+}
+
+#metwords-tip .defs .prefix {
+	display: inline-block;
+	min-width: 26px;
+	color:gray;
+	font-weight: 700;
+}
+
+#metwords-tip .scenes ul li {
 	display: list-item;
-	margin-bottom: 2px;
-}
-
-#metwords-tip li a {
-	cursor: pointer;
+	list-style-type:square;
+	margin-bottom: 4px;
 }
 
 #metwords-tip .met-forget {
