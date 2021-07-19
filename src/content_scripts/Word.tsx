@@ -141,7 +141,6 @@ class Word extends React.Component<WordProps, WordState> {
 			})
 			return
 		}
-		console.log("state is:", result.state)
 		// known
 		if (result.state == 10) {
 			this.setState({
