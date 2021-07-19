@@ -103,6 +103,7 @@
 	cursor: pointer;
 	color: red;
 	text-decoration: solid underline;
+	text-underline-position: under;
 }
 
 xmetword.x-metword-mark {

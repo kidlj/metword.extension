@@ -173,6 +173,7 @@ export function getSceneSentence(parent: Node, selectText: string): string {
 	console.log("selectText is:", selectText)
 	const word = paddingLeft + selectText + paddingRight
 	const text = getText(parent, "")
+	console.log("text is:", text)
 	let start = 0
 	let end = text.length
 	let found = false
@@ -201,12 +202,9 @@ export function getSceneSentence(parent: Node, selectText: string): string {
 	return text.slice(start, end).trim()
 }
 
-const paddingSpace = new Map<string, boolean>([
+const dropped = new Map<string, boolean>([
 	["SUP", true],
-	["BR", true],
-	["DIV", true],
-	["P", true],
-	["BLOCKQUOTE", true],
+	["SUB", true],
 ])
 
 const paddingDelimeter = new Map<string, boolean>([
@@ -225,19 +223,24 @@ const paddingRight = "</xmet>"
 function getText(n: Node, text: string): string {
 	// selection marked element
 	if (n == getSelectedElement()) {
-		return text + paddingLeft + n.firstChild!.nodeValue + paddingRight
+		// marked element may have an ElementNode child, like <em>selectedText</em>.
+		var selectText = ""
+		for (let c = n.firstChild; c != null; c = c.nextSibling) {
+			selectText = getText(c, selectText)
+		}
+		return text + paddingLeft + selectText + paddingRight
 	}
 
 	if (n.nodeType == Node.TEXT_NODE) {
 		return text + n.nodeValue
 	}
 
-	for (let c = n.firstChild; c != null; c = c.nextSibling) {
-		text = getText(c, text)
+	if (n.nodeType == Node.ELEMENT_NODE && dropped.get(n.nodeName) == true) {
+		return text
 	}
 
-	if (n.nodeType == Node.ELEMENT_NODE && paddingSpace.get(n.nodeName) == true) {
-		return text + " "
+	for (let c = n.firstChild; c != null; c = c.nextSibling) {
+		text = getText(c, text)
 	}
 
 	if (n.nodeType == Node.ELEMENT_NODE && paddingDelimeter.get(n.nodeName) == true) {
