@@ -64,12 +64,12 @@
 }
 
 #metwords-tip .phonetic-label {
-	font-family: monospace;
+	font-family: Menlo, Monaco, Consolas, Inconsolata, monospace;
 	margin-right: 6px;
 }
 
 #metwords-tip .phonetic {
-	font-family: monospace;
+	font-family: Menlo, Monaco, Consolas, Inconsolata, monospace;
 }
 
 #metwords-tip .scenes {
