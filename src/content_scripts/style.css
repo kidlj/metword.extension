@@ -84,6 +84,7 @@
 #metwords-tip .scenes a {
 	color: black;
 	font-weight: 200;
+	font-size: 14px;
 }
 
 #metwords-tip .scenes a:hover {
