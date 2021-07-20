@@ -72,8 +72,6 @@ class Word extends React.Component<WordProps, WordState> {
 				</div>
 				<div className="phonetics">
 					<span className="phonetic-label">US</span><span className="phonetic">[{word.usPhonetic}]</span>
-				</div>
-				<div className="phonetics">
 					<span className="phonetic-label">UK</span><span className="phonetic">[{word.ukPhonetic}]</span>
 				</div>
 				<div className="defs">
