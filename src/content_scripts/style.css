@@ -144,6 +144,11 @@
 	cursor: pointer;
 }
 
+#metwords-tip .met-message {
+	padding: 20px;
+	margin: 0px;
+}
+
 #metwords-tip .met-message a {
 	font-size: 14px;
 	cursor: pointer;
