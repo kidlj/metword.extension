@@ -2,6 +2,7 @@ import React from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import Word from './Word'
 import ErrorMessage from './ErrorMessage'
+import { Spinner, SpinnerSize } from '@fluentui/react/lib/Spinner'
 
 
 interface TipProps {
@@ -11,16 +12,21 @@ interface TipProps {
 }
 
 interface TipState {
+	loading: boolean
 	message: string | undefined
 	words: any[]
 }
 
 class Tip extends React.Component<TipProps, TipState> {
 	state: TipState = {
+		loading: true,
 		message: undefined,
 		words: []
 	}
 	render() {
+		if (this.state.loading) {
+			return <Spinner size={SpinnerSize.medium} />
+		}
 		if (this.state.message != undefined) {
 			return <ErrorMessage message={this.state.message}></ErrorMessage>
 		}
@@ -41,7 +47,8 @@ class Tip extends React.Component<TipProps, TipState> {
 		})
 		if (!result.success) {
 			this.setState({
-				message: result.message
+				message: result.message,
+				loading: false,
 			})
 			return
 		}
@@ -78,6 +85,7 @@ class Tip extends React.Component<TipProps, TipState> {
 			words.push(word)
 		})
 		this.setState({
+			loading: false,
 			words: words
 		})
 	}
