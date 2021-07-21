@@ -148,16 +148,20 @@ class Word extends React.Component<WordProps, WordState> {
 			})
 			return
 		}
-		// known
 		if (result.state == 10) {
+			// known
 			this.setState({
 				known: true,
 			})
-			// active
+			const selectedElement = getSelectedElement()!
+			selectedElement.setAttribute("data-times", "-".repeat(0))
 		} else if (result.state == 1) {
+			// active
 			this.setState({
 				known: false,
 			})
+			const selectedElement = getSelectedElement()!
+			selectedElement.setAttribute("data-times", "-".repeat(this.state.times))
 		}
 	}
 
