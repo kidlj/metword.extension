@@ -9,7 +9,7 @@
     padding: 10px 10px;
     font-family: Arial, Helvetica, sans-serif;
 	font-size: 14px;
-    width: 600px;
+    width: 520px;
     border: 1px solid black;
     z-index: 7665;
 }
@@ -32,7 +32,7 @@
 
 #metwords-tip .met-times {
 	line-height: 1.2em;
-	font-size: 16px;
+	font-size: 15px;
 	background-color: black;
 	color: white;
 	margin-bottom: 10px;
@@ -40,7 +40,7 @@
 
 #metwords-tip .plus-button {
 	all: unset;
-	font-size: 30px;
+	font-size: 20px;
 	line-height: 1.0em;
 	color: black;
 	font-weight: bold;
@@ -82,12 +82,15 @@
 }
 
 #metwords-tip .scenes a {
+	all: unset;
 	color: black;
 	font-weight: 200;
 	font-size: 14px;
 }
 
 #metwords-tip .scenes a:hover {
+	all: unset;
+	cursor: pointer;
 	text-decoration: none;
 }
 
@@ -96,23 +99,30 @@
 }
 
 #metwords-tip ul {
+	all: unset;
 	display: block;
 	list-style-position: inside;
-	list-style-type: square;
+	list-style-type: disc;
 	line-height: 1.4em;
 	text-align: left;
 	padding: 0;
 	margin: 6px 0;
 }
 
+#metwords-tip .defs {
+	margin-bottom: 10px;
+}
+
 #metwords-tip .defs ul {
+	all: unset;
 	font-size: 14px;
 	list-style-type: none;
-	margin-bottom: 10px;
 	max-width: max-content;
 }
 
 #metwords-tip .defs ul li {
+	all: unset;
+	list-style-type: none;
 	font-size: 14px;
 	display: block;
 }
@@ -126,8 +136,9 @@
 }
 
 #metwords-tip .scenes ul li {
+	all: unset;
 	display: list-item;
-	list-style-type:square;
+	list-style-type: disc;
 	margin-bottom: 4px;
 	font-size: 14px;
 }
