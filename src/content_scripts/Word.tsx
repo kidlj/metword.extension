@@ -11,32 +11,33 @@ interface WordProps {
 	parent: Node
 }
 
-interface WordObject {
+export interface WordObject {
 	id: number
 	name: string
 	usPhonetic: string
 	ukPhonetic: string
 	defs: string[]
 	known: boolean
-	scenes: Scene[]
+	scenes: SceneObject[]
 }
 
 interface WordState {
 	met: boolean
 	known: boolean
 	times: number
-	scenes: Scene[]
+	scenes: SceneObject[]
 	message: string | undefined
 }
 
-interface Scene {
+export interface SceneObject {
 	id: number
 	sentence: string
 	url: string
+	createTime: Date
 }
 
 
-class Word extends React.Component<WordProps, WordState> {
+export class Word extends React.Component<WordProps, WordState> {
 	constructor(props: WordProps) {
 		super(props)
 		this.state = {
@@ -87,7 +88,7 @@ class Word extends React.Component<WordProps, WordState> {
 						{this.state.scenes.map((scene) => {
 							return (
 								<li className="scene" key={scene.id}>
-									<a href={scene.url}>
+									<a href={scene.url} title={scene.createTime.toLocaleString('zh-CN')}>
 										<span className="met-scene" dangerouslySetInnerHTML={{ __html: scene.sentence }}></span>
 									</a>
 									<span className="met-forget" onClick={() => this.forgetScene(scene.id)}>✗</span>
@@ -133,6 +134,7 @@ class Word extends React.Component<WordProps, WordState> {
 				id: result.scene.id,
 				sentence: result.scene.text,
 				url: result.scene.url,
+				createTime: new Date(result.scene.create_time),
 			})
 		})
 	}
@@ -187,5 +189,3 @@ class Word extends React.Component<WordProps, WordState> {
 	}
 
 }
-
-export default Word
