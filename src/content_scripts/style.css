@@ -161,13 +161,10 @@
 	cursor: pointer;
 }
 
-#metwords-tip .met-message {
-	padding: 20px;
-	margin: 0px;
-}
-
-#metwords-tip .met-message p {
+#metwords-tip p.met-message {
 	all: unset;
+	display: block;
+	padding: 10px 10px;
 	font-size: 14px;
 	line-height: 1.2em;
     font-family: Arial, Helvetica, sans-serif;
