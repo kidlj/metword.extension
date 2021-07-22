@@ -19,7 +19,7 @@ interface TipState {
 
 class Tip extends React.Component<TipProps, TipState> {
 	state: TipState = {
-		loading: true,
+		loading: false,
 		message: undefined,
 		words: []
 	}
@@ -40,12 +40,14 @@ class Tip extends React.Component<TipProps, TipState> {
 	}
 
 	async componentDidMount() {
+		const spinner = setTimeout(() => this.setState({ loading: true }), 200)
 		const word = this.props.word
 		const result = await browser.runtime.sendMessage({
 			action: "query",
 			word: word
 		})
 		if (!result.success) {
+			clearTimeout(spinner)
 			this.setState({
 				message: result.message,
 				loading: false,
@@ -85,6 +87,7 @@ class Tip extends React.Component<TipProps, TipState> {
 			}
 			words.push(word)
 		})
+		clearTimeout(spinner)
 		this.setState({
 			loading: false,
 			words: words
