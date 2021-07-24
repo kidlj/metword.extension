@@ -41,18 +41,19 @@ async function start() {
 
 	document.addEventListener('mouseup', listenMouseup)
 	document.addEventListener('mousedown', listenMouseDown)
-
-	const tipWrap = document.createElement("div")
-	tipWrap.setAttribute("id", "metwords-tip")
-	const body = document.getElementsByTagName("body").item(0)!
-	body.appendChild(tipWrap)
 }
 
 // waiting a while for client side rendered dom ready
 setTimeout(start, waitDuration)
 
 const listenMouseup = async (e: MouseEvent) => {
-	const tip = document.getElementById("metwords-tip")!
+	let tip = document.getElementById("metwords-tip")
+	if (tip == null) {
+		tip = document.createElement("div")
+		tip.setAttribute("id", "metwords-tip")
+		const body = document.getElementsByTagName("body").item(0)!
+		body.appendChild(tip)
+	}
 	if ((tip as Node).contains(e.target as Node)) {
 		return
 	}
