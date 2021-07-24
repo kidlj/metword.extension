@@ -48,6 +48,8 @@ const skipTags = new Map<string, boolean>([
 	["OBJECT", true],
 	["VAR", true],
 	["KBD", true],
+	["DETAILS", true],
+	["SUMMARY", true],
 ])
 
 export function getWordRanges(n: Node, m: Map<string, WordRange>): Map<string, WordRange> {
