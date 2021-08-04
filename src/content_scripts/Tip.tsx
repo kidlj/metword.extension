@@ -9,7 +9,7 @@ interface TipProps {
 	parent: Node
 }
 
-const Tip: React.FunctionComponent<any> = (props: TipProps) => {
+export default function Tip(props: TipProps) {
 	const [data, error] = useQuery({ key: props.word, msg: { action: 'query', word: props.word } })
 	console.log(error)
 	console.log(data)
@@ -102,5 +102,3 @@ function useQuery(props: ActionProps) {
 
 	return [data, error]
 }
-
-export default Tip

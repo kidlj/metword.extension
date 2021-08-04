@@ -27,7 +27,7 @@ export interface SceneObject {
 }
 
 
-export const Word: React.FunctionComponent<any> = (props: WordProps) => {
+export function Word(props: WordProps) {
 	const [times, setTimes] = React.useState(props.word.scenes.length)
 	const [scenes, setScenes] = React.useState(props.word.scenes)
 	const [met, setMet] = React.useState(false)
