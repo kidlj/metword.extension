@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './style.css';
 import Tip from './Tip';
 import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
 import { browser } from 'webextension-polyfill-ts';
@@ -87,28 +86,9 @@ const listenMouseup = async (e: MouseEvent) => {
 
 	markSelected(range, selectText)
 
-	// display tip
-	tip.style.display = "block"
-
-	const target = range.getBoundingClientRect()
-	var top = target.y + window.scrollY + target.height + 5
-	if (target.y + tip.clientHeight > window.innerHeight) {
-		const shouldTop = top - tip.clientHeight - target.height - 10
-		if (shouldTop > 0) {
-			top = shouldTop
-		}
-	}
-	tip.style.top = top + "px"
-
-	var left = target.x
-	if (left + tip.clientWidth > window.innerWidth) {
-		left = left - tip.clientWidth
-	}
-	tip.style.left = left + "px"
-
 	ReactDOM.render(
 		<React.StrictMode>
-			<Tip word={word} selectText={selectText} parent={parent} />
+			<Tip />
 		</React.StrictMode>,
 		tip
 	)
@@ -124,7 +104,6 @@ const listenMouseDown = (e: MouseEvent) => {
 		selectedElement.removeAttribute("id")
 	}
 	ReactDOM.unmountComponentAtNode(tip)
-	tip.style.display = "none"
 }
 
 browser.storage.onChanged.addListener(({ disabled }) => {
@@ -133,6 +112,6 @@ browser.storage.onChanged.addListener(({ disabled }) => {
 		document.removeEventListener('mousedown', listenMouseDown)
 
 		const tip = document.getElementById("metwords-tip")!
-		tip.style.display = "none"
+		ReactDOM.unmountComponentAtNode(tip)
 	}
 })
