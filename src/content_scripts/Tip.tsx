@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Callout, mergeStyleSets, Text, FontWeights, Spinner, SpinnerSize } from '@fluentui/react'
+import { mergeStyleSets, Text, FontWeights, Spinner, SpinnerSize } from '@fluentui/react'
 import { Word, WordObject, SceneObject } from './Word'
 import { browser } from 'webextension-polyfill-ts'
 
@@ -14,8 +14,8 @@ const Tip: React.FunctionComponent<any> = (props: TipProps) => {
 	console.log(error)
 	console.log(data)
 
-	if (error != undefined) return <Text block variant="xLarge" className={styles.title}>{error}</Text>
-	if (data == null) return <Spinner size={SpinnerSize.medium}></Spinner>
+	if (error) return <Text block variant="xLarge" className={styles.title}>{error}</Text>
+	if (!data) return <Spinner size={SpinnerSize.medium}></Spinner>
 
 	const owords: any[] = data
 	const words: WordObject[] = []
