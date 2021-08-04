@@ -1,4 +1,3 @@
-import { resultContent } from "@fluentui/react/lib/components/FloatingPicker/PeoplePicker/PeoplePicker.scss"
 import { browser } from "webextension-polyfill-ts"
 
 const meetsURL = "http://words.metaphor.com:8080/meet/times"
@@ -193,7 +192,7 @@ async function queryWord(word: string) {
 		const result = await resp.json()
 		return {
 			success: true,
-			words: result.words
+			data: result.words
 		}
 	} catch (err) {
 		return {
@@ -205,20 +204,30 @@ async function queryWord(word: string) {
 
 async function getMeets() {
 	if (valid) {
-		return meets
+		return {
+			success: true,
+			meets: meets
+		}
 	}
 	try {
 		const resp = await fetch(meetsURL)
 		if (resp.status != 200) {
-			return meets
+			return {
+				success: false,
+			}
 		}
 		const result = JSON.parse(await resp.text())
 		meets = result.meets
 		valid = true
-		return meets
+		return {
+			success: true,
+			meets: meets
+		}
 	} catch (err) {
 		console.log("Metwords extension: get words error", err)
-		return meets
+		return {
+			success: false,
+		}
 	}
 }
 

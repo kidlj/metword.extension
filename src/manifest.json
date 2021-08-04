@@ -27,6 +27,9 @@
 			"js": [
 				"./dist/content_script.js"
 			],
+			"css": [
+				"./dist/content_script.css"
+			],
 			"matches": [
 				"*://*/*"
 			],

@@ -1,41 +1,38 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Tip from './Tip';
+import './style.css';
 import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
 import { browser } from 'webextension-polyfill-ts';
+import { Callout, mergeStyleSets, FontWeights } from '@fluentui/react'
 
 // 1s
 const waitDuration = 1000
 
-async function getMeets() {
-	const meets = await browser.runtime.sendMessage({
+async function start() {
+	// switch
+	const store = await browser.storage.local.get("disabled")
+	if (store.disabled == true) {
+		return
+	}
+	const result = await browser.runtime.sendMessage({
 		action: "getMeets"
 	})
-	return meets
-}
-
-async function start() {
-	try {
-		// switch
-		const store = await browser.storage.local.get("disabled")
-		if (store.disabled == true) {
-			return
+	if (!result.success) {
+		return
+	}
+	const meets = result.meets
+	let ranges = new Map<string, WordRange>()
+	ranges = getWordRanges(document.getRootNode(), ranges)
+	ranges.forEach((val, key) => {
+		if (meets[key] == undefined) {
+			ranges.delete(key)
+		} else {
+			val.times = meets[key]
 		}
-		const meets = await getMeets()
-		let ranges = new Map<string, WordRange>()
-		ranges = getWordRanges(document.getRootNode(), ranges)
-		ranges.forEach((val, key) => {
-			if (meets[key] == undefined) {
-				ranges.delete(key)
-			} else {
-				val.times = meets[key]
-			}
-		})
-		for (let range of ranges.values()) {
-			markWord(range, false)
-		}
-	} catch (err) {
-		console.log("Metwords extension: get words error", err)
+	})
+	for (let range of ranges.values()) {
+		markWord(range, false)
 	}
 
 	document.addEventListener('mouseup', listenMouseup)
@@ -67,6 +64,8 @@ const listenMouseup = async (e: MouseEvent) => {
 	// don't trim here.
 	const selectText = selection.toString()
 	const word = getWord(selectText)
+	console.log(selectText)
+	console.log("word is:", word)
 	if (word == "") {
 		return
 	}
@@ -88,7 +87,15 @@ const listenMouseup = async (e: MouseEvent) => {
 
 	ReactDOM.render(
 		<React.StrictMode>
-			<Tip />
+			<Callout
+				className={styles.callout}
+				role="alertdialog"
+				gapSpace={0}
+				target={`#metword-selected`}
+				setInitialFocus
+			>
+				<Tip word={word} selectText={selectText} parent={parent} />
+			</Callout>
 		</React.StrictMode>,
 		tip
 	)
@@ -114,4 +121,22 @@ browser.storage.onChanged.addListener(({ disabled }) => {
 		const tip = document.getElementById("metwords-tip")!
 		ReactDOM.unmountComponentAtNode(tip)
 	}
+})
+
+const styles = mergeStyleSets({
+	button: {
+		width: 130,
+	},
+	callout: {
+		width: 420,
+		padding: '20px 24px',
+	},
+	title: {
+		marginBottom: 12,
+		fontWeight: FontWeights.semilight,
+	},
+	words: {
+		display: 'block',
+		marginTop: 20,
+	},
 })

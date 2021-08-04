@@ -1,37 +1,63 @@
 import * as React from 'react'
-import { Callout, Link, mergeStyleSets, Text, FontWeights } from '@fluentui/react'
-import { useId } from '@fluentui/react-hooks'
+import { Callout, mergeStyleSets, Text, FontWeights, Spinner, SpinnerSize } from '@fluentui/react'
+import { Word, WordObject, SceneObject } from './Word'
+import { browser } from 'webextension-polyfill-ts'
 
-interface Selection {
+interface TipProps {
+	selectText: string
+	word: string
+	parent: Node
 }
 
-export const Tip: React.FunctionComponent<any> = (props: Selection) => {
-	const labelId = useId('callout-label')
-	const descriptionId = useId('callout-description')
+const Tip: React.FunctionComponent<any> = (props: TipProps) => {
+	const [data, error] = useQuery({ key: props.word, msg: { action: 'query', word: props.word } })
+	console.log(error)
+	console.log(data)
+
+	if (error != undefined) return <Text block variant="xLarge" className={styles.title}>{error}</Text>
+	if (data == null) return <Spinner size={SpinnerSize.medium}></Spinner>
+
+	const owords: any[] = data
+	const words: WordObject[] = []
+	owords.forEach((w: any) => {
+		const scenes: SceneObject[] = []
+		let known = false
+		if (w.edges.meets != null) {
+			if (w.edges.meets[0].state == 10) {
+				known = true
+			}
+
+			if (w.edges.meets[0].edges.scenes != null) {
+				w.edges.meets[0].edges.scenes.forEach((sc: any) => {
+					const scene: SceneObject = {
+						id: sc.id,
+						sentence: sc.text,
+						url: sc.url,
+						createTime: new Date(sc.create_time),
+					}
+					scenes.push(scene)
+				})
+			}
+		}
+		const word: WordObject = {
+			id: w.id,
+			name: w.name,
+			usPhonetic: w.us_phonetic,
+			ukPhonetic: w.uk_phonetic,
+			defs: w.def_zh,
+			known: known,
+			scenes: scenes
+		}
+		words.push(word)
+	})
+
 
 	return (
-		<>
-			<Callout
-				className={styles.callout}
-				ariaLabelledBy={labelId}
-				ariaDescribedBy={descriptionId}
-				role="alertdialog"
-				gapSpace={0}
-				target={`#metword-selected`}
-				setInitialFocus
-			>
-				<Text block variant="xLarge" className={styles.title} id={labelId}>
-					Callout title here
-				</Text>
-				<Text block variant="small" id={descriptionId}>
-					Message body is optional. If help documentation is available, consider adding a link to learn more at the
-					bottom.
-				</Text>
-				<Link href="http://microsoft.com" target="_blank" className={styles.link}>
-					Sample link
-				</Link>
-			</Callout>
-		</>
+		<div className={styles.words}>
+			{
+				words.map((w: WordObject) => (<Word word={w} selectText={props.selectText} parent={props.parent} />))
+			}
+		</div>
 	)
 }
 
@@ -39,18 +65,42 @@ const styles = mergeStyleSets({
 	button: {
 		width: 130,
 	},
-	callout: {
-		width: 420,
-		padding: '20px 24px',
-	},
 	title: {
 		marginBottom: 12,
 		fontWeight: FontWeights.semilight,
 	},
-	link: {
+	words: {
 		display: 'block',
 		marginTop: 20,
 	},
 })
+
+interface ActionProps {
+	key: string
+	msg: {
+		action: string
+		word: string
+	}
+}
+
+function useQuery(props: ActionProps) {
+	const [data, setData] = React.useState<any>(null)
+	const [error, setError] = React.useState<string>()
+
+	React.useEffect(() => {
+		async function sendMessage(msg: { action: string, word: string }) {
+			const result = await browser.runtime.sendMessage(props.msg)
+			if (!result.success) {
+				setError(result.message)
+				return
+			}
+			setData(result.data)
+		}
+
+		sendMessage(props.msg)
+	}, [props.key])
+
+	return [data, error]
+}
 
 export default Tip
