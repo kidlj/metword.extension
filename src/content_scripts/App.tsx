@@ -37,6 +37,7 @@ async function start() {
 
 	document.addEventListener('mouseup', listenMouseup)
 	document.addEventListener('mousedown', listenMouseDown)
+	document.addEventListener('scroll', listenMouseDown)
 }
 
 // waiting a while for client side rendered dom ready
@@ -92,7 +93,6 @@ const listenMouseup = async (e: MouseEvent) => {
 				role="alertdialog"
 				gapSpace={0}
 				target={`#metword-selected`}
-				setInitialFocus
 			>
 				<Tip word={word} selectText={selectText} parent={parent} />
 			</Callout>
@@ -101,7 +101,7 @@ const listenMouseup = async (e: MouseEvent) => {
 	)
 }
 
-const listenMouseDown = (e: MouseEvent) => {
+const listenMouseDown = (e: MouseEvent | Event) => {
 	const tip = document.getElementById("metwords-tip")!
 	if ((tip as Node).contains(e.target as Node)) {
 		return
@@ -117,6 +117,7 @@ browser.storage.onChanged.addListener(({ disabled }) => {
 	if (disabled.newValue == true) {
 		document.removeEventListener('mouseup', listenMouseup)
 		document.removeEventListener('mousedown', listenMouseDown)
+		document.removeEventListener('scroll', listenMouseDown)
 
 		const tip = document.getElementById("metwords-tip")!
 		ReactDOM.unmountComponentAtNode(tip)
