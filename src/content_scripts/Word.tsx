@@ -176,7 +176,7 @@ const styles = mergeStyleSets({
 	},
 	button: {
 		lineHeight: 1,
-		width: 16,
+		width: 24,
 		height: 16,
 		marginLeft: 16,
 	},
