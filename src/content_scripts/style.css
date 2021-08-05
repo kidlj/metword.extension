@@ -117,3 +117,10 @@ xmet {
 	opacity: 100;
 	cursor: pointer;
 }
+
+.metwords-message {
+	display: block;
+	padding: 10px 10px;
+	font-size: 16px;
+	line-height: 1.2em;
+}

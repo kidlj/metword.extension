@@ -14,7 +14,7 @@ export default function Tip(props: TipProps) {
 	console.log(error)
 	console.log(data)
 
-	if (error) return <Text block variant="xLarge" className={styles.title}>{error}</Text>
+	if (error) return <p className="metwords-message" dangerouslySetInnerHTML={{ __html: error }}></p>
 	if (!data) return <Spinner size={SpinnerSize.medium}></Spinner>
 
 	const owords: any[] = data
