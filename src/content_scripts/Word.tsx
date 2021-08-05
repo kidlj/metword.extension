@@ -148,7 +148,7 @@ export function Word(props: WordProps) {
 				</ul>
 			</div>
 			{times > 0 &&
-				<Text className="metwords-times">遇见 {times} 次</Text>
+				<span className="metwords-times">遇见 {times} 次</span>
 			}
 			<div className="metwords-scenes">
 				<ul>
