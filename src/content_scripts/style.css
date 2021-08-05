@@ -68,7 +68,7 @@ xmet {
 }
 
 .metwords-explain {
-	font-size: 13px;
+	font-size: 13px !important;
 }
 
 .metwords-times {
