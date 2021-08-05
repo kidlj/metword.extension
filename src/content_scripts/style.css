@@ -46,11 +46,11 @@ xmet {
 
 .metwords-defs {
 	margin-bottom: 10px;
+	font-size: 13px;
 }
 
 .metwords-defs ul {
 	all: unset;
-	font-size: 14px;
 	list-style-type: none;
 	max-width: max-content;
 }
@@ -59,9 +59,12 @@ xmet {
 	all: unset;
 	list-style-type: none;
 	line-height: 1.2em;
-	font-size: 14px;
 	margin-bottom: 4px;
 	display: block;
+}
+
+.metwords-explain {
+	font-size: 13px;
 }
 
 .metwords-times {
