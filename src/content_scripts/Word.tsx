@@ -156,7 +156,7 @@ export function Word(props: WordProps) {
 						return (
 							<li key={scene.id}>
 								<a href={scene.url} title={scene.createTime.toLocaleString('zh-CN')}>
-									<span dangerouslySetInnerHTML={{ __html: scene.sentence }}></span>
+									<span className="mewords-scene" dangerouslySetInnerHTML={{ __html: scene.sentence }}></span>
 								</a>
 								<Text className="metwords-forget" onClick={() => forgetScene(scene.id)}>✗</Text>
 							</li>
