@@ -215,7 +215,8 @@ const paddingDelimeter = new Map<string, boolean>([
 	["H3", true],
 	["H4", true],
 	["H5", true],
-	["H6", true]
+	["H6", true],
+	["LI", true],
 ])
 
 // for highlighting and exact matching
