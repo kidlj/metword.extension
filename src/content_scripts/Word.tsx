@@ -1,8 +1,9 @@
 import * as React from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import { getSceneSentence, getSelectedElement } from './lib'
-import { mergeStyleSets, Text, FontWeights, IIconProps, List } from '@fluentui/react'
-import { ActionButton } from '@fluentui/react/lib/Button';
+import { mergeStyleSets, Text, FontWeights, IRenderFunction } from '@fluentui/react'
+import { ActionButton, IButtonProps } from '@fluentui/react/lib/Button';
+import { AddIcon, RingerIcon, RingerOffIcon } from '@fluentui/react-icons-mdl2';
 
 interface WordProps {
 	word: WordObject
@@ -36,13 +37,6 @@ export function Word(props: WordProps) {
 	const [error, setError] = React.useState<string>()
 
 	const word = props.word
-	// const defs = word.defs.map((def) => {
-	// 	let dotIndex = def.indexOf(".")
-	// 	return {
-	// 		prefix: def.substring(0, dotIndex + 1),
-	// 		explain: def.substring(dotIndex + 1)
-	// 	}
-	// })
 
 	async function plusOne(id: number, selectText: string, parent: Node) {
 		const text = getSceneSentence(parent, selectText)
@@ -118,17 +112,28 @@ export function Word(props: WordProps) {
 		return <Text>{error}</Text>
 	}
 
-	const addIcon: IIconProps = { iconName: 'Add', title: "+1" }
-	const RingerIcon: IIconProps = { iconName: 'Ringer', title: "未掌握" }
-	const RingerOffIcon: IIconProps = { iconName: 'RingerOff', title: "已掌握" }
+	const onRenderIcon: IRenderFunction<IButtonProps> = (props: IButtonProps | undefined) => {
+		if (props == undefined) {
+			return null
+		}
+		switch (props.label) {
+			case 'Add':
+				return <AddIcon title="+1"></AddIcon>
+			case 'Ringer':
+				return <RingerIcon title="未掌握"></RingerIcon>
+			case 'RingerOff':
+				return <RingerOffIcon title="已掌握"></RingerOffIcon>
+		}
+		return null
+	}
 
 	return (
 		<div className="metwords-word">
 			<div className={styles.head}>
 				<Text className={styles.title}>{word.name}</Text>
-				<ActionButton className={styles.button} iconProps={addIcon} disabled={met || known} onClick={() => plusOne(word.id, props.selectText, props.parent)} />
+				<ActionButton className={styles.button} onRenderIcon={onRenderIcon} label="Add" disabled={met || known} onClick={() => plusOne(word.id, props.selectText, props.parent)} />
 				{(times > 0 || known) &&
-					<ActionButton className={styles.button} toggle iconProps={known ? RingerOffIcon : RingerIcon} onClick={() => { toggleKnown(word.id) }} />
+					<ActionButton className={styles.button} toggle onRenderIcon={onRenderIcon} label={known ? "RingerOff" : "Ringer"} onClick={() => { toggleKnown(word.id) }} />
 				}
 			</div>
 			<div className="metwords-phonetics">
