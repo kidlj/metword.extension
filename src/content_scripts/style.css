@@ -24,7 +24,7 @@ xmetword.x-metword-mark::before {
 }
 
 xmet {
-	font-weight: bold;
+	font-weight: 600;
 }
 
 .metwords-phonetics {
@@ -62,4 +62,51 @@ xmet {
 	font-size: 14px;
 	margin-bottom: 4px;
 	display: block;
+}
+
+.metwords-times {
+	line-height: 1.2em;
+	font-size: 14px;
+	background-color: black;
+	color: white;
+	margin-bottom: 10px;
+}
+
+.metwords-scenes ul {
+	all: unset;
+}
+
+.metwords-scenes ul li {
+	all: unset;
+	display: list-item;
+	list-style-position: inside;
+	list-style-type: circle;
+	line-height: 1.2em;
+	margin: 4px 0px;
+	font-size: 14px;
+}
+
+.metwords-scenes a {
+	all: unset;
+	text-decoration: none;
+	font-weight: 400;
+	font-size: 14px;
+}
+
+.metwords-scenes a:hover {
+	all: unset;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.metwords-forget {
+	font-size: 14px;
+	opacity: 0;
+	padding: 1px 10px;
+}
+
+.metwords-forget:hover {
+	font-size: 14px;
+	opacity: 100;
+	cursor: pointer;
 }

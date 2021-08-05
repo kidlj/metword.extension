@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import { getSceneSentence, getSelectedElement } from './lib'
-import { mergeStyleSets, Text, FontWeights, IIconProps } from '@fluentui/react'
+import { mergeStyleSets, Text, FontWeights, IIconProps, List } from '@fluentui/react'
 import { ActionButton } from '@fluentui/react/lib/Button';
 
 interface WordProps {
@@ -123,7 +123,7 @@ export function Word(props: WordProps) {
 	const RingerOffIcon: IIconProps = { iconName: 'RingerOff', title: "已掌握" }
 
 	return (
-		<div className="word">
+		<div className="metwords-word">
 			<div className={styles.head}>
 				<Text className={styles.title}>{word.name}</Text>
 				<ActionButton className={styles.button} iconProps={addIcon} disabled={met || known} onClick={() => plusOne(word.id, props.selectText, props.parent)} />
@@ -142,18 +142,18 @@ export function Word(props: WordProps) {
 					)}
 				</ul>
 			</div>
-			<div className="scenes">
-				{times > 0 &&
-					<span className="met-times">遇见 {times} 次</span>
-				}
+			{times > 0 &&
+				<Text className="metwords-times">遇见 {times} 次</Text>
+			}
+			<div className="metwords-scenes">
 				<ul>
 					{scenes.map((scene) => {
 						return (
-							<li className="scene" key={scene.id}>
+							<li key={scene.id}>
 								<a href={scene.url} title={scene.createTime.toLocaleString('zh-CN')}>
-									<span className="met-scene" dangerouslySetInnerHTML={{ __html: scene.sentence }}></span>
+									<span dangerouslySetInnerHTML={{ __html: scene.sentence }}></span>
 								</a>
-								<span className="met-forget" onClick={() => forgetScene(scene.id)}>✗</span>
+								<Text className="metwords-forget" onClick={() => forgetScene(scene.id)}>✗</Text>
 							</li>
 						)
 					})}
