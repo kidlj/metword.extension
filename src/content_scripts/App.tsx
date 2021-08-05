@@ -43,8 +43,8 @@ let _rootDiv: HTMLElement
 
 const listenMouseup = async (e: MouseEvent) => {
 	if (!_rootDiv) {
-		_rootDiv = document.createElement('div');
-		document.body.appendChild(_rootDiv);
+		_rootDiv = document.createElement('div')
+		document.body.appendChild(_rootDiv)
 	}
 
 	const selection = window.getSelection()
