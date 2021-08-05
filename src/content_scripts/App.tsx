@@ -39,17 +39,14 @@ async function start() {
 // waiting a while for client side rendered dom ready
 setTimeout(start, waitDuration)
 
+let _rootDiv: HTMLElement
+
 const listenMouseup = async (e: MouseEvent) => {
-	let tip = document.getElementById("metwords-tip")
-	if (tip == null) {
-		tip = document.createElement("div")
-		tip.setAttribute("id", "metwords-tip")
-		const body = document.getElementsByTagName("body").item(0)!
-		body.appendChild(tip)
+	if (!_rootDiv) {
+		_rootDiv = document.createElement('div');
+		document.body.appendChild(_rootDiv);
 	}
-	if ((tip as Node).contains(e.target as Node)) {
-		return
-	}
+
 	const selection = window.getSelection()
 	if (selection == null) return
 
@@ -93,20 +90,16 @@ const listenMouseup = async (e: MouseEvent) => {
 				<Tip word={word} selectText={selectText} parent={parent} />
 			</Callout>
 		</React.StrictMode>,
-		tip
+		_rootDiv
 	)
 }
 
 const listenMouseDown = (e: MouseEvent | Event) => {
-	const tip = document.getElementById("metwords-tip")!
-	if ((tip as Node).contains(e.target as Node)) {
-		return
-	}
 	const selectedElement = getSelectedElement()
 	if (selectedElement != null) {
 		selectedElement.removeAttribute("id")
 	}
-	ReactDOM.unmountComponentAtNode(tip)
+	ReactDOM.unmountComponentAtNode(_rootDiv)
 }
 
 browser.storage.onChanged.addListener(({ disabled }) => {
@@ -115,8 +108,7 @@ browser.storage.onChanged.addListener(({ disabled }) => {
 		document.removeEventListener('mousedown', listenMouseDown)
 		document.removeEventListener('scroll', listenMouseDown)
 
-		const tip = document.getElementById("metwords-tip")!
-		ReactDOM.unmountComponentAtNode(tip)
+		ReactDOM.unmountComponentAtNode(_rootDiv)
 	}
 })
 
