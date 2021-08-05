@@ -23,6 +23,43 @@ xmetword.x-metword-mark::before {
 	text-overflow: clip;
 }
 
-#metwords-tip xmet {
+xmet {
 	font-weight: bold;
+}
+
+.metwords-phonetics {
+	font-size: 14px;
+	line-height: 1.4em;
+	margin: 10px 0px;
+	display: block;
+}
+
+.metwords-phonetic-label {
+	font-size: 14px;
+	margin-right: 6px;
+}
+
+.metwords-phonetic {
+	font-size: 14px;
+	margin-right: 8px;
+}
+
+.metwords-defs {
+	margin-bottom: 10px;
+}
+
+.metwords-defs ul {
+	all: unset;
+	font-size: 14px;
+	list-style-type: none;
+	max-width: max-content;
+}
+
+.metwords-defs ul li {
+	all: unset;
+	list-style-type: none;
+	line-height: 1.2em;
+	font-size: 14px;
+	margin-bottom: 4px;
+	display: block;
 }

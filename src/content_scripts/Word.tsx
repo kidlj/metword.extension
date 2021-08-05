@@ -131,14 +131,14 @@ export function Word(props: WordProps) {
 					<ActionButton className={styles.button} toggle iconProps={known ? RingerOffIcon : RingerIcon} onClick={() => { toggleKnown(word.id) }} />
 				}
 			</div>
-			<div className="phonetics">
-				<span className="phonetic-label">US</span><span className="phonetic">[{word.usPhonetic}]</span>
-				<span className="phonetic-label">UK</span><span className="phonetic">[{word.ukPhonetic}]</span>
+			<div className="metwords-phonetics">
+				<Text className="metwords-phonetic-label">US</Text><Text className="metwords-phonetic">[{word.usPhonetic}]</Text>
+				<Text className="metwords-phonetic-label">UK</Text><Text className="metwords-phonetic">[{word.ukPhonetic}]</Text>
 			</div>
-			<div className="defs">
+			<div className="metwords-defs">
 				<ul>
 					{word.defs.map((def) => (
-						<li className="def"><span className="explain">{def}</span></li>)
+						<li className="metwords-def"><Text className="metwords-explain">{def}</Text></li>)
 					)}
 				</ul>
 			</div>
