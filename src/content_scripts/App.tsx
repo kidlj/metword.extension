@@ -131,8 +131,8 @@ const styles = mergeStyleSets({
 		width: 130,
 	},
 	callout: {
-		width: 420,
-		padding: '20px 24px',
+		width: 520,
+		padding: '20px 20px',
 	},
 	title: {
 		marginBottom: 12,
