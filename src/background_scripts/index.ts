@@ -204,30 +204,20 @@ async function queryWord(word: string) {
 
 async function getMeets() {
 	if (valid) {
-		return {
-			success: true,
-			meets: meets
-		}
+		return meets
 	}
 	try {
 		const resp = await fetch(meetsURL)
 		if (resp.status != 200) {
-			return {
-				success: false,
-			}
+			return meets
 		}
 		const result = JSON.parse(await resp.text())
 		meets = result.meets
 		valid = true
-		return {
-			success: true,
-			meets: meets
-		}
+		return meets
 	} catch (err) {
 		console.log("Metwords extension: get words error", err)
-		return {
-			success: false,
-		}
+		return meets
 	}
 }
 

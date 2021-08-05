@@ -15,13 +15,9 @@ async function start() {
 	if (store.disabled == true) {
 		return
 	}
-	const result = await browser.runtime.sendMessage({
+	const meets = await browser.runtime.sendMessage({
 		action: "getMeets"
 	})
-	if (!result.success) {
-		return
-	}
-	const meets = result.meets
 	let ranges = new Map<string, WordRange>()
 	ranges = getWordRanges(document.getRootNode(), ranges)
 	ranges.forEach((val, key) => {
