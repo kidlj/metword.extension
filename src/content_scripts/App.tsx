@@ -5,6 +5,8 @@ import './style.css';
 import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
 import { browser } from 'webextension-polyfill-ts';
 import { Callout, mergeStyleSets, FontWeights } from '@fluentui/react'
+import { initializeIcons } from '@fluentui/font-icons-mdl2'
+initializeIcons()
 
 // 1s
 const waitDuration = 1000

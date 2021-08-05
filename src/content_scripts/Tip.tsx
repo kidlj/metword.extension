@@ -62,16 +62,12 @@ export default function Tip(props: TipProps) {
 }
 
 const styles = mergeStyleSets({
-	button: {
-		width: 130,
-	},
 	title: {
 		marginBottom: 12,
 		fontWeight: FontWeights.semilight,
 	},
 	words: {
 		display: 'block',
-		marginTop: 20,
 	},
 })
 
@@ -85,7 +81,7 @@ interface ActionProps {
 
 function useQuery(props: ActionProps) {
 	const [data, setData] = React.useState<any>(null)
-	const [error, setError] = React.useState<string>()
+	const [error, setError] = React.useState<string | undefined>(undefined)
 
 	React.useEffect(() => {
 		async function sendMessage(msg: { action: string, word: string }) {

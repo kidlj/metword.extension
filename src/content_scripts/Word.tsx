@@ -1,7 +1,8 @@
 import * as React from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import { getSceneSentence, getSelectedElement } from './lib'
-import { Toggle, mergeStyleSets, Text, FontWeights } from '@fluentui/react'
+import { mergeStyleSets, Text, FontWeights, IIconProps } from '@fluentui/react'
+import { ActionButton } from '@fluentui/react/lib/Button';
 
 interface WordProps {
 	word: WordObject
@@ -35,13 +36,13 @@ export function Word(props: WordProps) {
 	const [error, setError] = React.useState<string>()
 
 	const word = props.word
-	const defs = word.defs.map((def) => {
-		let dotIndex = def.indexOf(".")
-		return {
-			prefix: def.substring(0, dotIndex + 1),
-			explain: def.substring(dotIndex + 1)
-		}
-	})
+	// const defs = word.defs.map((def) => {
+	// 	let dotIndex = def.indexOf(".")
+	// 	return {
+	// 		prefix: def.substring(0, dotIndex + 1),
+	// 		explain: def.substring(dotIndex + 1)
+	// 	}
+	// })
 
 	async function plusOne(id: number, selectText: string, parent: Node) {
 		const text = getSceneSentence(parent, selectText)
@@ -113,19 +114,21 @@ export function Word(props: WordProps) {
 		setTimes(times - 1)
 	}
 
-	if (error != undefined) {
+	if (error) {
 		return <Text>{error}</Text>
 	}
 
+	const addIcon: IIconProps = { iconName: 'Add', title: "+1" }
+	const RingerIcon: IIconProps = { iconName: 'Ringer', title: "未掌握" }
+	const RingerOffIcon: IIconProps = { iconName: 'RingerOff', title: "已掌握" }
+
 	return (
-		<div className="word" >
-			<div className="head">
-				<span className="headword">{word.name}</span>
-
-				<button className="plus-button" disabled={met || known} onClick={() => plusOne(word.id, props.selectText, props.parent)}>+1</button>
-
+		<div className="word">
+			<div className={styles.head}>
+				<Text className={styles.title}>{word.name}</Text>
+				<ActionButton className={styles.button} iconProps={addIcon} disabled={met || known} onClick={() => plusOne(word.id, props.selectText, props.parent)} />
 				{(times > 0 || known) &&
-					<Toggle className="known-switch" checked={known} onChange={() => { toggleKnown(word.id) }} offText="未掌握" onText="已掌握" />
+					<ActionButton className={styles.button} toggle iconProps={known ? RingerOffIcon : RingerIcon} onClick={() => { toggleKnown(word.id) }} />
 				}
 			</div>
 			<div className="phonetics">
@@ -134,7 +137,9 @@ export function Word(props: WordProps) {
 			</div>
 			<div className="defs">
 				<ul>
-					{defs.map((def) => (<li className="def"><span className="prefix">{def.prefix}</span><span className="explain">{def.explain}</span></li>))}
+					{word.defs.map((def) => (
+						<li className="def"><span className="explain">{def}</span></li>)
+					)}
 				</ul>
 			</div>
 			<div className="scenes">
@@ -154,6 +159,25 @@ export function Word(props: WordProps) {
 					})}
 				</ul>
 			</div>
-		</div >
+		</div>
 	)
 }
+
+const styles = mergeStyleSets({
+	head: {
+		marginBottom: 12,
+		display: "flex",
+		alignItems: "flex-end"
+	},
+	button: {
+		lineHeight: 1,
+		width: 16,
+		height: 16,
+		marginLeft: 16,
+	},
+	title: {
+		fontWeight: FontWeights.semilight,
+		fontSize: 42,
+		lineHeight: "100%",
+	},
+})

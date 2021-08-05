@@ -22,3 +22,7 @@ xmetword.x-metword-mark::before {
 	overflow: hidden;
 	text-overflow: clip;
 }
+
+#metwords-tip xmet {
+	font-weight: bold;
+}
