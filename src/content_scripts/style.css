@@ -128,3 +128,17 @@ xmet {
 	font-size: 16px;
 	line-height: 1.2em;
 }
+
+.metwords-message a {
+	all: unset;
+	font-size: 16px;
+	cursor: pointer;
+	color: #0000EE;
+	text-decoration: solid underline;
+	text-underline-position: under;
+}
+
+.metwords-message a:hover,
+.metwords-message a:visited {
+	color: #551A8B;
+}
