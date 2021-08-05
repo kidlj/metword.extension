@@ -125,6 +125,7 @@ const styles = mergeStyleSets({
 		width: 130,
 	},
 	callout: {
+		display: "block !important",
 		width: 520,
 		padding: '20px 20px',
 	},

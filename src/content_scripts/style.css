@@ -23,6 +23,10 @@ xmetword.x-metword-mark::before {
 	text-overflow: clip;
 }
 
+.metwords-word {
+	text-align: left;
+}
+
 xmet {
 	font-weight: 600;
 }
