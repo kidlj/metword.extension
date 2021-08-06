@@ -172,7 +172,7 @@ async function getMeets() {
 	}
 }
 
-const hideMark = `xmetword.x-metword-mark::before { display: none !important; }`
+const hideMark = `xmetword::before { display: none !important; }`
 
 async function toggleDisabled() {
 	try {

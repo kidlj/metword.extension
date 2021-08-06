@@ -33,7 +33,6 @@ async function start() {
 
 	document.addEventListener('mouseup', show)
 	document.addEventListener('mousedown', dismiss)
-	document.addEventListener('scroll', dismiss)
 }
 
 // waiting a while for client side rendered dom ready
@@ -42,16 +41,18 @@ setTimeout(start, waitDuration)
 let _rootDiv: HTMLElement
 
 const show = async (e: MouseEvent) => {
-	if (!_rootDiv) {
-		_rootDiv = document.createElement('div')
-		document.body.appendChild(_rootDiv)
-	}
+	// const tip = document.getElementById("metwords-tip")
+	// console.log("tip is:", tip)
+	// if (tip) { return }
 
 	const selection = window.getSelection()
 	if (selection == null) return
+	console.log("selection is:", selection)
 
-	if (selection.rangeCount == 0) return
+	if (selection.type != "Range") return
+	if (selection.rangeCount != 1) return
 	const range = selection.getRangeAt(0)
+	console.log("range before is:", range)
 	if (range.collapsed) {
 		return
 	}
@@ -68,6 +69,9 @@ const show = async (e: MouseEvent) => {
 		return
 	}
 
+	console.log("range after is:", range)
+	markSelected(range, selectText)
+
 	let parent = range.commonAncestorContainer
 	if (range.startContainer == range.endContainer) {
 		parent = range.startContainer.parentNode!
@@ -77,7 +81,10 @@ const show = async (e: MouseEvent) => {
 		parent = parent.parentNode!
 	}
 
-	markSelected(range, selectText)
+	if (!_rootDiv) {
+		_rootDiv = document.createElement('div')
+		document.body.appendChild(_rootDiv)
+	}
 
 	ReactDOM.render(
 		<React.StrictMode>
@@ -111,7 +118,6 @@ browser.storage.onChanged.addListener(({ disabled }) => {
 	if (disabled.newValue == true) {
 		document.removeEventListener('mouseup', show)
 		document.removeEventListener('mousedown', dismiss)
-		document.removeEventListener('scroll', dismiss)
 
 		ReactDOM.unmountComponentAtNode(_rootDiv)
 	}

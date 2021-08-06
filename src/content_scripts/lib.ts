@@ -128,12 +128,17 @@ const selectedID = "metword-selected"
 
 export function markWord(range: WordRange, selected: boolean) {
 	let ele = document.createElement("xmetword")
-	ele.classList.add("x-metword-mark")
 	if (selected) {
 		ele.setAttribute("id", selectedID)
 	}
 	const color = "red"
-	range.range.surroundContents(ele)
+	// To surround range contents with the mark element.
+	// The surroundContent() may fail when a range spreads across Node element boundries:
+	// range.range.surroundContents(ele)
+	// See: https://developer.mozilla.org/en-US/docs/Web/API/Range/surroundContents
+	// Use the extractContent() + insertNode() equivalent instead:
+	ele.appendChild(range.range.extractContents())
+	range.range.insertNode(ele)
 	ele.style.setProperty("--met-color", color)
 	ele.setAttribute("data-times", "-".repeat(range.times))
 }
@@ -150,7 +155,6 @@ export function markSelected(range: Range, selectedText: string) {
 
 function isMarkedNode(n: Node, selectedText: string): boolean {
 	return (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "XMETWORD" &&
-		(n as HTMLElement).getAttribute("class") == "x-metword-mark" &&
 		getText(n, "") == selectedText)
 }
 
