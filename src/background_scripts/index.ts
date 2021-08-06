@@ -36,9 +36,9 @@ function invalidate() {
 	valid = false
 }
 
-async function fetchResult(url: string, options?: { method: string, body?: any, headers?: Headers }) {
+async function fetchResult(input: RequestInfo, init?: RequestInit) {
 	try {
-		const resp = await fetch(url, options)
+		const resp = await fetch(input, init)
 		if (resp.status == 401) {
 			return {
 				success: false,
