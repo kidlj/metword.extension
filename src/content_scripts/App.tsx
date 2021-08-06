@@ -31,9 +31,9 @@ async function start() {
 		markWord(range, false)
 	}
 
-	document.addEventListener('mouseup', listenMouseup)
-	document.addEventListener('mousedown', listenMouseDown)
-	document.addEventListener('scroll', listenMouseDown)
+	document.addEventListener('mouseup', show)
+	document.addEventListener('mousedown', dismiss)
+	document.addEventListener('scroll', dismiss)
 }
 
 // waiting a while for client side rendered dom ready
@@ -41,7 +41,7 @@ setTimeout(start, waitDuration)
 
 let _rootDiv: HTMLElement
 
-const listenMouseup = async (e: MouseEvent) => {
+const show = async (e: MouseEvent) => {
 	if (!_rootDiv) {
 		_rootDiv = document.createElement('div')
 		document.body.appendChild(_rootDiv)
@@ -82,6 +82,7 @@ const listenMouseup = async (e: MouseEvent) => {
 	ReactDOM.render(
 		<React.StrictMode>
 			<Callout
+				id="metwords-tip"
 				className={styles.callout}
 				role="alertdialog"
 				gapSpace={0}
@@ -94,19 +95,23 @@ const listenMouseup = async (e: MouseEvent) => {
 	)
 }
 
-const listenMouseDown = (e: MouseEvent | Event) => {
+const dismiss = (e: MouseEvent | Event) => {
+	const tip = document.getElementById("metwords-tip")
+	if (!tip) { return }
+	if ((tip as Node).contains(e.target as Node)) { return }
+
 	const selectedElement = getSelectedElement()
-	if (selectedElement != null) {
-		selectedElement.removeAttribute("id")
-	}
+	if (!selectedElement) { return }
+	selectedElement.removeAttribute("id")
+
 	ReactDOM.unmountComponentAtNode(_rootDiv)
 }
 
 browser.storage.onChanged.addListener(({ disabled }) => {
 	if (disabled.newValue == true) {
-		document.removeEventListener('mouseup', listenMouseup)
-		document.removeEventListener('mousedown', listenMouseDown)
-		document.removeEventListener('scroll', listenMouseDown)
+		document.removeEventListener('mouseup', show)
+		document.removeEventListener('mousedown', dismiss)
+		document.removeEventListener('scroll', dismiss)
 
 		ReactDOM.unmountComponentAtNode(_rootDiv)
 	}
