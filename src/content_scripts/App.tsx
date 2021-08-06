@@ -41,26 +41,18 @@ setTimeout(start, waitDuration)
 let _rootDiv: HTMLElement
 
 const show = async (e: MouseEvent) => {
-	// const tip = document.getElementById("metwords-tip")
-	// console.log("tip is:", tip)
-	// if (tip) { return }
-
 	const selection = window.getSelection()
 	if (selection == null) return
-	console.log("selection is:", selection)
 
 	if (selection.type != "Range") return
 	if (selection.rangeCount != 1) return
 	const range = selection.getRangeAt(0)
-	console.log("range before is:", range)
 	if (range.collapsed) {
 		return
 	}
 	// don't trim here.
 	const selectText = selection.toString()
 	const word = getWord(selectText)
-	console.log(selectText)
-	console.log("word is:", word)
 	if (word == "") {
 		return
 	}
@@ -68,9 +60,6 @@ const show = async (e: MouseEvent) => {
 	if (range.startContainer.nodeType != Node.TEXT_NODE) {
 		return
 	}
-
-	console.log("range after is:", range)
-	markSelected(range, selectText)
 
 	let parent = range.commonAncestorContainer
 	if (range.startContainer == range.endContainer) {
@@ -80,6 +69,8 @@ const show = async (e: MouseEvent) => {
 	if (parent.firstChild == parent.lastChild) {
 		parent = parent.parentNode!
 	}
+
+	markSelected(range, selectText)
 
 	if (!_rootDiv) {
 		_rootDiv = document.createElement('div')
