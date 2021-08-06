@@ -10,8 +10,9 @@ const loginURL = "http://words.metaphor.com:8080/account/login"
 const loginMessage = `<span>请<a href="${loginURL}" target="_blank">登录</a>后使用。</span>`
 const rateLimitMessage = "操作过于频繁。"
 const notFoundMessage = "未找到定义。"
-const errorMessage = "发生未知错误，请稍后再试。"
-const networkMessage = "网络连接错误，请稍后再试。"
+const timeOutMessage = "请求超时。"
+const networkMessage = "网络连接异常。"
+const otherErrorMessage = "未知错误。"
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
@@ -35,146 +36,13 @@ function invalidate() {
 	valid = false
 }
 
-async function plusOne(scene: any) {
+async function fetchResult(url: string, options?: { method: string, body?: any, headers?: Headers }) {
 	try {
-		const body = {
-			id: scene.id,
-			url: scene.url,
-			text: scene.text
-		}
-		let payload = JSON.stringify(body)
-		let jsonHeaders = new Headers({
-			'Content-Type': 'application/json'
-		})
-
-		const resp = await fetch(meetURL, {
-			method: "POST",
-			body: payload,
-			headers: jsonHeaders
-		})
+		const resp = await fetch(url, options)
 		if (resp.status == 401) {
 			return {
 				success: false,
 				message: loginMessage
-			}
-		}
-		if (resp.status == 503) {
-			return {
-				success: false,
-				message: rateLimitMessage
-			}
-		}
-		if (resp.status != 200) {
-			return {
-				success: false,
-				message: errorMessage
-			}
-		}
-		const result = await resp.json()
-		// invalidate cache
-		invalidate()
-		return {
-			success: true,
-			scene: result.scene,
-		}
-	} catch (err) {
-		return {
-			success: false,
-			message: networkMessage
-		}
-	}
-}
-
-async function toggleKnown(id: number) {
-	try {
-		const url = knowURL + id
-		const resp = await fetch(url, {
-			method: "POST",
-		})
-		if (resp.status == 401) {
-			return {
-				success: false,
-				message: loginMessage
-			}
-		}
-		if (resp.status == 503) {
-			return {
-				success: false,
-				message: rateLimitMessage
-			}
-		}
-		if (resp.status != 200) {
-			return {
-				success: false,
-				message: errorMessage
-			}
-		}
-		const result = await resp.json()
-		// invalidate cache
-		invalidate()
-		return {
-			success: true,
-			state: result.state
-		}
-	} catch (err) {
-		return {
-			success: false,
-			message: networkMessage
-		}
-	}
-}
-
-async function forgetScene(id: number) {
-	try {
-		const url = forgetSceneURL + id
-		const resp = await fetch(url, {
-			method: "DELETE",
-		})
-		if (resp.status == 401) {
-			return {
-				success: false,
-				message: loginMessage
-			}
-		}
-		if (resp.status == 503) {
-			return {
-				success: false,
-				message: rateLimitMessage
-			}
-		}
-		if (resp.status != 200) {
-			return {
-				success: false,
-				message: errorMessage
-			}
-		}
-		// invalidate cache
-		invalidate()
-		return {
-			success: true,
-		}
-	} catch (err) {
-		return {
-			success: false,
-			message: networkMessage
-		}
-	}
-}
-
-async function queryWord(word: string) {
-	try {
-		const query = queryURL + word
-		const resp = await fetch(query)
-		if (resp.status == 401) {
-			return {
-				success: false,
-				message: loginMessage
-			}
-		}
-		if (resp.status == 503) {
-			return {
-				success: false,
-				message: rateLimitMessage
 			}
 		}
 		if (resp.status == 404) {
@@ -183,16 +51,28 @@ async function queryWord(word: string) {
 				message: notFoundMessage
 			}
 		}
+		if (resp.status == 503) {
+			return {
+				success: false,
+				message: rateLimitMessage
+			}
+		}
+		if (resp.status == 504) {
+			return {
+				success: false,
+				message: timeOutMessage
+			}
+		}
 		if (resp.status != 200) {
 			return {
 				success: false,
-				message: errorMessage
+				message: otherErrorMessage
 			}
 		}
-		const result = await resp.json()
+		const data = await resp.json()
 		return {
 			success: true,
-			data: result.words
+			data: data
 		}
 	} catch (err) {
 		return {
@@ -200,6 +80,77 @@ async function queryWord(word: string) {
 			message: networkMessage
 		}
 	}
+
+}
+
+async function plusOne(scene: any) {
+	const body = {
+		id: scene.id,
+		url: scene.url,
+		text: scene.text
+	}
+	let payload = JSON.stringify(body)
+	let jsonHeaders = new Headers({
+		'Content-Type': 'application/json'
+	})
+
+	const result = await fetchResult(meetURL, {
+		method: "POST",
+		body: payload,
+		headers: jsonHeaders
+	})
+	if (result.success) {
+		// invalidate cache
+		invalidate()
+		return {
+			success: true,
+			scene: result.data.scene
+		}
+	}
+	return result
+}
+
+async function toggleKnown(id: number) {
+	const url = knowURL + id
+	const result = await fetchResult(url, {
+		method: "POST",
+	})
+	if (result.success) {
+		// invalidate cache
+		invalidate()
+		return {
+			success: true,
+			state: result.data.state
+		}
+	}
+	return result
+}
+
+async function forgetScene(id: number) {
+	const url = forgetSceneURL + id
+	const result = await fetchResult(url, {
+		method: "DELETE",
+	})
+	if (result.success) {
+		// invalidate cache
+		invalidate()
+		return {
+			success: true,
+		}
+	}
+	return result
+}
+
+async function queryWord(word: string) {
+	const url = queryURL + word
+	const result = await fetchResult(url)
+	if (result.success) {
+		return {
+			success: true,
+			words: result.data.words
+		}
+	}
+	return result
 }
 
 async function getMeets() {

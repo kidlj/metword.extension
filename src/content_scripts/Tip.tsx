@@ -10,14 +10,11 @@ interface TipProps {
 }
 
 export default function Tip(props: TipProps) {
-	const [data, error] = useQuery({ key: props.word, msg: { action: 'query', word: props.word } })
-	console.log(error)
-	console.log(data)
+	const [owords, error] = useWords({ key: props.word, msg: { action: 'query', word: props.word } })
 
 	if (error) return <p className="metwords-message" dangerouslySetInnerHTML={{ __html: error }}></p>
-	if (!data) return <Spinner size={SpinnerSize.medium}></Spinner>
+	if (!owords) return <Spinner size={SpinnerSize.medium}></Spinner>
 
-	const owords: any[] = data
 	const words: WordObject[] = []
 	owords.forEach((w: any) => {
 		const scenes: SceneObject[] = []
@@ -71,7 +68,7 @@ const styles = mergeStyleSets({
 	},
 })
 
-interface ActionProps {
+interface QueryWordsProps {
 	key: string
 	msg: {
 		action: string
@@ -79,8 +76,8 @@ interface ActionProps {
 	}
 }
 
-function useQuery(props: ActionProps) {
-	const [data, setData] = React.useState<any>(null)
+function useWords(props: QueryWordsProps) {
+	const [words, setWords] = React.useState<any>(null)
 	const [error, setError] = React.useState<string | undefined>(undefined)
 
 	React.useEffect(() => {
@@ -90,11 +87,11 @@ function useQuery(props: ActionProps) {
 				setError(result.message)
 				return
 			}
-			setData(result.data)
+			setWords(result.words)
 		}
 
 		sendMessage(props.msg)
 	}, [props.key])
 
-	return [data, error]
+	return [words, error]
 }
