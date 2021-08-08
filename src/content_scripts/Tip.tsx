@@ -10,7 +10,7 @@ interface TipProps {
 }
 
 export default function Tip(props: TipProps) {
-	const [owords, error] = useWords({ key: props.word, msg: { action: 'query', word: props.word } })
+	const { words: owords, error } = useWords({ key: props.word, msg: { action: 'query', word: props.word } })
 
 	if (error) return <p className="metwords-message" dangerouslySetInnerHTML={{ __html: error }}></p>
 	if (!owords) return <Spinner size={SpinnerSize.medium}></Spinner>
@@ -93,5 +93,5 @@ function useWords(props: QueryWordsProps) {
 		sendMessage(props.msg)
 	}, [props.key])
 
-	return [words, error]
+	return { words, error }
 }
