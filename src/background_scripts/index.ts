@@ -63,17 +63,8 @@ async function fetchResult(input: RequestInfo, init?: RequestInit) {
 				message: timeOutMessage
 			}
 		}
-		if (resp.status != 200) {
-			return {
-				success: false,
-				message: otherErrorMessage
-			}
-		}
-		const data = await resp.json()
-		return {
-			success: true,
-			data: data
-		}
+		const result = await resp.json()
+		return result
 	} catch (err) {
 		return {
 			success: false,
@@ -104,7 +95,7 @@ async function plusOne(scene: any) {
 		invalidate()
 		return {
 			success: true,
-			scene: result.data.scene
+			scene: result.data
 		}
 	}
 	return result
@@ -120,7 +111,7 @@ async function toggleKnown(id: number) {
 		invalidate()
 		return {
 			success: true,
-			state: result.data.state
+			state: result.data
 		}
 	}
 	return result
@@ -147,7 +138,7 @@ async function queryWord(word: string) {
 	if (result.success) {
 		return {
 			success: true,
-			words: result.data.words
+			words: result.data
 		}
 	}
 	return result
@@ -163,7 +154,7 @@ async function getMeets() {
 			return meets
 		}
 		const result = JSON.parse(await resp.text())
-		meets = result.meets
+		meets = result.data
 		valid = true
 		return meets
 	} catch (err) {
