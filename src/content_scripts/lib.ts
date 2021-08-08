@@ -258,10 +258,10 @@ function getText(n: Node, text: string): string {
 }
 
 export function getWord(selectedText: string): string {
-	const re = /^[a-zA-Z]+$/
-	// Safari needs to trim() selected text to drop the trailing space.
-	if (selectedText.trim().match(re)) {
-		return selectedText.toLowerCase()
+	const word = selectedText.trim()
+	const re = /^([a-zA-Z]?[a-z]+|[A-Z]+)$/
+	if (word.match(re)) {
+		return word.toLowerCase()
 	}
 	return ""
 }
