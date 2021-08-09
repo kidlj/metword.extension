@@ -12,7 +12,6 @@ const rateLimitMessage = "操作过于频繁。"
 const notFoundMessage = "未找到定义。"
 const timeOutMessage = "请求超时。"
 const networkMessage = "网络连接异常。"
-const otherErrorMessage = "未知错误。"
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
@@ -71,7 +70,6 @@ async function fetchResult(input: RequestInfo, init?: RequestInit) {
 			message: networkMessage
 		}
 	}
-
 }
 
 async function plusOne(scene: any) {
