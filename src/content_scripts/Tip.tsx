@@ -52,7 +52,7 @@ export default function Tip(props: TipProps) {
 	return (
 		<div className={styles.words}>
 			{
-				words.map((w: WordObject) => (<Word word={w} selectText={props.selectText} parent={props.parent} />))
+				words.map((w: WordObject) => (<Word key={w.id} word={w} selectText={props.selectText} parent={props.parent} />))
 			}
 		</div>
 	)
