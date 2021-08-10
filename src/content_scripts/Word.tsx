@@ -142,8 +142,8 @@ export function Word(props: WordProps) {
 			</div>
 			<div className="metwords-defs">
 				<ul>
-					{word.defs.map((def) => (
-						<li className="metwords-def"><Text className="metwords-explain">{def}</Text></li>)
+					{word.defs.map((def, index) => (
+						<li key={index} className="metwords-def"><Text className="metwords-explain">{def}</Text></li>)
 					)}
 				</ul>
 			</div>
