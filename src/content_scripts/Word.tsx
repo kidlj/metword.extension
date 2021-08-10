@@ -29,14 +29,12 @@ export interface SceneObject {
 }
 
 
-export function Word(props: WordProps) {
-	const [times, setTimes] = React.useState(props.word.scenes.length)
-	const [scenes, setScenes] = React.useState(props.word.scenes)
+export function Word({ word, selectText, parent }: WordProps) {
+	const [times, setTimes] = React.useState(word.scenes.length)
+	const [scenes, setScenes] = React.useState(word.scenes)
 	const [met, setMet] = React.useState(false)
-	const [known, setKnown] = React.useState(props.word.known)
+	const [known, setKnown] = React.useState(word.known)
 	const [error, setError] = React.useState<string>()
-
-	const word = props.word
 
 	async function plusOne(id: number, selectText: string, parent: Node) {
 		const text = getSceneSentence(parent, selectText)
@@ -131,7 +129,7 @@ export function Word(props: WordProps) {
 		<div className="metwords-word">
 			<div className={styles.head}>
 				<Text className={styles.title}>{word.name}</Text>
-				<ActionButton className={styles.button} onRenderIcon={onRenderIcon} label="Add" disabled={met || known} onClick={() => plusOne(word.id, props.selectText, props.parent)} />
+				<ActionButton className={styles.button} onRenderIcon={onRenderIcon} label="Add" disabled={met || known} onClick={() => plusOne(word.id, selectText, parent)} />
 				{(times > 0 || known) &&
 					<ActionButton className={styles.button} toggle onRenderIcon={onRenderIcon} label={known ? "RingerOff" : "Ringer"} onClick={() => { toggleKnown(word.id) }} />
 				}
