@@ -1,7 +1,8 @@
 import * as React from 'react'
-import { mergeStyleSets, Text, FontWeights, Spinner, SpinnerSize } from '@fluentui/react'
+import { mergeStyleSets, FontWeights, Spinner, SpinnerSize } from '@fluentui/react'
 import { Word, WordObject, SceneObject } from './Word'
 import { browser } from 'webextension-polyfill-ts'
+import ErrorMessage from './ErrorMessage'
 
 interface TipProps {
 	selectText: string
@@ -10,13 +11,13 @@ interface TipProps {
 }
 
 export default function Tip(props: TipProps) {
-	const { words: owords, error } = useWords({ key: props.word, msg: { action: 'query', word: props.word } })
+	const { words, errorCode } = useWords({ key: props.word, msg: { action: 'query', word: props.word } })
 
-	if (error) return <p className="metwords-message" dangerouslySetInnerHTML={{ __html: error }}></p>
-	if (!owords) return <Spinner size={SpinnerSize.medium}></Spinner>
+	if (errorCode) return <ErrorMessage errorCode={errorCode}></ErrorMessage>
+	if (!words) return <Spinner size={SpinnerSize.medium}></Spinner>
 
-	const words: WordObject[] = []
-	owords.forEach((w: any) => {
+	const wordObjects: WordObject[] = []
+	words.forEach((w: any) => {
 		const scenes: SceneObject[] = []
 		let known = false
 		if (w.edges.meets != null) {
@@ -36,7 +37,7 @@ export default function Tip(props: TipProps) {
 				})
 			}
 		}
-		const word: WordObject = {
+		const wordObject: WordObject = {
 			id: w.id,
 			name: w.name,
 			usPhonetic: w.us_phonetic,
@@ -45,14 +46,14 @@ export default function Tip(props: TipProps) {
 			known: known,
 			scenes: scenes
 		}
-		words.push(word)
+		wordObjects.push(wordObject)
 	})
 
 
 	return (
 		<div className={styles.words}>
 			{
-				words.map((w: WordObject) => (<Word key={w.id} word={w} selectText={props.selectText} parent={props.parent} />))
+				wordObjects.map((w: WordObject) => (<Word key={w.id} word={w} selectText={props.selectText} parent={props.parent} />))
 			}
 		</div>
 	)
@@ -78,20 +79,20 @@ interface QueryWordsProps {
 
 function useWords(props: QueryWordsProps) {
 	const [words, setWords] = React.useState<any>(null)
-	const [error, setError] = React.useState<string | undefined>(undefined)
+	const [errorCode, setErrorCode] = React.useState<number | false>(false)
 
 	React.useEffect(() => {
 		async function sendMessage(msg: { action: string, word: string }) {
-			const result = await browser.runtime.sendMessage(props.msg)
-			if (!result.success) {
-				setError(result.message)
+			const { data, errorCode } = await browser.runtime.sendMessage(msg)
+			if (errorCode) {
+				setErrorCode(errorCode)
 				return
 			}
-			setWords(result.words)
+			setWords(data)
 		}
 
 		sendMessage(props.msg)
 	}, [props.key])
 
-	return { words, error }
+	return { words, errorCode }
 }

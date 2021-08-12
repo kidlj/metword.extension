@@ -2,16 +2,9 @@ import { browser } from "webextension-polyfill-ts"
 
 const meetsURL = "http://words.metaphor.com:8080/meet/times"
 const queryURL = "http://words.metaphor.com:8080/word?word="
-const meetURL = "http://words.metaphor.com:8080/meet"
-const knowURL = "http://words.metaphor.com:8080/meet/toggle?id="
+const addSceneURL = "http://words.metaphor.com:8080/scene"
 const forgetSceneURL = "http://words.metaphor.com:8080/scene?id="
-const loginURL = "http://words.metaphor.com:8080/account/login"
-
-const loginMessage = `<span>请<a href="${loginURL}" target="_blank">登录</a>后使用。</span>`
-const rateLimitMessage = "操作过于频繁。"
-const notFoundMessage = "未找到定义。"
-const timeOutMessage = "请求超时。"
-const networkMessage = "网络连接异常。"
+const knowURL = "http://words.metaphor.com:8080/meet/toggle?id="
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
@@ -19,12 +12,12 @@ browser.runtime.onMessage.addListener(async (msg) => {
 			return await queryWord(msg.word)
 		case 'getMeets':
 			return await getMeets()
-		case 'plusOne':
-			return await plusOne(msg.scene)
-		case 'toggleKnown':
-			return await toggleKnown(msg.id)
+		case 'addScene':
+			return await addScene(msg.scene)
 		case 'forgetScene':
 			return await forgetScene(msg.id)
+		case 'toggleKnown':
+			return await toggleKnown(msg.id)
 	}
 })
 
@@ -35,44 +28,29 @@ function invalidate() {
 	valid = false
 }
 
-async function fetchResult(input: RequestInfo, init?: RequestInit) {
+interface FetchResult {
+	data: any,
+	errorCode: number | false
+}
+
+async function fetchResult(input: RequestInfo, init?: RequestInit): Promise<FetchResult> {
 	try {
-		const resp = await fetch(input, init)
-		if (resp.status == 401) {
-			return {
-				success: false,
-				message: loginMessage
-			}
+		const res = await fetch(input, init)
+		const errorCode = res.ok ? false : res.status
+		const result = await res.json()
+		return {
+			data: result.data || null,
+			errorCode: errorCode
 		}
-		if (resp.status == 404) {
-			return {
-				success: false,
-				message: notFoundMessage
-			}
-		}
-		if (resp.status == 503) {
-			return {
-				success: false,
-				message: rateLimitMessage
-			}
-		}
-		if (resp.status == 504) {
-			return {
-				success: false,
-				message: timeOutMessage
-			}
-		}
-		const result = await resp.json()
-		return result
 	} catch (err) {
 		return {
-			success: false,
-			message: networkMessage
+			data: null,
+			errorCode: 499
 		}
 	}
 }
 
-async function plusOne(scene: any) {
+async function addScene(scene: any) {
 	const body = {
 		id: scene.id,
 		url: scene.url,
@@ -83,18 +61,14 @@ async function plusOne(scene: any) {
 		'Content-Type': 'application/json'
 	})
 
-	const result = await fetchResult(meetURL, {
+	const result = await fetchResult(addSceneURL, {
 		method: "POST",
 		body: payload,
 		headers: jsonHeaders
 	})
-	if (result.success) {
+	if (!result.errorCode) {
 		// invalidate cache
 		invalidate()
-		return {
-			success: true,
-			scene: result.data
-		}
 	}
 	return result
 }
@@ -104,13 +78,9 @@ async function toggleKnown(id: number) {
 	const result = await fetchResult(url, {
 		method: "POST",
 	})
-	if (result.success) {
+	if (!result.errorCode) {
 		// invalidate cache
 		invalidate()
-		return {
-			success: true,
-			state: result.data
-		}
 	}
 	return result
 }
@@ -120,12 +90,9 @@ async function forgetScene(id: number) {
 	const result = await fetchResult(url, {
 		method: "DELETE",
 	})
-	if (result.success) {
+	if (!result.errorCode) {
 		// invalidate cache
 		invalidate()
-		return {
-			success: true,
-		}
 	}
 	return result
 }
@@ -133,12 +100,6 @@ async function forgetScene(id: number) {
 async function queryWord(word: string) {
 	const url = queryURL + word
 	const result = await fetchResult(url)
-	if (result.success) {
-		return {
-			success: true,
-			words: result.data
-		}
-	}
 	return result
 }
 

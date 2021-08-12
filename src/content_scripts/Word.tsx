@@ -4,6 +4,7 @@ import { getSceneSentence, getSelectedElement } from './lib'
 import { mergeStyleSets, Text, FontWeights, IRenderFunction } from '@fluentui/react'
 import { ActionButton, IButtonProps } from '@fluentui/react/lib/Button';
 import { AddIcon, RingerIcon, RingerOffIcon } from '@fluentui/react-icons-mdl2';
+import ErrorMessage from './ErrorMessage';
 
 interface WordProps {
 	word: WordObject
@@ -34,24 +35,24 @@ export function Word({ word, selectText, parent }: WordProps) {
 	const [scenes, setScenes] = React.useState(word.scenes)
 	const [met, setMet] = React.useState(false)
 	const [known, setKnown] = React.useState(word.known)
-	const [error, setError] = React.useState<string>()
+	const [errorCode, setErrorCode] = React.useState<number | false>(false)
 
-	async function plusOne(id: number, selectText: string, parent: Node) {
+	async function addScene(id: number, selectText: string, parent: Node) {
 		const text = getSceneSentence(parent, selectText)
 		console.log("sentence:", text);
 
 		const url = window.location.href
-		const scene = {
+		const payload = {
 			id: id,
 			url: url,
 			text: text
 		}
-		const result = await browser.runtime.sendMessage({
-			action: "plusOne",
-			scene: scene
+		const { data: scene, errorCode } = await browser.runtime.sendMessage({
+			action: "addScene",
+			scene: payload
 		})
-		if (!result.success) {
-			setError(result.message)
+		if (errorCode) {
+			setErrorCode(errorCode)
 			return
 		}
 
@@ -61,28 +62,28 @@ export function Word({ word, selectText, parent }: WordProps) {
 		setTimes(times + 1)
 		setMet(true)
 		setScenes(scenes.concat({
-			id: result.scene.id,
-			sentence: result.scene.text,
-			url: result.scene.url,
-			createTime: new Date(result.scene.create_time),
+			id: scene.id,
+			sentence: scene.text,
+			url: scene.url,
+			createTime: new Date(scene.create_time),
 		}))
 	}
 
 	async function toggleKnown(id: number) {
-		const result = await browser.runtime.sendMessage({
+		const { data: state, errorCode } = await browser.runtime.sendMessage({
 			action: "toggleKnown",
 			id: id,
 		})
-		if (!result.success) {
-			setError(result.message)
+		if (errorCode) {
+			setErrorCode(errorCode)
 			return
 		}
-		if (result.state == 10) {
+		if (state == 10) {
 			// known
 			setKnown(true)
 			const selectedElement = getSelectedElement()!
 			selectedElement.setAttribute("data-times", "-".repeat(0))
-		} else if (result.state == 1) {
+		} else if (state == 1) {
 			// active
 			setKnown(false)
 			const selectedElement = getSelectedElement()!
@@ -91,12 +92,12 @@ export function Word({ word, selectText, parent }: WordProps) {
 	}
 
 	async function forgetScene(id: number) {
-		const result = await browser.runtime.sendMessage({
+		const { data, errorCode } = await browser.runtime.sendMessage({
 			action: "forgetScene",
 			id: id,
 		})
-		if (!result.success) {
-			setError(result.message)
+		if (errorCode) {
+			setErrorCode(errorCode)
 			return
 		}
 		const selectedElement = getSelectedElement()!
@@ -106,8 +107,8 @@ export function Word({ word, selectText, parent }: WordProps) {
 		setTimes(times - 1)
 	}
 
-	if (error) {
-		return <Text>{error}</Text>
+	if (errorCode) {
+		return <ErrorMessage errorCode={errorCode}></ErrorMessage>
 	}
 
 	const onRenderIcon: IRenderFunction<IButtonProps> = (props: IButtonProps | undefined) => {
@@ -129,7 +130,7 @@ export function Word({ word, selectText, parent }: WordProps) {
 		<div className="metwords-word">
 			<div className={styles.head}>
 				<Text className={styles.title}>{word.name}</Text>
-				<ActionButton className={styles.button} onRenderIcon={onRenderIcon} label="Add" disabled={met || known} onClick={() => plusOne(word.id, selectText, parent)} />
+				<ActionButton className={styles.button} onRenderIcon={onRenderIcon} label="Add" disabled={met || known} onClick={() => addScene(word.id, selectText, parent)} />
 				{(times > 0 || known) &&
 					<ActionButton className={styles.button} toggle onRenderIcon={onRenderIcon} label={known ? "RingerOff" : "Ringer"} onClick={() => { toggleKnown(word.id) }} />
 				}
