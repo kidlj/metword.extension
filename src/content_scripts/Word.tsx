@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useState } from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import { getSceneSentence, getSelectedElement } from './lib'
 import { mergeStyleSets, Text, FontWeights, IRenderFunction } from '@fluentui/react'
@@ -7,35 +7,47 @@ import { AddIcon, RingerIcon, RingerOffIcon } from '@fluentui/react-icons-mdl2';
 import ErrorMessage from './ErrorMessage';
 
 interface WordProps {
-	word: WordObject
+	word: IWord
 	selectText: string
 	parent: Node
 }
 
-export interface WordObject {
-	id: number
-	name: string
-	usPhonetic: string
-	ukPhonetic: string
-	defs: string[]
-	known: boolean
-	scenes: SceneObject[]
+export interface IWord {
+	id: number,
+	name: string,
+	us_phonetic: string,
+	uk_phonetic: string,
+	def_zh: string[],
+	edges: IWordEdges,
 }
 
-export interface SceneObject {
-	id: number
-	sentence: string
-	url: string
-	createTime: Date
+interface IWordEdges {
+	meets: IMeet[]
 }
 
+interface IMeet {
+	state: number,
+	times: number,
+	edges: IMeetEdges
+}
+
+interface IMeetEdges {
+	scenes: IScene[]
+}
+
+interface IScene {
+	id: number,
+	text: string,
+	url: string,
+	create_time: number
+}
 
 export function Word({ word, selectText, parent }: WordProps) {
-	const [times, setTimes] = React.useState(word.scenes.length)
-	const [scenes, setScenes] = React.useState(word.scenes)
-	const [met, setMet] = React.useState(false)
-	const [known, setKnown] = React.useState(word.known)
-	const [errorCode, setErrorCode] = React.useState<number | false>(false)
+	const [times, setTimes] = useState(word.edges.meets ? word.edges.meets[0].times : 0)
+	const [scenes, setScenes] = useState(word.edges.meets && word.edges.meets[0].edges.scenes ? word.edges.meets[0].edges.scenes : [])
+	const [met, setMet] = useState(false)
+	const [known, setKnown] = useState(word.edges.meets && word.edges.meets[0].state == 10 ? true : false)
+	const [errorCode, setErrorCode] = useState<number | false>(false)
 
 	async function addScene(id: number, selectText: string, parent: Node) {
 		const text = getSceneSentence(parent, selectText)
@@ -47,7 +59,7 @@ export function Word({ word, selectText, parent }: WordProps) {
 			url: url,
 			text: text
 		}
-		const { data: scene, errorCode } = await browser.runtime.sendMessage({
+		const { data, errorCode } = await browser.runtime.sendMessage({
 			action: "addScene",
 			scene: payload
 		})
@@ -56,17 +68,14 @@ export function Word({ word, selectText, parent }: WordProps) {
 			return
 		}
 
+		const scene = data as IScene
+
 		const selectedElement = getSelectedElement()!
 		selectedElement.setAttribute("data-times", "-".repeat(times + 1))
 
 		setTimes(times + 1)
 		setMet(true)
-		setScenes(scenes.concat({
-			id: scene.id,
-			sentence: scene.text,
-			url: scene.url,
-			createTime: new Date(scene.create_time),
-		}))
+		setScenes(scenes.concat(scene))
 	}
 
 	async function toggleKnown(id: number) {
@@ -136,12 +145,12 @@ export function Word({ word, selectText, parent }: WordProps) {
 				}
 			</div>
 			<div className="metwords-phonetics">
-				<Text className="metwords-phonetic-label">US</Text><Text className="metwords-phonetic">[{word.usPhonetic}]</Text>
-				<Text className="metwords-phonetic-label">UK</Text><Text className="metwords-phonetic">[{word.ukPhonetic}]</Text>
+				<Text className="metwords-phonetic-label">US</Text><Text className="metwords-phonetic">[{word.us_phonetic}]</Text>
+				<Text className="metwords-phonetic-label">UK</Text><Text className="metwords-phonetic">[{word.uk_phonetic}]</Text>
 			</div>
 			<div className="metwords-defs">
 				<ul>
-					{word.defs.map((def, index) => (
+					{word.def_zh.map((def, index) => (
 						<li key={index} className="metwords-def"><Text className="metwords-explain">{def}</Text></li>)
 					)}
 				</ul>
@@ -154,8 +163,8 @@ export function Word({ word, selectText, parent }: WordProps) {
 					{scenes.map((scene) => {
 						return (
 							<li key={scene.id}>
-								<a href={scene.url} title={scene.createTime.toLocaleString('zh-CN')}>
-									<span className="mewords-scene" dangerouslySetInnerHTML={{ __html: scene.sentence }}></span>
+								<a href={scene.url} title={new Date(scene.create_time).toLocaleString('zh-CN')}>
+									<span className="mewords-scene" dangerouslySetInnerHTML={{ __html: scene.text }}></span>
 								</a>
 								<Text className="metwords-forget" onClick={() => forgetScene(scene.id)}>✗</Text>
 							</li>
