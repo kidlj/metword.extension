@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import { getSceneSentence, getSelectedElement } from './lib'
-import { mergeStyleSets, Text, FontWeights, IRenderFunction } from '@fluentui/react'
+import { mergeStyleSets, Text, IRenderFunction } from '@fluentui/react'
 import { ActionButton, IButtonProps } from '@fluentui/react/lib/Button';
 import { AddIcon, RingerIcon, RingerOffIcon } from '@fluentui/react-icons-mdl2';
 import ErrorMessage from './ErrorMessage';
