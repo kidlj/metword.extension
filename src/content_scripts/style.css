@@ -80,6 +80,10 @@ xmet {
 	margin-bottom: 10px;
 }
 
+.metwords-scenes {
+	padding-left: 1px;
+}
+
 .metwords-scenes ul {
 	all: unset;
 	font-size: 13px;
