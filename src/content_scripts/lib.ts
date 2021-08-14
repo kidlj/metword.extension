@@ -205,6 +205,8 @@ export function getSceneSentence(parent: Node, selectText: string): string {
 		}
 	}
 
+	console.log("start is:", start)
+	console.log("end is:", end)
 	return text.slice(start, end).trim()
 }
 

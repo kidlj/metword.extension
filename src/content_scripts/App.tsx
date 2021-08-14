@@ -57,20 +57,28 @@ const show = async (e: MouseEvent) => {
 		return
 	}
 
+	console.log("range is:", range)
+
 	if (range.startContainer.nodeType != Node.TEXT_NODE) {
 		return
 	}
 
+	markSelected(range, selectText)
+
 	let parent = range.commonAncestorContainer
+	console.log("parent 1 is:", parent)
 	if (range.startContainer == range.endContainer) {
 		parent = range.startContainer.parentNode!
 	}
+	console.log("parent 2 is:", parent)
 	// fix Safari range
+	console.log("first child is:", parent.firstChild)
+	console.log("last child is:", parent.lastChild)
 	if (parent.firstChild == parent.lastChild) {
 		parent = parent.parentNode!
 	}
+	console.log("parent 3 is:", parent)
 
-	markSelected(range, selectText)
 
 	if (!_rootDiv) {
 		_rootDiv = document.createElement('div')
