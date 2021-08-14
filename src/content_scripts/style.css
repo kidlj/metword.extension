@@ -1,71 +1,74 @@
 xmetword {
-    position: relative;
-	z-index: 0;
-	display: inline;
-	text-indent: 0;
+    position: relative !important;
+	z-index: 0 !important;
+	display: inline !important;
+	text-indent: 0 !important;
 }
 
 xmetword::before {
-    content: attr(data-times);
-    color: var(--met-color);
-    position: absolute;
-    z-index: -7671;
-    line-height: 3px;
-	height: 2px;
-	font-family:'Courier New', Courier, monospace;
-	font-weight: 600;
-	display: inline-block;
-	width: 100%;
-	left: 0%;
-	top: 100%;
-	text-align: left;
-	overflow: hidden;
-	text-overflow: clip;
+    content: attr(data-times) !important;
+    color: var(--met-color) !important;
+    position: absolute !important;
+    z-index: -7671 !important;
+    line-height: 3px !important;
+	height: 2px !important;
+	font-family:'Courier New', Courier, monospace !important;
+	display: inline-block !important;
+	width: 100% !important;
+	left: 0% !important;
+	top: 100% !important;
+	text-align: left !important;
+	overflow: hidden !important;
+	text-overflow: clip !important;
 }
 
 .metwords-word {
-	text-align: left;
+	text-align: left !important;
+	font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif !important;
+	-webkit-font-smoothing: antialiased !important;
+	font-size: 14px !important;
+	font-weight: 400 !important;
 }
 
 xmet {
-	font-weight: 600;
+	font-weight: 600 !important;
 }
 
 .metwords-phonetics {
-	font-size: 14px;
-	line-height: 1.4em;
-	margin: 10px 0px;
-	display: block;
+	font-size: 14px !important;
+	line-height: 1.4em !important;
+	margin: 10px 0px !important;
+	display: block !important;
 }
 
 .metwords-phonetic-label {
-	font-size: 14px;
-	margin-right: 6px;
+	font-size: 14px !important;
+	margin-right: 6px !important;
 }
 
 .metwords-phonetic {
-	font-size: 14px;
-	margin-right: 8px;
+	font-size: 14px !important;
+	margin-right: 8px !important;
 }
 
 .metwords-defs {
-	margin-bottom: 10px;
-	font-size: 13px;
+	margin-bottom: 10px !important;
+	font-size: 13px !important;
 }
 
 .metwords-defs ul {
-	all: unset;
-	list-style-type: none;
-	max-width: max-content;
-	padding-left: 0px;
+	all: unset !important;
+	list-style-type: none !important;
+	max-width: max-content !important;
+	padding-left: 0px !important;
 }
 
 .metwords-defs ul li {
-	all: unset;
-	list-style-type: none;
-	line-height: 1.2em;
-	margin-bottom: 4px;
-	display: block;
+	all: unset !important;
+	list-style-type: none !important;
+	line-height: 1.2em !important;
+	margin-bottom: 4px !important;
+	display: block !important;
 }
 
 .metwords-explain {
@@ -73,78 +76,80 @@ xmet {
 }
 
 .metwords-times {
-	line-height: 1.2em;
-	font-size: 14px;
-	background-color: black;
-	color: white;
-	margin-bottom: 10px;
+	line-height: 1.2em !important;
+	font-size: 14px !important;
+	background-color: black !important;
+	color: white !important;
+	margin-bottom: 10px !important;
 }
 
 .metwords-scenes {
-	padding-left: 1px;
+	padding-left: 1px !important;
+	font-weight: 300 !important;
 }
 
 .metwords-scenes ul {
-	all: unset;
-	font-size: 13px;
-	padding-left: 0px;
+	all: unset !important;
+	font-size: 13px !important;
+	padding-left: 0px !important;
 }
 
 .metwords-scenes ul li {
-	all: unset;
-	display: list-item;
-	list-style-position: inside;
-	list-style-type: circle;
-	line-height: 1.2em;
-	margin: 4px 0px;
+	all: unset !important;
+	display: list-item !important;
+	list-style-position: inside !important;
+	list-style-type: circle !important;
+	line-height: 1.2em !important;
+	margin: 4px 0px !important;
 }
 
 .metwords-scene {
-	font-size: 13px;
+	font-size: 13px !important;
 }
 
 .metwords-scenes a {
-	all: unset;
-	text-decoration: none;
-	font-weight: 400;
-	font-size: 13px;
+	all: unset !important;
+	text-decoration: none !important;
+	font-size: 13px !important;
+	color: rgb(50, 49, 48) !important;
 }
 
 .metwords-scenes a:hover {
-	all: unset;
-	cursor: pointer;
-	text-decoration: none;
+	all: unset !important;
+	cursor: pointer !important;
+	text-decoration: none !important;
+	color: rgb(50, 49, 48) !important;
 }
 
 .metwords-forget {
-	font-size: 14px;
-	opacity: 0;
-	padding: 1px 10px;
+	font-size: 14px !important;
+	opacity: 0 !important;
+	padding: 1px 10px !important;
 }
 
 .metwords-forget:hover {
-	font-size: 14px;
-	opacity: 100;
-	cursor: pointer;
+	font-size: 14px !important;
+	opacity: 100 !important;
+	cursor: pointer !important;
 }
 
 .metwords-message {
-	display: block;
-	padding: 10px 10px;
-	font-size: 16px;
-	line-height: 1.2em;
+	display: block !important;
+	padding: 10px 10px !important;
+	font-size: 16px !important;
+	line-height: 1.2em !important;
 }
 
 .metwords-message a {
-	all: unset;
-	font-size: 16px;
-	cursor: pointer;
-	color: #0000EE;
-	text-decoration: solid underline;
-	text-underline-position: under;
+	all: unset !important;
+	font-size: 16px !important;
+	cursor: pointer !important;
+	color: #0000EE !important;
+	text-decoration: solid underline !important;
+	text-underline-position: under !important;
 }
 
 .metwords-message a:hover,
 .metwords-message a:visited {
-	color: #551A8B;
+	color: #551A8B !important;
 }
