@@ -183,14 +183,14 @@ const styles = mergeStyleSets({
 		alignItems: "flex-end"
 	},
 	button: {
-		lineHeight: 1,
+		lineHeight: "1.0",
 		width: 24,
 		height: 16,
 		marginLeft: 16,
 	},
 	title: {
-		fontWeight: FontWeights.semilight,
+		fontWeight: 200,
 		fontSize: 42,
-		lineHeight: "100%",
+		lineHeight: "1.0",
 	},
 })
