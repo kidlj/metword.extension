@@ -211,6 +211,7 @@ export function getSceneSentence(parent: Node, selectText: string): string {
 }
 
 const dropped = new Map<string, boolean>([
+	["PRE", true],
 	["SUP", true],
 	["SUB", true],
 ])
