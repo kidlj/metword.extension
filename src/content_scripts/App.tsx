@@ -63,6 +63,11 @@ const show = async (e: MouseEvent) => {
 		return
 	}
 
+	// mark selected before computing parent for matching sentence,
+	// so in some cases when computing parent a parent should have two child nodes, including the marked one,
+	// which is right.
+	markSelected(range, selectText)
+
 	let parent = range.commonAncestorContainer
 	console.log("parent 1 is:", parent)
 	if (range.startContainer == range.endContainer) {
@@ -76,9 +81,6 @@ const show = async (e: MouseEvent) => {
 		parent = parent.parentNode!
 	}
 	console.log("parent 3 is:", parent)
-
-	markSelected(range, selectText)
-
 
 	if (!_rootDiv) {
 		_rootDiv = document.createElement('div')
