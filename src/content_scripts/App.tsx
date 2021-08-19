@@ -63,8 +63,6 @@ const show = async (e: MouseEvent) => {
 		return
 	}
 
-	markSelected(range, selectText)
-
 	let parent = range.commonAncestorContainer
 	console.log("parent 1 is:", parent)
 	if (range.startContainer == range.endContainer) {
@@ -78,6 +76,8 @@ const show = async (e: MouseEvent) => {
 		parent = parent.parentNode!
 	}
 	console.log("parent 3 is:", parent)
+
+	markSelected(range, selectText)
 
 
 	if (!_rootDiv) {
