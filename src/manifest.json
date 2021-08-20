@@ -1,12 +1,12 @@
 {
 	"name": "遇见单词",
-	"description": "遇见单词，基于单词遇见频率的英语学习工具",
+	"description": "不背单词，遇见单词。标记你遇到的单词，再下次遇见时获得提醒。",
 	"version": "0.0.1",
 	"manifest_version": 2,
 	"homepage_url": "https://www.metwords.com",
 	"icons": {
-		"48": "./icons/metwords_96.png",
-		"96": "./icons/metwords_96.png"
+		"48": "./icons/logo.png",
+		"96": "./icons/logo.png"
 	},
 	"permissions": [
 		"storage",
