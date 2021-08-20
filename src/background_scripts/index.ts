@@ -1,10 +1,11 @@
 import { browser } from "webextension-polyfill-ts"
+import config from '../config'
 
-const meetsURL = "http://words.metaphor.com:8080/meet/times"
-const queryURL = "http://words.metaphor.com:8080/word?word="
-const addSceneURL = "http://words.metaphor.com:8080/scene"
-const forgetSceneURL = "http://words.metaphor.com:8080/scene?id="
-const knowURL = "http://words.metaphor.com:8080/meet/toggle?id="
+const meetsURL = config.meetsURL
+const queryURL = config.queryURL
+const addSceneURL = config.addSceneURL
+const forgetSceneURL = config.forgetSceneURL
+const knowURL = config.knowURL
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {

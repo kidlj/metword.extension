@@ -38,7 +38,6 @@ module.exports = {
 		],
 	},
 	optimization: {
-		nodeEnv: 'production', // only minify in production
 		minimizer: [
 			new CssMinimizerPlugin(), // minify css
 			new TerserPlugin({

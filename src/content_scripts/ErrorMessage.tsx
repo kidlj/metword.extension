@@ -1,4 +1,4 @@
-const loginURL = "http://words.metaphor.com:8080/account/login"
+import config from '../config'
 
 export default function ErrorMessage({ errorCode }: { errorCode: number }) {
 	let message = <p>服务异常。</p>
@@ -7,7 +7,7 @@ export default function ErrorMessage({ errorCode }: { errorCode: number }) {
 			message = <p>请检查输入。</p>
 			break
 		case 401:
-			message = <p>请<a href={loginURL}>登录</a>后使用。</p>
+			message = <p>请<a href={config.loginURL}>登录</a>后使用。</p>
 			break
 		case 404:
 			message = <p>未找到定义。</p>
