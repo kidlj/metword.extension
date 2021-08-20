@@ -63,12 +63,20 @@ const show = async (e: MouseEvent) => {
 		return
 	}
 
+	// mark selected before computing parent for matching sentence,
+	// so in some cases when computing parent a parent should have two child nodes, including the marked one,
+	// which is right.
+	markSelected(range, selectText)
+
 	let parent = range.commonAncestorContainer
 	if (range.startContainer == range.endContainer) {
 		parent = range.startContainer.parentNode!
 	}
 
-	markSelected(range, selectText)
+	// fix Safari range
+	if (parent.firstChild == parent.lastChild) {
+		parent = parent.parentNode!
+	}
 
 	if (!_rootDiv) {
 		_rootDiv = document.createElement('div')
