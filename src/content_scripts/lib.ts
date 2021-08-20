@@ -154,8 +154,11 @@ export function markSelected(range: Range, selectedText: string) {
 }
 
 function isMarkedNode(n: Node, selectedText: string): boolean {
+	// use getText() instead of comparing Node text with selectedText:
+	// marked nodes may contain child nodes.
+	const selectedElement = getSelectedElement()
 	return (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "XMETWORD" &&
-		getText(n, "") == selectedText)
+		getText(n, "", selectedElement) == selectedText)
 }
 
 export function getSelectedElement(): HTMLElement | null {
@@ -178,7 +181,8 @@ function isWordDelimiter(s: string): boolean {
 export function getSceneSentence(parent: Node, selectText: string): string {
 	console.log("selectText is:", selectText)
 	const word = paddingLeft + selectText + paddingRight
-	const text = getText(parent, "")
+	const selectedElement = getSelectedElement()
+	const text = getText(parent, "", selectedElement)
 	console.log("text is:", text)
 	let start = 0
 	let end = text.length
@@ -230,13 +234,13 @@ const paddingDelimeter = new Map<string, boolean>([
 const paddingLeft = "<xmet>"
 const paddingRight = "</xmet>"
 
-function getText(n: Node, text: string): string {
+function getText(n: Node, text: string, selectedElement: HTMLElement | null): string {
 	// selection marked element
-	if (n == getSelectedElement()) {
+	if (n == selectedElement) {
 		// marked element may have an ElementNode child, like <em>selectedText</em>.
 		var selectText = ""
 		for (let c = n.firstChild; c != null; c = c.nextSibling) {
-			selectText = getText(c, selectText)
+			selectText = getText(c, selectText, selectedElement)
 		}
 		return text + paddingLeft + selectText + paddingRight
 	}
@@ -250,7 +254,7 @@ function getText(n: Node, text: string): string {
 	}
 
 	for (let c = n.firstChild; c != null; c = c.nextSibling) {
-		text = getText(c, text)
+		text = getText(c, text, selectedElement)
 	}
 
 	if (n.nodeType == Node.ELEMENT_NODE && paddingDelimeter.get(n.nodeName) == true) {
