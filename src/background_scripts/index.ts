@@ -134,12 +134,12 @@ async function toggleDisabled() {
 			await browser.tabs.insertCSS({ code: hideMark })
 			// invalidate cache
 			invalidate()
-			await browser.browserAction.setIcon({ path: "icons/logo.disabled.png" })
+			await browser.browserAction.setIcon({ path: "icons/logo.disabled@256px.png" })
 		} else if (store.disabled = true) {
 			await browser.storage.local.remove("disabled")
 			await browser.tabs.removeCSS({ code: hideMark })
 			await browser.tabs.reload()
-			await browser.browserAction.setIcon({ path: "icons/logo.png" })
+			await browser.browserAction.setIcon({ path: "icons/logo@256px.png" })
 		}
 	} catch (err) {
 		console.log(err)

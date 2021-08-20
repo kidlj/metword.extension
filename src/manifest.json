@@ -5,8 +5,9 @@
 	"manifest_version": 2,
 	"homepage_url": "https://www.metwords.com",
 	"icons": {
-		"48": "./icons/logo.png",
-		"96": "./icons/logo.png"
+		"48": "./icons/logo@48px.png",
+		"96": "./icons/logo@96px.png",
+		"256": "./icons/logo@256px.png"
 	},
 	"permissions": [
 		"storage",
