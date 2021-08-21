@@ -5,6 +5,7 @@ Hello dear reviewers, thanks for your time!
 Here is how to build the extension:
 
 ```shell
+$ npm install
 $ npm run prod
 ```
 
