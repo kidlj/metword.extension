@@ -115,6 +115,8 @@ browser.storage.onChanged.addListener(({ disabled }) => {
 		document.removeEventListener('mouseup', show)
 		document.removeEventListener('mousedown', dismiss)
 
+		const tip = document.getElementById("metwords-tip")
+		if (!tip) { return }
 		ReactDOM.unmountComponentAtNode(_rootDiv)
 	}
 })
