@@ -161,10 +161,11 @@ export function Word({ word, selectText, parent }: WordProps) {
 			<div className="metwords-scenes">
 				<ul>
 					{scenes.map((scene) => {
+						const [pre, met, post] = extractScene(scene.text)
 						return (
 							<li key={scene.id}>
-								<a href={scene.url} title={new Date(scene.create_time).toLocaleString('zh-CN')}>
-									<span className="mewords-scene" dangerouslySetInnerHTML={{ __html: scene.text }}></span>
+								<a href={scene.url} className="mewords-scene" title={new Date(scene.create_time).toLocaleString('zh-CN')}>
+									{pre}<span dangerouslySetInnerHTML={{ __html: met }}></span>{post}
 								</a>
 								<Text className="metwords-forget" onClick={() => forgetScene(scene.id)}>✗</Text>
 							</li>
@@ -174,6 +175,18 @@ export function Word({ word, selectText, parent }: WordProps) {
 			</div>
 		</div>
 	)
+}
+
+function extractScene(scene: string) {
+	const re = /<xmet>.+<\/xmet>/
+	const match = re.exec(scene)
+	if (!match) {
+		return ["", scene, ""]
+	}
+	const met = match[0]
+	const index = match["index"]
+	const postIndex = index + met.length
+	return [scene.slice(0, index), met, scene.slice(postIndex)]
 }
 
 const styles = mergeStyleSets({
