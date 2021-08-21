@@ -142,4 +142,5 @@ async function toggleDisabled() {
 	}
 }
 
-browser.browserAction.onClicked.addListener(toggleDisabled)
+// setIcon() while enable/disable not working on Chrome/Edge/Safari.
+// browser.browserAction.onClicked.addListener(toggleDisabled)
