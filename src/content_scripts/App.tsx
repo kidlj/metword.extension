@@ -57,8 +57,6 @@ const show = async (e: MouseEvent) => {
 		return
 	}
 
-	console.log("range is:", range)
-
 	if (range.startContainer.nodeType != Node.TEXT_NODE) {
 		return
 	}

@@ -29,6 +29,4 @@ const config: Config = {
 	production
 }
 
-console.log("env is:", env)
-
 export default config[env ?? "development"]

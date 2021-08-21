@@ -51,7 +51,6 @@ export function Word({ word, selectText, parent }: WordProps) {
 
 	async function addScene(id: number, selectText: string, parent: Node) {
 		const text = getSceneSentence(parent, selectText)
-		console.log("sentence:", text);
 
 		const url = window.location.href
 		const payload = {

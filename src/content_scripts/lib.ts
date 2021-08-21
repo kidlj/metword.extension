@@ -179,11 +179,9 @@ function isWordDelimiter(s: string): boolean {
 // It only relies on sentence delimiters, so in some cases periods like in 'Mellon C. Collie' produce wrong sentence.
 // This is a known bug and results are acceptable to me. To keep code simple, I choose not to fix it.
 export function getSceneSentence(parent: Node, selectText: string): string {
-	console.log("selectText is:", selectText)
 	const word = paddingLeft + selectText + paddingRight
 	const selectedElement = getSelectedElement()
 	const text = getText(parent, "", selectedElement)
-	console.log("text is:", text)
 	let start = 0
 	let end = text.length
 	let found = false
@@ -209,8 +207,6 @@ export function getSceneSentence(parent: Node, selectText: string): string {
 		}
 	}
 
-	console.log("start is:", start)
-	console.log("end is:", end)
 	return text.slice(start, end).trim()
 }
 
