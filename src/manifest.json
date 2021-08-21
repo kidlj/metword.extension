@@ -1,6 +1,6 @@
 {
 	"name": "遇见单词",
-	"description": "不背单词，遇见单词。标记你遇到的单词，再下次遇见时获得提醒。",
+	"description": "不背单词，遇见单词。标记你遇到的单词，在下次遇见时获得提醒。",
 	"version": "0.0.1",
 	"manifest_version": 2,
 	"homepage_url": "https://www.metwords.com",
