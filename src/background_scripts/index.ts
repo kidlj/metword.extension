@@ -144,3 +144,10 @@ async function toggleDisabled() {
 
 // setIcon() while enable/disable not working on Chrome/Edge/Safari.
 // browser.browserAction.onClicked.addListener(toggleDisabled)
+
+
+browser.browserAction.onClicked.addListener(async () => {
+	await browser.tabs.create({
+		url: "https://www.metwords.com"
+	})
+})
