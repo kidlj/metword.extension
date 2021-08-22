@@ -10,11 +10,6 @@ import { Callout, mergeStyleSets, FontWeights } from '@fluentui/react'
 const waitDuration = 1000
 
 async function start() {
-	// switch
-	const store = await browser.storage.local.get("disabled")
-	if (store.disabled == true) {
-		return
-	}
 	const meets = await browser.runtime.sendMessage({
 		action: "getMeets"
 	})
@@ -109,17 +104,6 @@ const dismiss = (e: MouseEvent | Event) => {
 	ReactDOM.unmountComponentAtNode(_rootDiv)
 	window.getSelection()?.collapseToStart()
 }
-
-browser.storage.onChanged.addListener(({ disabled }) => {
-	if (disabled.newValue == true) {
-		document.removeEventListener('mouseup', show)
-		document.removeEventListener('mousedown', dismiss)
-
-		const tip = document.getElementById("metwords-tip")
-		if (!tip) { return }
-		ReactDOM.unmountComponentAtNode(_rootDiv)
-	}
-})
 
 const styles = mergeStyleSets({
 	button: {

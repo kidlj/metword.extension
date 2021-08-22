@@ -10,7 +10,6 @@
 		"256": "./icons/logo@256px.png"
 	},
 	"permissions": [
-		"storage",
 		"activeTab",
 		"http://127.0.0.1/*",
 		"http://words.metaphor.com/*",

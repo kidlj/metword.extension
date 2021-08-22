@@ -124,28 +124,6 @@ async function getMeets() {
 
 const hideMark = `xmetword::before { display: none !important; }`
 
-async function toggleDisabled() {
-	const store = await browser.storage.local.get("disabled")
-	if (store.disabled == undefined) {
-		await browser.storage.local.set({
-			"disabled": true
-		})
-		await browser.tabs.insertCSS({ code: hideMark })
-		// invalidate cache
-		invalidate()
-		await browser.browserAction.setIcon({ path: "icons/logo.disabled@256px.png" })
-	} else if (store.disabled = true) {
-		await browser.storage.local.remove("disabled")
-		await browser.tabs.removeCSS({ code: hideMark })
-		await browser.tabs.reload()
-		await browser.browserAction.setIcon({ path: "icons/logo@256px.png" })
-	}
-}
-
-// setIcon() while enable/disable not working on Chrome/Edge/Safari.
-// browser.browserAction.onClicked.addListener(toggleDisabled)
-
-
 browser.browserAction.onClicked.addListener(async () => {
 	await browser.tabs.create({
 		url: "https://www.metwords.com"
