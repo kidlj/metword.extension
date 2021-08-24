@@ -56,17 +56,20 @@ const show = async (e: MouseEvent) => {
 		return
 	}
 
-	// mark selected before computing parent for matching sentence,
-	// so in some cases when computing parent a parent should have two child nodes, including the marked one,
-	// which is right.
+	// range changed here.
 	markSelected(range, selectText)
+
+	// range has changed, add the new range to selection.
+	// this fixes Safari selection collapsed issue.
+	selection.removeAllRanges()
+	selection.addRange(range)
 
 	let parent = range.commonAncestorContainer
 	if (range.startContainer == range.endContainer) {
 		parent = range.startContainer.parentNode!
 	}
 
-	// fix Safari range
+	// that is: parent's only child is the selected element, so go one upper level.
 	if (parent.firstChild == parent.lastChild) {
 		parent = parent.parentNode!
 	}
