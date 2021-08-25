@@ -34,9 +34,9 @@ interface FetchResult {
 	errorCode: number | false
 }
 
-async function fetchResult(input: RequestInfo, init?: RequestInit): Promise<FetchResult> {
+async function fetchData(url: string, init?: RequestInit): Promise<FetchResult> {
 	try {
-		const res = await fetch(input, init)
+		const res = await fetch(encodeURI(url), init)
 		const errorCode = res.ok ? false : res.status
 		const result = await res.json()
 		return {
@@ -62,7 +62,7 @@ async function addScene(scene: any) {
 		'Content-Type': 'application/json'
 	})
 
-	const result = await fetchResult(addSceneURL, {
+	const result = await fetchData(addSceneURL, {
 		method: "POST",
 		body: payload,
 		headers: jsonHeaders
@@ -76,7 +76,7 @@ async function addScene(scene: any) {
 
 async function toggleKnown(id: number) {
 	const url = knowURL + id
-	const result = await fetchResult(url, {
+	const result = await fetchData(url, {
 		method: "POST",
 	})
 	if (!result.errorCode) {
@@ -88,7 +88,7 @@ async function toggleKnown(id: number) {
 
 async function forgetScene(id: number) {
 	const url = forgetSceneURL + id
-	const result = await fetchResult(url, {
+	const result = await fetchData(url, {
 		method: "DELETE",
 	})
 	if (!result.errorCode) {
@@ -100,7 +100,7 @@ async function forgetScene(id: number) {
 
 async function queryWord(word: string) {
 	const url = queryURL + word
-	const result = await fetchResult(url)
+	const result = await fetchData(url)
 	return result
 }
 
