@@ -50,10 +50,7 @@ function useWords(props: QueryWordsProps) {
 	React.useEffect(() => {
 		async function sendMessage(msg: { action: string, word: string }) {
 			const { data, errorCode } = await browser.runtime.sendMessage(msg)
-			if (errorCode) {
-				setErrorCode(errorCode)
-				return
-			}
+			setErrorCode(errorCode)
 			setWords(data)
 		}
 
