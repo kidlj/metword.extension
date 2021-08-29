@@ -105,7 +105,6 @@ const dismiss = (e: MouseEvent | Event) => {
 	selectedElement.removeAttribute("id")
 
 	ReactDOM.unmountComponentAtNode(_rootDiv)
-	window.getSelection()?.collapseToStart()
 }
 
 const styles = mergeStyleSets({
