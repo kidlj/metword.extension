@@ -5,12 +5,13 @@ import './style.css';
 import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
 import { browser } from 'webextension-polyfill-ts';
 import { Callout, mergeStyleSets, FontWeights } from '@fluentui/react'
+import { Meets } from '../background_scripts/index'
 
 // 1s
 const waitDuration = 1000
 
 async function start() {
-	const meets = await browser.runtime.sendMessage({
+	const meets: Meets = await browser.runtime.sendMessage({
 		action: "getMeets"
 	})
 	let ranges = new Map<string, WordRange>()

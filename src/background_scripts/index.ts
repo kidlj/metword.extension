@@ -22,8 +22,12 @@ browser.runtime.onMessage.addListener(async (msg) => {
 	}
 })
 
+export interface Meets {
+	[key: string]: number
+}
+
 var valid = false
-var meets: any = {}
+var meets: Meets = {}
 
 interface FetchResult {
 	data: any,
@@ -94,19 +98,16 @@ async function getMeets() {
 	if (valid) {
 		return meets
 	}
-	// always set valid
-	valid = true
 	try {
 		const resp = await fetch(meetsURL)
-		if (resp.status != 200) {
-			return meets
-		}
 		const result = JSON.parse(await resp.text())
-		meets = result.data
-		return meets
+		meets = result.data || {}
+		valid = true
 	} catch (err) {
-		return meets
+		meets = {}
+		valid = false
 	}
+	return meets
 }
 
 const hideMark = `xmetword::before { display: none !important; }`
