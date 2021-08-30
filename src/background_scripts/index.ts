@@ -25,10 +25,6 @@ browser.runtime.onMessage.addListener(async (msg) => {
 var valid = false
 var meets: any = {}
 
-function invalidate() {
-	valid = false
-}
-
 interface FetchResult {
 	data: any,
 	errorCode: number | false
@@ -67,10 +63,6 @@ async function addScene(scene: any) {
 		body: payload,
 		headers: jsonHeaders
 	})
-	if (!result.errorCode) {
-		// invalidate cache
-		invalidate()
-	}
 	return result
 }
 
@@ -79,10 +71,6 @@ async function toggleKnown(id: number) {
 	const result = await fetchData(url, {
 		method: "POST",
 	})
-	if (!result.errorCode) {
-		// invalidate cache
-		invalidate()
-	}
 	return result
 }
 
@@ -91,14 +79,12 @@ async function forgetScene(id: number) {
 	const result = await fetchData(url, {
 		method: "DELETE",
 	})
-	if (!result.errorCode) {
-		// invalidate cache
-		invalidate()
-	}
 	return result
 }
 
 async function queryWord(word: string) {
+	// any query invalidate meets cache
+	valid = false
 	const url = queryURL + word
 	const result = await fetchData(url)
 	return result
@@ -108,6 +94,8 @@ async function getMeets() {
 	if (valid) {
 		return meets
 	}
+	// always set valid
+	valid = true
 	try {
 		const resp = await fetch(meetsURL)
 		if (resp.status != 200) {
@@ -115,7 +103,6 @@ async function getMeets() {
 		}
 		const result = JSON.parse(await resp.text())
 		meets = result.data
-		valid = true
 		return meets
 	} catch (err) {
 		return meets
