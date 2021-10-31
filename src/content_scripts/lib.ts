@@ -175,6 +175,11 @@ function isWordDelimiter(s: string): boolean {
 	return re.test(s)
 }
 
+const delimiter = /^[.!?。！？]$/
+const close = /^[\s"'’”]$/
+const chineseClose = /^[。！？]$/
+const space = /^[\s]$/
+
 // This is a 'good enough' algorithm that gets the sentence a 'selection' resides in.
 // It only relies on sentence delimiters, so in some cases periods like in 'Mellon C. Collie' produce wrong sentence.
 // This is a known bug and results are acceptable to me. To keep code simple, I choose not to fix it.
@@ -185,11 +190,8 @@ export function getSceneSentence(parent: Node, selectText: string): string {
 	let start = 0
 	let end = text.length
 	let found = false
-	const delimiter = /^[.!?。！？]$/
-	const close = /^[\s"'’”]$/
-	const chineseDelimeter = /^[。！？]$/
 	for (let i = 0; i < text.length; i++) {
-		if (delimiter.test(text[i]) && found == false && (close.test(text[i + 1]) || chineseDelimeter.test(text[i]))) {
+		if (delimiter.test(text[i]) && found == false && (close.test(text[i + 1]) || chineseClose.test(text[i]))) {
 			start = i + 1
 		}
 		for (let j = 0; j < word.length; j++) {
@@ -201,7 +203,7 @@ export function getSceneSentence(parent: Node, selectText: string): string {
 				i = i + j
 			}
 		}
-		if (found == true && delimiter.test(text[i]) && (close.test(text[i + 1]) || chineseDelimeter.test(text[i]))) {
+		if (found == true && delimiter.test(text[i]) && (close.test(text[i + 1]) || chineseClose.test(text[i]))) {
 			end = i + 1
 			break
 		}
@@ -224,6 +226,10 @@ const paddingDelimeter = new Map<string, boolean>([
 	["H5", true],
 	["H6", true],
 	["LI", true],
+])
+
+const paddingSpace = new Map<string, boolean>([
+	["BR", true],
 ])
 
 // for highlighting and exact matching
@@ -253,8 +259,15 @@ function getText(n: Node, text: string, selectedElement: HTMLElement | null): st
 		text = getText(c, text, selectedElement)
 	}
 
+	// post decrations
 	if (n.nodeType == Node.ELEMENT_NODE && paddingDelimeter.get(n.nodeName) == true) {
-		return text + ". "
+		if (!delimiter.test(text.slice(-1)))
+			return text + ". "
+	}
+
+	if (n.nodeType == Node.ELEMENT_NODE && paddingSpace.get(n.nodeName) == true) {
+		if (!space.test(text.slice(-1)))
+			return text + " "
 	}
 
 	return text
