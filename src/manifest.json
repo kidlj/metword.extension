@@ -1,7 +1,7 @@
 {
-	"name": "遇见单词",
-	"description": "不背单词，遇见单词。标记你遇到的单词，在下次遇见时获得提醒。",
-	"version": "1.0.7",
+	"name": "遇见单词划词翻译",
+	"description": "不背单词，遇见单词。遇见单词是一个划词翻译扩展，标记你不认识的单词，在下次遇见时获得提醒。",
+	"version": "1.0.8",
 	"manifest_version": 2,
 	"homepage_url": "https://www.metwords.com",
 	"icons": {
@@ -35,10 +35,5 @@
 			],
 			"run_at": "document_idle"
 		}
-	],
-	"web_accessible_resources": [
-		"*.html",
-		"*.js",
-		"*.css"
 	]
 }
