@@ -132,13 +132,16 @@ export function markWord(range: WordRange, selected: boolean) {
 		ele.setAttribute("id", selectedID)
 	}
 	const color = "red"
-	// To surround range contents with the mark element.
-	// The surroundContent() may fail when a range spreads across Node element boundries:
-	// range.range.surroundContents(ele)
-	// See: https://developer.mozilla.org/en-US/docs/Web/API/Range/surroundContents
-	// Use the extractContent() + insertNode() equivalent instead:
-	ele.appendChild(range.range.extractContents())
-	range.range.insertNode(ele)
+	try {
+		// To surround range contents with the mark element.
+		// The surroundContent() may fail when a range spreads across Node element boundries:
+		// See: https://developer.mozilla.org/en-US/docs/Web/API/Range/surroundContents
+		range.range.surroundContents(ele)
+	} catch {
+		// Use the extractContent() + insertNode() equivalent instead in case of error:
+		ele.appendChild(range.range.extractContents())
+		range.range.insertNode(ele)
+	}
 	ele.style.setProperty("--met-color", color)
 	ele.setAttribute("data-times", "-".repeat(range.times))
 }
