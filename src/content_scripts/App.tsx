@@ -65,16 +65,6 @@ const show = async (e: MouseEvent) => {
 	selection.removeAllRanges()
 	selection.addRange(range)
 
-	let parent = range.commonAncestorContainer
-	if (range.startContainer == range.endContainer) {
-		parent = range.startContainer.parentNode!
-	}
-
-	// that is: parent's only child is the selected element, so go one upper level.
-	if (parent.firstChild == parent.lastChild) {
-		parent = parent.parentNode!
-	}
-
 	if (!_rootDiv) {
 		_rootDiv = document.createElement('div')
 		document.body.appendChild(_rootDiv)
@@ -89,7 +79,7 @@ const show = async (e: MouseEvent) => {
 				gapSpace={0}
 				target={`#metword-selected`}
 			>
-				<Tip word={word} selectText={selectText} parent={parent} />
+				<Tip word={word} selectText={selectText} />
 			</Callout>
 		</React.StrictMode>,
 		_rootDiv

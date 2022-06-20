@@ -186,10 +186,15 @@ const space = /^[\s]$/
 // This is a 'good enough' algorithm that gets the sentence a 'selection' resides in.
 // It only relies on sentence delimiters, so in some cases periods like in 'Mellon C. Collie' produce wrong sentence.
 // This is a known bug and results are acceptable to me. To keep code simple, I choose not to fix it.
-export function getSceneSentence(parent: Node, selectText: string): string {
+export function getSceneSentence(selectText: string): string {
 	const word = paddingLeft + selectText + paddingRight
 	const selectedElement = getSelectedElement()
+	console.log("selectedText is:", selectText)
+	if (!selectedElement) return ""
+	const parent = getEnclosingNode(selectedElement)
+	console.log("parent is:", parent)
 	const text = getText(parent, "", selectedElement)
+	console.log("text is:", text)
 	let start = 0
 	let end = text.length
 	let found = false
@@ -216,24 +221,69 @@ export function getSceneSentence(parent: Node, selectText: string): string {
 }
 
 const dropped = new Map<string, boolean>([
+	["SCRIPT", true],
+	["STYLE", true],
 	["PRE", true],
 	["SUP", true],
 	["SUB", true],
 ])
 
-const paddingDelimeter = new Map<string, boolean>([
-	["H1", true],
-	["H2", true],
-	["H3", true],
-	["H4", true],
-	["H5", true],
-	["H6", true],
-	["LI", true],
-])
-
 const paddingSpace = new Map<string, boolean>([
 	["BR", true],
 ])
+
+// All block level elements, via
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements
+function isBlockElement(n: Node): boolean {
+	const elements = new Map<string, boolean>([
+		["ADDRESS", true],
+		["ARTICLE", true],
+		["ASIDE", true],
+		["BLOCKQUOTE", true],
+		["DETAILS", true],
+		["DIALOG", true],
+		["DD", true],
+		["DIV", true],
+		["DL", true],
+		["DT", true],
+		["FIELDSET", true],
+		["FIGCAPTION", true],
+		["FIGURE", true],
+		["FOOTER", true],
+		["H1", true],
+		["H2", true],
+		["H3", true],
+		["H4", true],
+		["H5", true],
+		["H6", true],
+		["FORM", true],
+		["HEADER", true],
+		["HGROUP", true],
+		// ["HR", true],
+		["LI", true],
+		["MAIN", true],
+		["NAV", true],
+		["OL", true],
+		["P", true],
+		["PRE", true],
+		["SECTION", true],
+		["TABLE", true],
+		["UL", true],
+
+	])
+	return elements.get(n.nodeName) == true
+}
+
+function getEnclosingNode(n: Node): Node {
+	for (n = n.parentNode!; !isBlockElement(n); n = n.parentNode!) {
+		for (let c = n.firstChild; c != null; c = c.nextSibling) {
+			if (c.nodeType == Node.TEXT_NODE && c.nodeValue!.match(`[,.!;?，。！；？]`)) {
+				return n
+			}
+		}
+	}
+	return n
+}
 
 // for highlighting and exact matching
 const paddingLeft = "<xmet>"
@@ -262,12 +312,7 @@ function getText(n: Node, text: string, selectedElement: HTMLElement | null): st
 		text = getText(c, text, selectedElement)
 	}
 
-	// post decrations
-	if (n.nodeType == Node.ELEMENT_NODE && paddingDelimeter.get(n.nodeName) == true) {
-		if (!delimiter.test(text.slice(-1)))
-			return text + ". "
-	}
-
+	// post decorations
 	if (n.nodeType == Node.ELEMENT_NODE && paddingSpace.get(n.nodeName) == true) {
 		if (!space.test(text.slice(-1)))
 			return text + " "

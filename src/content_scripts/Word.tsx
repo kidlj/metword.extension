@@ -9,7 +9,6 @@ import ErrorMessage from './ErrorMessage';
 interface WordProps {
 	word: IWord
 	selectText: string
-	parent: Node
 }
 
 export interface IWord {
@@ -42,15 +41,15 @@ interface IScene {
 	create_time: number
 }
 
-export function Word({ word, selectText, parent }: WordProps) {
+export function Word({ word, selectText }: WordProps) {
 	const [times, setTimes] = useState(word.edges.meets ? word.edges.meets[0].times : 0)
 	const [scenes, setScenes] = useState(word.edges.meets && word.edges.meets[0].edges.scenes ? word.edges.meets[0].edges.scenes : [])
 	const [met, setMet] = useState(false)
 	const [known, setKnown] = useState(word.edges.meets && word.edges.meets[0].state == 10 ? true : false)
 	const [errorCode, setErrorCode] = useState<number | false>(false)
 
-	async function addScene(id: number, selectText: string, parent: Node) {
-		const text = getSceneSentence(parent, selectText)
+	async function addScene(id: number, selectText: string) {
+		const text = getSceneSentence(selectText)
 
 		const url = window.location.href
 		const payload = {
@@ -138,7 +137,7 @@ export function Word({ word, selectText, parent }: WordProps) {
 		<div className="metwords-word">
 			<div className={styles.head}>
 				<Text className={styles.title}>{word.name}</Text>
-				<ActionButton className={styles.button} onRenderIcon={onRenderIcon} label="Add" disabled={met || known} onClick={() => addScene(word.id, selectText, parent)} />
+				<ActionButton className={styles.button} onRenderIcon={onRenderIcon} label="Add" disabled={met || known} onClick={() => addScene(word.id, selectText)} />
 				{(times > 0 || known) &&
 					<ActionButton className={styles.button} toggle onRenderIcon={onRenderIcon} label={known ? "RingerOff" : "Ringer"} onClick={() => { toggleKnown(word.id) }} />
 				}

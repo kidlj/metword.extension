@@ -7,7 +7,6 @@ import ErrorMessage from './ErrorMessage'
 interface TipProps {
 	selectText: string
 	word: string
-	parent: Node
 }
 
 export default function Tip(props: TipProps) {
@@ -19,7 +18,7 @@ export default function Tip(props: TipProps) {
 	return (
 		<div className={styles.words}>
 			{
-				words.map((w) => (<Word key={w.id} word={w} selectText={props.selectText} parent={props.parent} />))
+				words.map((w) => (<Word key={w.id} word={w} selectText={props.selectText} />))
 			}
 		</div>
 	)
