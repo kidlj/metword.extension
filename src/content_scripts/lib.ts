@@ -322,10 +322,9 @@ function getText(n: Node, text: string, selectedElement: HTMLElement | null): st
 }
 
 export function getWord(selectedText: string): string {
-	const word = selectedText.trim()
 	const re = /^([a-zA-Z]?[a-z]+|[A-Z]+)$/
-	if (word.match(re)) {
-		return word.toLowerCase()
+	if (selectedText.match(re)) {
+		return selectedText.toLowerCase()
 	}
 	return ""
 }
