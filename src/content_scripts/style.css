@@ -1,18 +1,19 @@
 xmetword {
-    position: relative !important;
+	position: relative !important;
 	z-index: 0 !important;
 	display: inline !important;
 	text-indent: 0 !important;
+	pointer-events: none;
 }
 
 xmetword::before {
-    content: attr(data-times) !important;
-    color: var(--met-color) !important;
-    position: absolute !important;
-    z-index: -7671 !important;
-    line-height: 3px !important;
+	content: attr(data-times) !important;
+	color: var(--met-color) !important;
+	position: absolute !important;
+	z-index: -7671 !important;
+	line-height: 3px !important;
 	height: 2px !important;
-	font-family:'Courier New', Courier, monospace !important;
+	font-family: 'Courier New', Courier, monospace !important;
 	display: inline-block !important;
 	width: 100% !important;
 	left: 0% !important;
