@@ -59,6 +59,7 @@ async function addScene(scene: any) {
 	}
 	let payload = JSON.stringify(body)
 	let jsonHeaders = new Headers({
+		'Accept': 'application/json',
 		'Content-Type': 'application/json'
 	})
 
@@ -71,35 +72,58 @@ async function addScene(scene: any) {
 }
 
 async function toggleKnown(id: number) {
+	let jsonHeaders = new Headers({
+		'Accept': 'application/json',
+		'Content-Type': 'application/json'
+	})
+
 	const url = knowURL + id
 	const result = await fetchData(url, {
 		method: "POST",
+		headers: jsonHeaders
 	})
 	return result
 }
 
 async function forgetScene(id: number) {
+	let jsonHeaders = new Headers({
+		'Accept': 'application/json',
+	})
+
 	const url = forgetSceneURL + id
 	const result = await fetchData(url, {
 		method: "DELETE",
+		headers: jsonHeaders
 	})
 	return result
 }
 
 async function queryWord(word: string) {
+	let jsonHeaders = new Headers({
+		'Accept': 'application/json',
+	})
+
 	// any query invalidate meets cache
 	valid = false
 	const url = queryURL + word
-	const result = await fetchData(url)
+	const result = await fetchData(url, {
+		headers: jsonHeaders
+	})
 	return result
 }
 
 async function getMeets() {
+	let jsonHeaders = new Headers({
+		'Accept': 'application/json',
+	})
+
 	if (valid) {
 		return meets
 	}
 	try {
-		const resp = await fetch(meetsURL)
+		const resp = await fetch(meetsURL, {
+			headers: jsonHeaders
+		})
 		const result = JSON.parse(await resp.text())
 		meets = result.data || {}
 		valid = true
