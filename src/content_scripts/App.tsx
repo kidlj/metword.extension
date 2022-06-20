@@ -14,18 +14,16 @@ async function start() {
 	const meets: Meets = await browser.runtime.sendMessage({
 		action: "getMeets"
 	})
-	let ranges = new Map<string, WordRange>()
+	let ranges = new Array<WordRange>()
 	ranges = getWordRanges(document.getRootNode(), ranges)
-	ranges.forEach((val, key) => {
-		if (meets[key] == undefined) {
-			ranges.delete(key)
+	ranges.forEach((r, i) => {
+		if (meets[r.name] > 0) {
+			r.times = meets[r.name]
+			markWord(r, false)
 		} else {
-			val.times = meets[key]
+			delete ranges[i]
 		}
 	})
-	for (let range of ranges.values()) {
-		markWord(range, false)
-	}
 
 	document.addEventListener('mouseup', show)
 	document.addEventListener('mousedown', dismiss)

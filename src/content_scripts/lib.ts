@@ -1,4 +1,5 @@
 export interface WordRange {
+	name: string
 	times: number,
 	range: Range,
 }
@@ -52,32 +53,31 @@ const skipTags = new Map<string, boolean>([
 	["SUMMARY", true],
 ])
 
-export function getWordRanges(n: Node, m: Map<string, WordRange>): Map<string, WordRange> {
+export function getWordRanges(n: Node, s: Array<WordRange>): Array<WordRange> {
 	if (n.nodeType == Node.ELEMENT_NODE && skipTags.get(n.nodeName) == true) {
-		return m
+		return s
 	}
 
 	if (n.nodeType == Node.TEXT_NODE) {
 		let wordIndexes = getWordIndexes(n.nodeValue!)
 		wordIndexes.forEach((v: WordIndex) => {
-			if (m.get(v.word) == undefined) {
-				let range = document.createRange()
-				range.setStart(n, v.start)
-				range.setEnd(n, v.end)
+			let range = document.createRange()
+			range.setStart(n, v.start)
+			range.setEnd(n, v.end)
 
-				m.set(v.word, {
-					times: 0,
-					range: range
-				})
-			}
+			s.push({
+				name: v.word,
+				times: 0,
+				range: range
+			})
 		})
 	}
 
 	for (let c = n.firstChild; c != null; c = c.nextSibling) {
-		m = getWordRanges(c, m)
+		s = getWordRanges(c, s)
 	}
 
-	return m
+	return s
 }
 
 export function getWordIndexes(s: string): Array<WordIndex> {
@@ -153,7 +153,7 @@ export function markSelected(range: Range, selectedText: string) {
 		return
 	}
 
-	markWord({ range: range, times: 0 }, true)
+	markWord({ name: selectedID, range: range, times: 0 }, true)
 }
 
 function isMarkedNode(n: Node, selectedText: string): boolean {
