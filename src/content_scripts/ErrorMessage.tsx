@@ -4,7 +4,7 @@ export default function ErrorMessage({ errorCode }: { errorCode: number }) {
 	let message = <p>服务异常。</p>
 	switch (errorCode) {
 		case 400:
-			message = <p>请检查输入。</p>
+			message = <p>不支持的输入。</p>
 			break
 		case 401:
 			message = <p>请<a href={config.loginURL}>登录</a>后使用。</p>
