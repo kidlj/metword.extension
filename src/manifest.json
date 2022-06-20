@@ -5,14 +5,12 @@
 	"manifest_version": 2,
 	"homepage_url": "https://www.metwords.com",
 	"icons": {
-		"48": "./icons/logo@48px.png",
-		"96": "./icons/logo@96px.png",
-		"256": "./icons/logo@256px.png"
+		"512": "./icons/icon.png"
 	},
 	"permissions": [
 		"activeTab",
 		"http://127.0.0.1/*",
-		"http://words.metaphor.com/*",
+		"http://app.metword.co/*",
 		"https://www.metwords.com/*"
 	],
 	"background": {
