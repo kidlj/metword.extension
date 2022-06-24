@@ -46,7 +46,7 @@ export function Word({ word, selectText }: WordProps) {
 	const [scenes, setScenes] = useState(word.edges.meets && word.edges.meets[0].edges.scenes ? word.edges.meets[0].edges.scenes : [])
 	const [met, setMet] = useState(false)
 	const [known, setKnown] = useState(word.edges.meets && word.edges.meets[0].state == 10 ? true : false)
-	const [errorCode, setErrorCode] = useState<number | false>(false)
+	const [errMessage, setErrMessage] = useState<string | false>(false)
 
 	async function addScene(id: number, selectText: string) {
 		const text = getSceneSentence(selectText)
@@ -57,12 +57,12 @@ export function Word({ word, selectText }: WordProps) {
 			url: url,
 			text: text
 		}
-		const { data, errorCode } = await browser.runtime.sendMessage({
+		const { data, errMessage } = await browser.runtime.sendMessage({
 			action: "addScene",
 			scene: payload
 		})
-		if (errorCode) {
-			setErrorCode(errorCode)
+		if (errMessage) {
+			setErrMessage(errMessage)
 			return
 		}
 
@@ -77,12 +77,12 @@ export function Word({ word, selectText }: WordProps) {
 	}
 
 	async function toggleKnown(id: number) {
-		const { data: state, errorCode } = await browser.runtime.sendMessage({
+		const { data: state, errMessage } = await browser.runtime.sendMessage({
 			action: "toggleKnown",
 			id: id,
 		})
-		if (errorCode) {
-			setErrorCode(errorCode)
+		if (errMessage) {
+			setErrMessage(errMessage)
 			return
 		}
 		if (state == 10) {
@@ -99,12 +99,12 @@ export function Word({ word, selectText }: WordProps) {
 	}
 
 	async function forgetScene(id: number) {
-		const { data, errorCode } = await browser.runtime.sendMessage({
+		const { data, errMessage } = await browser.runtime.sendMessage({
 			action: "forgetScene",
 			id: id,
 		})
-		if (errorCode) {
-			setErrorCode(errorCode)
+		if (errMessage) {
+			setErrMessage(errMessage)
 			return
 		}
 		const selectedElement = getSelectedElement()!
@@ -114,8 +114,8 @@ export function Word({ word, selectText }: WordProps) {
 		setTimes(times - 1)
 	}
 
-	if (errorCode) {
-		return <ErrorMessage errorCode={errorCode}></ErrorMessage>
+	if (errMessage) {
+		return <ErrorMessage errMessage={errMessage}></ErrorMessage>
 	}
 
 	const onRenderIcon: IRenderFunction<IButtonProps> = (props: IButtonProps | undefined) => {

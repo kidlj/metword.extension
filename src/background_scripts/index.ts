@@ -6,6 +6,11 @@ const queryURL = config.queryURL
 const addSceneURL = config.addSceneURL
 const forgetSceneURL = config.forgetSceneURL
 const knowURL = config.knowURL
+const collectionsURL = config.collectionsURL
+const collectionURL = config.collectionURL
+
+const addCollectionAction = 1
+const removeCollectionAction = 2
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
@@ -19,6 +24,12 @@ browser.runtime.onMessage.addListener(async (msg) => {
 			return await forgetScene(msg.id)
 		case 'toggleKnown':
 			return await toggleKnown(msg.id)
+		case 'getArticleState':
+			return await getArticleState()
+		case 'addCollection':
+			return await collection(addCollectionAction)
+		case 'removeCollection':
+			return await collection(removeCollectionAction)
 	}
 })
 
@@ -26,27 +37,43 @@ export interface Meets {
 	[key: string]: number
 }
 
-var valid = false
-var meets: Meets = {}
+let meetsCacheValid = false
+let meets: Meets = {}
+
+export interface Collections {
+	[key: string]: number
+}
+let collectionCacheValid = false
+let collections: Collections = {}
+
 
 interface FetchResult {
 	data: any,
-	errorCode: number | false
+	errMessage: string | false
 }
 
-async function fetchData(url: string, init?: RequestInit): Promise<FetchResult> {
+async function fetchData(url: string, init: RequestInit): Promise<FetchResult> {
+	const jsonHeaders = new Headers({
+		// Our Go backend implementation needs 'Accept' header to distinguish requests, like via JSON or Turbo.
+		'Accept': 'application/json',
+		'Content-Type': "application/json"
+	})
+	if (!init.headers) {
+		init.headers = jsonHeaders
+	}
+
 	try {
 		const res = await fetch(encodeURI(url), init)
-		const errorCode = res.ok ? false : res.status
 		const result = await res.json()
 		return {
+			// We can rely on .message field to distinguish successful for failed requests, but not on .data field.
 			data: result.data || null,
-			errorCode: errorCode
+			errMessage: result.message || false
 		}
 	} catch (err) {
 		return {
 			data: null,
-			errorCode: 499
+			errMessage: "网络连接错误"
 		}
 	}
 }
@@ -58,86 +85,126 @@ async function addScene(scene: any) {
 		text: scene.text
 	}
 	let payload = JSON.stringify(body)
-	let jsonHeaders = new Headers({
-		'Accept': 'application/json',
-		'Content-Type': 'application/json'
-	})
-
 	const result = await fetchData(addSceneURL, {
 		method: "POST",
 		body: payload,
-		headers: jsonHeaders
 	})
 	return result
 }
 
 async function toggleKnown(id: number) {
-	let jsonHeaders = new Headers({
-		'Accept': 'application/json',
-		'Content-Type': 'application/json'
-	})
-
 	const url = knowURL + id
 	const result = await fetchData(url, {
 		method: "POST",
-		headers: jsonHeaders
 	})
 	return result
 }
 
 async function forgetScene(id: number) {
-	let jsonHeaders = new Headers({
-		'Accept': 'application/json',
-	})
-
 	const url = forgetSceneURL + id
 	const result = await fetchData(url, {
 		method: "DELETE",
-		headers: jsonHeaders
 	})
 	return result
 }
 
 async function queryWord(word: string) {
-	let jsonHeaders = new Headers({
-		'Accept': 'application/json',
-	})
-
 	// any query invalidate meets cache
-	valid = false
+	meetsCacheValid = false
 	const url = queryURL + word
-	const result = await fetchData(url, {
-		headers: jsonHeaders
-	})
+	const result = await fetchData(url, {})
 	return result
 }
 
 async function getMeets() {
-	let jsonHeaders = new Headers({
-		'Accept': 'application/json',
-	})
-
-	if (valid) {
+	if (meetsCacheValid) {
 		return meets
 	}
 	try {
-		const resp = await fetch(meetsURL, {
-			headers: jsonHeaders
-		})
+		const resp = await fetch(meetsURL, {})
 		const result = JSON.parse(await resp.text())
 		meets = result.data || {}
-		valid = true
+		meetsCacheValid = true
 	} catch (err) {
 		meets = {}
-		valid = false
+		meetsCacheValid = false
 	}
 	return meets
 }
 
-const hideMark = `xmetword::before { display: none !important; }`
+async function getCollections() {
+	if (collectionCacheValid) {
+		return collections
+	}
 
-browser.browserAction.onClicked.addListener(async () => {
-	await browser.tabs.create({
-		url: "https://www.metwords.com"
+	try {
+		const resp = await fetch(collectionsURL, {})
+		const result = JSON.parse(await resp.text())
+		collections = result.data || {}
+		collectionCacheValid = true
+	} catch (err) {
+		collections = {}
+		collectionCacheValid = false
+	}
+	return collections
+}
+
+export interface IArticleState {
+	inCollection: boolean
+}
+
+async function getArticleState(): Promise<IArticleState> {
+	const tabs = await getActiveTab()
+	let url = tabs[0].url
+	if (!url) {
+		return { inCollection: false }
+	}
+	url = clearAnchor(url)
+	const collections = await getCollections()
+	if (collections[url]) {
+		return { inCollection: true }
+	}
+	return { inCollection: false }
+}
+
+async function getActiveTab() {
+	return await browser.tabs.query({ currentWindow: true, active: true })
+}
+
+async function collection(action: number) {
+	const tabs = await getActiveTab()
+	const url = tabs[0].url
+	const title = tabs[0].title
+	const body = {
+		url: url,
+		title: title,
+		action: action,
+	}
+	const payload = JSON.stringify(body)
+	const result = await fetchData(collectionURL, {
+		method: action === addCollectionAction ? "POST" : "DELETE",
+		body: payload,
 	})
-})
+	if (!result.errMessage) {
+		collectionCacheValid = false
+	}
+	return result
+}
+
+// ClearSegment cleans the last anchor part of an url; Migrated from Go version, see its tests for examples.
+function clearAnchor(url: string): string {
+	let index = url.length
+	for (let i = url.length - 1; i > 0; i--) {
+		if (url[i] === '#') {
+			index = i
+			break
+		}
+		if (url[i] === '!' || url[i] === '/') {
+			break
+		}
+	}
+	if (index < url.length) {
+		return url.slice(0, index)
+	}
+	return url
+}

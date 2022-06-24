@@ -9,7 +9,8 @@ module.exports = {
 	devtool: false,
 	entry: {
 		content_script: './src/content_scripts/App.tsx',
-		background_script: './src/background_scripts/index.ts'
+		background_script: './src/background_scripts/index.ts',
+		popup: './src/content_scripts/Popup.tsx'
 	},
 	output: {
 		filename: '[name].js',

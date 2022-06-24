@@ -10,9 +10,9 @@ interface TipProps {
 }
 
 export default function Tip(props: TipProps) {
-	const { words, errorCode } = useWords({ key: props.word, msg: { action: 'query', word: props.word } })
+	const { words, errMessage } = useWords({ key: props.word, msg: { action: 'query', word: props.word } })
 
-	if (errorCode) return <ErrorMessage errorCode={errorCode}></ErrorMessage>
+	if (errMessage) return <ErrorMessage errMessage={errMessage}></ErrorMessage>
 	if (!words) return <Spinner size={SpinnerSize.medium}></Spinner>
 
 	return (
@@ -44,17 +44,17 @@ interface QueryWordsProps {
 
 function useWords(props: QueryWordsProps) {
 	const [words, setWords] = React.useState<IWord[] | null>(null)
-	const [errorCode, setErrorCode] = React.useState<number | false>(false)
+	const [errMessage, setErrMessage] = React.useState<string | false>(false)
 
 	React.useEffect(() => {
 		async function sendMessage(msg: { action: string, word: string }) {
-			const { data, errorCode } = await browser.runtime.sendMessage(msg)
-			setErrorCode(errorCode)
+			const { data, errMessage } = await browser.runtime.sendMessage(msg)
+			setErrMessage(errMessage)
 			setWords(data)
 		}
 
 		sendMessage(props.msg)
 	}, [props.key])
 
-	return { words, errorCode }
+	return { words, errMessage }
 }
