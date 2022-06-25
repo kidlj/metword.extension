@@ -133,6 +133,7 @@ async function getMeets() {
 }
 
 async function getCollections() {
+	console.log("cache state is:", collectionCacheValid)
 	if (collectionCacheValid) {
 		return collections
 	}
@@ -161,6 +162,7 @@ async function getArticleState(): Promise<IArticleState> {
 	}
 	url = clearAnchor(url)
 	const collections = await getCollections()
+	console.log("collection:", collections)
 	if (collections[url]) {
 		return { inCollection: true }
 	}
@@ -174,7 +176,9 @@ async function getActiveTab() {
 async function collection(action: number) {
 	const tabs = await getActiveTab()
 	const url = tabs[0].url
+	console.log("url is:", url)
 	const title = tabs[0].title
+	console.log("title is:", title)
 	const body = {
 		url: url,
 		title: title,
