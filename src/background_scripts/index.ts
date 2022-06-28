@@ -21,14 +21,12 @@ browser.runtime.onMessage.addListener(async (msg) => {
 			return await forgetScene(msg.id)
 		case 'toggleKnown':
 			return await toggleKnown(msg.id)
-		case 'getArticleStatePopup':
-			return await getArticleStatePopup()
+		case 'getArticleState':
+			return await getArticleState()
 		case 'addCollection':
 			return await addCollection()
 		case 'deleteCollection':
 			return await deleteCollection(msg.id)
-		case 'updateBadge':
-			return await updateBadge()
 	}
 })
 
@@ -158,15 +156,9 @@ export interface IPageMetadata {
 	title?: string
 }
 
-async function getArticleStatePopup(): Promise<IArticleState> {
+async function getArticleState(): Promise<IArticleState> {
 	// every popup opening invalidate collections cache
 	collectionCacheValid = false
-	// ...and also update badge
-	await updateBadge()
-	return getArticleState()
-}
-
-async function getArticleState(): Promise<IArticleState> {
 	try {
 		const tabs = await getActiveTab()
 		const pageMetadata: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
@@ -255,20 +247,3 @@ function clearAnchor(url: string | undefined): string | undefined {
 	}
 	return url
 }
-
-async function updateBadge() {
-	const state = await getArticleState()
-	if (state && state.inCollection) {
-		await browser.browserAction.setBadgeText({ text: " ✓" })
-		await browser.browserAction.setBadgeBackgroundColor({ color: "cyan" })
-	} else {
-		await browser.browserAction.setBadgeText({ text: "" })
-	}
-}
-
-async function updateActiveTab() {
-	await updateBadge()
-}
-
-// tab switch
-browser.tabs.onActivated.addListener(updateActiveTab);

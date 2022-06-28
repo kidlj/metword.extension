@@ -27,10 +27,6 @@ async function start() {
 
 	document.addEventListener('mouseup', show)
 	document.addEventListener('mousedown', dismiss)
-
-	await browser.runtime.sendMessage({
-		action: "updateBadge"
-	})
 }
 
 // waiting a while for client side rendered dom ready

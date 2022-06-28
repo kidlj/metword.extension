@@ -71,7 +71,7 @@ function useArticleState() {
 			setState(data)
 		}
 
-		sendMessage({ action: "getArticleStatePopup" })
+		sendMessage({ action: "getArticleState" })
 	}, [])
 
 	return { state, setState }
