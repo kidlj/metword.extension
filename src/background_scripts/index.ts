@@ -61,7 +61,7 @@ async function fetchData(url: string, init: RequestInit): Promise<FetchResult> {
 		const res = await fetch(encodeURI(url), init)
 		const result = await res.json()
 		return {
-			// We can rely on .message field to distinguish successful for failed requests, but not on .data field.
+			// We can rely on .message field to distinguish successful or failed requests, but not on .data field.
 			data: result.data || null,
 			errMessage: result.message || false
 		}
