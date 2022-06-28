@@ -6,7 +6,7 @@ const queryURL = config.queryURL
 const addSceneURL = config.addSceneURL
 const forgetSceneURL = config.forgetSceneURL
 const knowURL = config.knowURL
-const collectionsURL = config.collectionsURL
+const articleStateURL = config.articleStateURL
 const collectionURL = config.collectionURL
 
 browser.runtime.onMessage.addListener(async (msg) => {
@@ -21,8 +21,8 @@ browser.runtime.onMessage.addListener(async (msg) => {
 			return await forgetScene(msg.id)
 		case 'toggleKnown':
 			return await toggleKnown(msg.id)
-		case 'getArticleState':
-			return await getArticleState()
+		case 'getArticleStatePopup':
+			return await getArticleStatePopup()
 		case 'addCollection':
 			return await addCollection()
 		case 'deleteCollection':
@@ -37,12 +37,10 @@ export interface Meets {
 let meetsCacheValid = false
 let meets: Meets = {}
 
-export interface Collections {
-	[key: string]: number
+export interface IArticleState {
+	inCollection: boolean
+	id?: number
 }
-let collectionCacheValid = false
-let collections: Collections = {}
-
 
 interface FetchResult {
 	data: any,
@@ -129,23 +127,6 @@ async function getMeets() {
 	return meets
 }
 
-async function getCollections() {
-	if (collectionCacheValid) {
-		return collections
-	}
-
-	try {
-		const resp = await fetch(collectionsURL, {})
-		const result = JSON.parse(await resp.text())
-		collections = result.data || {}
-		collectionCacheValid = true
-	} catch (err) {
-		collections = {}
-		collectionCacheValid = false
-	}
-	return collections
-}
-
 export interface IArticleState {
 	inCollection: boolean
 	id?: number
@@ -156,9 +137,16 @@ export interface IPageMetadata {
 	title?: string
 }
 
-async function getArticleState(): Promise<IArticleState> {
-	// every popup opening invalidate collections cache
-	collectionCacheValid = false
+async function getArticleState(articleURL: string): Promise<IArticleState> {
+	const url = articleStateURL + articleURL
+	const result = await fetchData(url, {})
+	if (result.errMessage) {
+		return { inCollection: false }
+	}
+	return result.data
+}
+
+async function getArticleStatePopup(): Promise<IArticleState> {
 	try {
 		const tabs = await getActiveTab()
 		const pageMetadata: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
@@ -171,13 +159,8 @@ async function getArticleState(): Promise<IArticleState> {
 		if (!url) {
 			return { inCollection: false }
 		}
-		console.log("### cache state is:", collectionCacheValid)
-		const collections = await getCollections()
-		const id = collections[url]
-		if (id) {
-			return { inCollection: true, id: id }
-		}
-		return { inCollection: false }
+		const state = await getArticleState(url)
+		return state
 	} catch (err) {
 		return { inCollection: false }
 	}
