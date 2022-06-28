@@ -9,9 +9,6 @@ const knowURL = config.knowURL
 const collectionsURL = config.collectionsURL
 const collectionURL = config.collectionURL
 
-const addCollectionAction = 1
-const removeCollectionAction = 2
-
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
 		case "query":
@@ -24,12 +21,14 @@ browser.runtime.onMessage.addListener(async (msg) => {
 			return await forgetScene(msg.id)
 		case 'toggleKnown':
 			return await toggleKnown(msg.id)
-		case 'getArticleState':
-			return await getArticleState()
+		case 'getArticleStatePopup':
+			return await getArticleStatePopup()
 		case 'addCollection':
-			return await collection(addCollectionAction)
-		case 'removeCollection':
-			return await collection(removeCollectionAction)
+			return await addCollection()
+		case 'deleteCollection':
+			return await deleteCollection(msg.id)
+		case 'updateBadge':
+			return await updateBadge()
 	}
 })
 
@@ -133,7 +132,6 @@ async function getMeets() {
 }
 
 async function getCollections() {
-	console.log("cache state is:", collectionCacheValid)
 	if (collectionCacheValid) {
 		return collections
 	}
@@ -152,51 +150,96 @@ async function getCollections() {
 
 export interface IArticleState {
 	inCollection: boolean
+	id?: number
+}
+
+export interface IPageMetadata {
+	url?: string
+	title?: string
+}
+
+async function getArticleStatePopup(): Promise<IArticleState> {
+	// every popup opening invalidate collections cache
+	collectionCacheValid = false
+	// ...and also update badge
+	await updateBadge()
+	return getArticleState()
 }
 
 async function getArticleState(): Promise<IArticleState> {
-	const tabs = await getActiveTab()
-	let url = tabs[0].url
-	if (!url) {
+	try {
+		const tabs = await getActiveTab()
+		const pageMetadata: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
+		let url = pageMetadata.url
+		console.log("canonical url:", url)
+		if (!url) {
+			url = clearAnchor(tabs[0].url)
+			console.log("tab url:", url)
+		}
+		if (!url) {
+			return { inCollection: false }
+		}
+		console.log("### cache state is:", collectionCacheValid)
+		const collections = await getCollections()
+		const id = collections[url]
+		if (id) {
+			return { inCollection: true, id: id }
+		}
+		return { inCollection: false }
+	} catch (err) {
 		return { inCollection: false }
 	}
-	url = clearAnchor(url)
-	const collections = await getCollections()
-	console.log("collection:", collections)
-	if (collections[url]) {
-		return { inCollection: true }
-	}
-	return { inCollection: false }
 }
 
 async function getActiveTab() {
 	return await browser.tabs.query({ currentWindow: true, active: true })
 }
 
-async function collection(action: number) {
-	const tabs = await getActiveTab()
-	const url = tabs[0].url
-	console.log("url is:", url)
-	const title = tabs[0].title
-	console.log("title is:", title)
+async function addCollection(): Promise<FetchResult> {
+	try {
+		const tabs = await getActiveTab()
+		const pageMetadata: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
+		let url = pageMetadata.url
+		if (!url) {
+			url = clearAnchor(tabs[0].url)
+		}
+		let title = pageMetadata.title
+		if (!title) {
+			title = tabs[0].title
+		}
+		const body = {
+			url: url,
+			title: title,
+		}
+		const payload = JSON.stringify(body)
+		const result = await fetchData(collectionURL, {
+			method: "POST",
+			body: payload,
+		})
+		return result
+	} catch (err) {
+		return {
+			data: null,
+			errMessage: "不支持的输入",
+		}
+	}
+}
+
+async function deleteCollection(id: number): Promise<FetchResult> {
 	const body = {
-		url: url,
-		title: title,
-		action: action,
+		id: id,
 	}
 	const payload = JSON.stringify(body)
 	const result = await fetchData(collectionURL, {
-		method: action === addCollectionAction ? "POST" : "DELETE",
+		method: "DELETE",
 		body: payload,
 	})
-	if (!result.errMessage) {
-		collectionCacheValid = false
-	}
 	return result
 }
 
 // ClearSegment cleans the last anchor part of an url; Migrated from Go version, see its tests for examples.
-function clearAnchor(url: string): string {
+function clearAnchor(url: string | undefined): string | undefined {
+	if (!url) return
 	let index = url.length
 	for (let i = url.length - 1; i > 0; i--) {
 		if (url[i] === '#') {
@@ -212,3 +255,20 @@ function clearAnchor(url: string): string {
 	}
 	return url
 }
+
+async function updateBadge() {
+	const state = await getArticleState()
+	if (state && state.inCollection) {
+		await browser.browserAction.setBadgeText({ text: " ✓" })
+		await browser.browserAction.setBadgeBackgroundColor({ color: "cyan" })
+	} else {
+		await browser.browserAction.setBadgeText({ text: "" })
+	}
+}
+
+async function updateActiveTab() {
+	await updateBadge()
+}
+
+// tab switch
+browser.tabs.onActivated.addListener(updateActiveTab);

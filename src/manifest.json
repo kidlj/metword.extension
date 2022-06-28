@@ -9,6 +9,7 @@
 	},
 	"permissions": [
 		"activeTab",
+		"tabs",
 		"http://127.0.0.1/*",
 		"http://app.metword.co/*",
 		"https://www.metwords.com/*"
@@ -20,7 +21,7 @@
 	},
 	"browser_action": {
 		"browser_style": true,
-		"default_title": "点击收藏文章",
+		"default_title": "遇见单词",
 		"default_popup": "popup/popup.html",
 		"default_icon": {
 			"512": "./icons/icon.png"

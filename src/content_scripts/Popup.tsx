@@ -17,7 +17,6 @@ ReactDOM.render(
 function Popup() {
 	const [errMessage, setErrMessage] = useState<string | boolean>(false)
 	const { state, setState } = useArticleState()
-	console.log("state is:", state)
 	if (errMessage) return <ErrorMessage errMessage={errMessage}></ErrorMessage>
 	if (!state) return <Spinner size={SpinnerSize.medium}></Spinner>
 
@@ -33,12 +32,12 @@ function Popup() {
 	return (
 		<div>
 			<p>In collection</p>
-			<button onClick={() => { removeCollection() }}>从收藏移除 </button>
+			<button onClick={() => { deleteCollection(state.id) }}>从收藏删除</button>
 		</div>
 	)
 
 	async function addCollection() {
-		const { data: state, errMessage } = await browser.runtime.sendMessage({
+		const { _, errMessage } = await browser.runtime.sendMessage({
 			action: "addCollection",
 		})
 		if (errMessage) {
@@ -49,9 +48,10 @@ function Popup() {
 		setState({ inCollection: true })
 	}
 
-	async function removeCollection() {
-		const { data: state, errMessage } = await browser.runtime.sendMessage({
-			action: "removeCollection",
+	async function deleteCollection(id: number | undefined) {
+		const { _, errMessage } = await browser.runtime.sendMessage({
+			action: "deleteCollection",
+			id: id
 		})
 		if (errMessage) {
 			setErrMessage(errMessage)
@@ -71,7 +71,7 @@ function useArticleState() {
 			setState(data)
 		}
 
-		sendMessage({ action: "getArticleState" })
+		sendMessage({ action: "getArticleStatePopup" })
 	}, [])
 
 	return { state, setState }

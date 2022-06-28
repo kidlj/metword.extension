@@ -12,8 +12,9 @@ const development = {
 	addSceneURL: "http://app.metword.co:8080/scene",
 	forgetSceneURL: "http://app.metword.co:8080/scene?id=",
 	knowURL: "http://app.metword.co:8080/meet/toggle?id=",
-	collectionsURL: "http://app.metword.co:8080/collection/list",
-	collectionURL: "http://app.metword.co:8080/collection",
+
+	collectionsURL: "http://app.metword.co:8080/api/collection/list",
+	collectionURL: "http://app.metword.co:8080/api/collection",
 }
 
 const production = {
@@ -22,8 +23,9 @@ const production = {
 	addSceneURL: "https://app.metword.co/scene",
 	forgetSceneURL: "https://app.metword.co/scene?id=",
 	knowURL: "https://app.metword.co/meet/toggle?id=",
-	collectionsURL: "https://app.metword.co/collection/list",
-	collectionURL: "https://app.metword.co/collection",
+
+	collectionsURL: "https://app.metword.co/api/collection/list",
+	collectionURL: "https://app.metword.co/api/collection",
 }
 
 const config: Config = {

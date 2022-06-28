@@ -5,7 +5,7 @@ import './style.css';
 import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
 import { browser } from 'webextension-polyfill-ts';
 import { Callout, mergeStyleSets, FontWeights } from '@fluentui/react'
-import { Meets } from '../background_scripts/index'
+import { Meets, IPageMetadata } from '../background_scripts/index'
 
 // 1s
 const waitDuration = 1000
@@ -27,6 +27,10 @@ async function start() {
 
 	document.addEventListener('mouseup', show)
 	document.addEventListener('mousedown', dismiss)
+
+	await browser.runtime.sendMessage({
+		action: "updateBadge"
+	})
 }
 
 // waiting a while for client side rendered dom ready
@@ -113,4 +117,44 @@ const styles = mergeStyleSets({
 		display: 'block',
 		marginTop: 20,
 	},
+})
+
+function getPageCanonicalTitle(): string | undefined {
+	const canonicalTitleElement = document.querySelector('head meta[property="og:title"]') as HTMLMetaElement
+	if (canonicalTitleElement) {
+		return canonicalTitleElement.content
+	}
+	const titleElement = document.querySelector('head title')
+	if (titleElement) {
+		return titleElement.innerHTML
+	}
+	return
+}
+
+function getPageCanonicalURL(): string | undefined {
+	const canonicalURLMetaElement = document.querySelector('head meta[property="og:url"]') as HTMLMetaElement
+	if (canonicalURLMetaElement) {
+		return canonicalURLMetaElement.content
+	}
+	const canonicalURLLinkElement = document.querySelector('head link[rel="canonical"]') as HTMLLinkElement
+	if (canonicalURLLinkElement) {
+		return canonicalURLLinkElement.href
+	}
+	return
+}
+
+function getPageCanonicalMetadata(): IPageMetadata {
+	const title = getPageCanonicalTitle()
+	const url = getPageCanonicalURL()
+	return {
+		title: title,
+		url: url,
+	}
+}
+
+browser.runtime.onMessage.addListener(async (msg) => {
+	switch (msg.action) {
+		case "queryPageMetadata":
+			return getPageCanonicalMetadata()
+	}
 })
