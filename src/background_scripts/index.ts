@@ -49,7 +49,7 @@ interface FetchResult {
 
 async function fetchData(url: string, init: RequestInit): Promise<FetchResult> {
 	const jsonHeaders = new Headers({
-		// Our Go backend implementation needs 'Accept' header to distinguish requests, like via JSON or Turbo.
+		// Our Go backend implementation needs 'Accept' header to distinguish between requests, like via JSON or Turbo.
 		'Accept': 'application/json',
 		'Content-Type': "application/json"
 	})
@@ -61,7 +61,7 @@ async function fetchData(url: string, init: RequestInit): Promise<FetchResult> {
 		const res = await fetch(encodeURI(url), init)
 		const result = await res.json()
 		return {
-			// We can rely on .message field to distinguish successful or failed requests, but not on .data field.
+			// We can rely on .message field to distinguish between successful or failed requests, but not on .data field.
 			data: result.data || null,
 			errMessage: result.message || false
 		}
@@ -79,7 +79,7 @@ async function addScene(scene: any) {
 		url: scene.url,
 		text: scene.text
 	}
-	let payload = JSON.stringify(body)
+	const payload = JSON.stringify(body)
 	const result = await fetchData(addSceneURL, {
 		method: "POST",
 		body: payload,
@@ -104,7 +104,10 @@ async function forgetScene(id: number) {
 }
 
 async function queryWord(word: string) {
-	// any query invalidate meets cache
+	// any query invalidate meets cache for better user experience:
+	// we use asynchronous model, after users have makred a word(which invalidates the cache on server side asynchronously),
+	// they may refresh the page to see whether results persist, if the old cache hasn't been purged at the right moment, 
+	// another word query will fetch the new cache.
 	meetsCacheValid = false
 	const url = queryURL + word
 	const result = await fetchData(url, {})
@@ -133,14 +136,22 @@ export interface IArticleState {
 }
 
 export interface IPageMetadata {
-	url?: string
-	title?: string
+	canonicalURL?: string
 }
 
-async function getArticleState(articleURL: string): Promise<IArticleState> {
-	const url = articleStateURL + articleURL
-	const result = await fetchData(url, {})
+async function getArticleState(tabURL: string, canonicalURL?: string): Promise<IArticleState> {
+	const url = articleStateURL
+	const body = {
+		url: tabURL,
+		canonicalURL: canonicalURL,
+	}
+	const payload = JSON.stringify(body)
+	const result = await fetchData(url, {
+		method: "POST",
+		body: payload,
+	})
 	if (result.errMessage) {
+		// Do not propogate error message here.
 		return { inCollection: false }
 	}
 	return result.data
@@ -149,17 +160,17 @@ async function getArticleState(articleURL: string): Promise<IArticleState> {
 async function getArticleStatePopup(): Promise<IArticleState> {
 	try {
 		const tabs = await getActiveTab()
+		// sendMessage may cause exceptions, like when in illegal tab
 		const pageMetadata: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
-		let url = pageMetadata.url
-		console.log("canonical url:", url)
-		if (!url) {
-			url = clearAnchor(tabs[0].url)
-			console.log("tab url:", url)
-		}
-		if (!url) {
+		const tabURL = tabs[0].url
+		console.log("tab url:", tabURL)
+		const canonicalURL = pageMetadata.canonicalURL
+		console.log("canonical url:", canonicalURL)
+		if (!tabURL) {
+			// Do not propogate error here; invalid urls will get rejected in further post actions.
 			return { inCollection: false }
 		}
-		const state = await getArticleState(url)
+		const state = await getArticleState(tabURL, canonicalURL)
 		return state
 	} catch (err) {
 		return { inCollection: false }
@@ -171,33 +182,19 @@ async function getActiveTab() {
 }
 
 async function addCollection(): Promise<FetchResult> {
-	try {
-		const tabs = await getActiveTab()
-		const pageMetadata: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
-		let url = pageMetadata.url
-		if (!url) {
-			url = clearAnchor(tabs[0].url)
-		}
-		let title = pageMetadata.title
-		if (!title) {
-			title = tabs[0].title
-		}
-		const body = {
-			url: url,
-			title: title,
-		}
-		const payload = JSON.stringify(body)
-		const result = await fetchData(collectionURL, {
-			method: "POST",
-			body: payload,
-		})
-		return result
-	} catch (err) {
-		return {
-			data: null,
-			errMessage: "不支持的输入",
-		}
+	const tabs = await getActiveTab()
+	const url = tabs[0].url
+	const title = tabs[0].title
+	const body = {
+		url: url,
+		title: title,
 	}
+	const payload = JSON.stringify(body)
+	const result = await fetchData(collectionURL, {
+		method: "POST",
+		body: payload,
+	})
+	return result
 }
 
 async function deleteCollection(id: number): Promise<FetchResult> {
@@ -210,23 +207,4 @@ async function deleteCollection(id: number): Promise<FetchResult> {
 		body: payload,
 	})
 	return result
-}
-
-// ClearSegment cleans the last anchor part of an url; Migrated from Go version, see its tests for examples.
-function clearAnchor(url: string | undefined): string | undefined {
-	if (!url) return
-	let index = url.length
-	for (let i = url.length - 1; i > 0; i--) {
-		if (url[i] === '#') {
-			index = i
-			break
-		}
-		if (url[i] === '!' || url[i] === '/') {
-			break
-		}
-	}
-	if (index < url.length) {
-		return url.slice(0, index)
-	}
-	return url
 }

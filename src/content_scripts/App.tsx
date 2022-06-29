@@ -115,36 +115,23 @@ const styles = mergeStyleSets({
 	},
 })
 
-function getPageCanonicalTitle(): string | undefined {
-	const canonicalTitleElement = document.querySelector('head meta[property="og:title"]') as HTMLMetaElement
-	if (canonicalTitleElement) {
-		return canonicalTitleElement.content
-	}
-	const titleElement = document.querySelector('head title')
-	if (titleElement) {
-		return titleElement.innerHTML
-	}
-	return
-}
-
 function getPageCanonicalURL(): string | undefined {
-	const canonicalURLMetaElement = document.querySelector('head meta[property="og:url"]') as HTMLMetaElement
-	if (canonicalURLMetaElement) {
-		return canonicalURLMetaElement.content
-	}
 	const canonicalURLLinkElement = document.querySelector('head link[rel="canonical"]') as HTMLLinkElement
 	if (canonicalURLLinkElement) {
 		return canonicalURLLinkElement.href
+	}
+
+	const canonicalURLMetaElement = document.querySelector('head meta[property="og:url"]') as HTMLMetaElement
+	if (canonicalURLMetaElement) {
+		return canonicalURLMetaElement.content
 	}
 	return
 }
 
 function getPageCanonicalMetadata(): IPageMetadata {
-	const title = getPageCanonicalTitle()
-	const url = getPageCanonicalURL()
+	const canonicalURL = getPageCanonicalURL()
 	return {
-		title: title,
-		url: url,
+		canonicalURL: canonicalURL,
 	}
 }
 
