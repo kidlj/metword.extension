@@ -15,6 +15,7 @@ const development = {
 
 	articleStateURL: "http://app.metword.co:8080/api/collection/state",
 	collectionURL: "http://app.metword.co:8080/api/collection",
+	homeURL: "http://app.metword.co:8080/"
 }
 
 const production = {
@@ -26,6 +27,7 @@ const production = {
 
 	articleStateURL: "https://app.metword.co/api/collection/state",
 	collectionURL: "https://app.metword.co/api/collection",
+	homeURL: "https://metword.co/"
 }
 
 const config: Config = {

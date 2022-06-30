@@ -1,11 +1,15 @@
 import { browser } from "webextension-polyfill-ts"
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
-import ErrorMessage from "./ErrorMessage";
-import { Spinner, SpinnerSize } from "@fluentui/react";
-import { IArticleState } from "../background_scripts";
+import React, { useState } from 'react'
+import ReactDOM from 'react-dom'
+import ErrorMessage from "./ErrorMessage"
+import { Spinner, SpinnerSize, PrimaryButton, Stack, IStackTokens, DefaultButton } from "@fluentui/react"
+import { IArticleState } from "../background_scripts"
+import config from "../config"
 
 const _rootDiv = document.getElementById("content")
+const homeURL = config.homeURL
+
+const stackTokens: IStackTokens = { childrenGap: 40 }
 
 ReactDOM.render(
 	<React.StrictMode>
@@ -17,23 +21,41 @@ ReactDOM.render(
 function Popup() {
 	const [errMessage, setErrMessage] = useState<string | boolean>(false)
 	const { state, setState } = useArticleState()
-	if (errMessage) return <ErrorMessage errMessage={errMessage}></ErrorMessage>
-	if (!state) return <Spinner size={SpinnerSize.medium}></Spinner>
+	if (errMessage) return (
+		<Stack verticalAlign="center" horizontalAlign="center" tokens={stackTokens}>
+			<ErrorMessage errMessage={errMessage}></ErrorMessage>
+		</Stack>
+	)
+	if (!state) return (
+		<Stack verticalAlign="center" horizontalAlign="center" tokens={stackTokens}>
+			<Spinner size={SpinnerSize.medium}></Spinner>
+		</Stack>
+	)
 
 	if (!state.inCollection) {
 		return (
-			<div>
-				<p>Not in collection</p>
-				<button onClick={() => { addCollection() }}>添加到收藏</button>
-			</div>
+			<Stack verticalAlign="center" horizontalAlign="center" tokens={stackTokens}>
+				<Stack verticalAlign="center" horizontalAlign="center">
+					<p>页面还未添加到收藏夹</p>
+					<PrimaryButton text="添加到收藏夹" onClick={() => { addCollection() }}></PrimaryButton>
+				</Stack>
+				<Stack verticalAlign="center" horizontalAlign="center">
+					<p>Powered by <a href={homeURL}>MetWord</a>.</p>
+				</Stack>
+			</Stack>
 		)
 	}
 
 	return (
-		<div>
-			<p>In collection</p>
-			<button onClick={() => { deleteCollection(state.id) }}>从收藏删除</button>
-		</div>
+		<Stack verticalAlign="center" horizontalAlign="center" tokens={stackTokens}>
+			<Stack verticalAlign="center" horizontalAlign="center">
+				<p>页面已添加到收藏夹</p>
+				<DefaultButton text="从收藏夹删除" onClick={() => { deleteCollection(state.id) }} style={{ backgroundColor: 'yellow' }} ></DefaultButton>
+			</Stack>
+			<Stack verticalAlign="center" horizontalAlign="center">
+				<p>Powered by <a href={homeURL}>MetWord</a>.</p>
+			</Stack>
+		</Stack>
 	)
 
 	async function addCollection() {
