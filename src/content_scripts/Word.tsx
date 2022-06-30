@@ -143,8 +143,16 @@ export function Word({ word, selectText }: WordProps) {
 				}
 			</div>
 			<div className="metwords-phonetics">
-				<Text className="metwords-phonetic-label">US</Text><Text className="metwords-phonetic">[{word.us_phonetic}]</Text>
-				<Text className="metwords-phonetic-label">UK</Text><Text className="metwords-phonetic">[{word.uk_phonetic}]</Text>
+				{(word.us_phonetic) &&
+					<span>
+						<Text className="metwords-phonetic-label">US</Text><Text className="metwords-phonetic">[{word.us_phonetic}]</Text>
+					</span>
+				}
+				{(word.uk_phonetic) &&
+					<span>
+						<Text className="metwords-phonetic-label">UK</Text><Text className="metwords-phonetic">[{word.uk_phonetic}]</Text>
+					</span>
+				}
 			</div>
 			<div className="metwords-defs">
 				<ul>
