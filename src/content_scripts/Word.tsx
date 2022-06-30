@@ -162,7 +162,7 @@ export function Word({ word, selectText }: WordProps) {
 				</ul>
 			</div>
 			{times > 0 &&
-				<span className="metwords-times">遇见 {times} 次</span>
+				<span className="metwords-times">标记 {times} 次</span>
 			}
 			<div className="metwords-scenes">
 				<ul>
