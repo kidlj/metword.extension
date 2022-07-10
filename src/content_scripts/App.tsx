@@ -5,7 +5,7 @@ import './style.css';
 import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
 import { browser } from 'webextension-polyfill-ts';
 import { Callout, mergeStyleSets, FontWeights } from '@fluentui/react'
-import { Meets, IPageMetadata } from '../background_scripts/index'
+import { Meets, IPageMetadata, IFeedMetadata } from '../background_scripts/index'
 
 // 1s
 const waitDuration = 1000
@@ -128,16 +128,36 @@ function getPageCanonicalURL(): string | undefined {
 	return
 }
 
-function getPageCanonicalMetadata(): IPageMetadata {
+function getPageFeedMetadata(): IFeedMetadata | undefined {
+	const rssLinkElement = document.querySelector('head link[type="application/rss+xml"]') as HTMLLinkElement
+	if (rssLinkElement) {
+		return {
+			url: rssLinkElement.href,
+			title: rssLinkElement.title
+		}
+	}
+	const atomLinkElement = document.querySelector('head link[type="application/atom+xml"]') as HTMLLinkElement
+	if (atomLinkElement) {
+		return {
+			url: atomLinkElement.href,
+			title: atomLinkElement.title,
+		}
+	}
+	return
+}
+
+function getPageMetadata(): IPageMetadata {
 	const canonicalURL = getPageCanonicalURL()
+	const feed = getPageFeedMetadata()
 	return {
 		canonicalURL: canonicalURL,
+		feed: feed,
 	}
 }
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
 		case "queryPageMetadata":
-			return getPageCanonicalMetadata()
+			return getPageMetadata()
 	}
 })

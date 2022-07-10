@@ -15,6 +15,10 @@ const development = {
 
 	articleStateURL: "http://app.metword.co:8080/api/collection/state",
 	collectionURL: "http://app.metword.co:8080/api/collection",
+
+	feedStateURL: "http://app.metword.co:8080/api/feed/state",
+	feedURL: "http://app.metword.co:8080/feed?id=",
+	subscribeURL: "http://app.metword.co:8080/api/feed",
 	homeURL: "http://app.metword.co:8080/"
 }
 
@@ -27,6 +31,10 @@ const production = {
 
 	articleStateURL: "https://app.metword.co/api/collection/state",
 	collectionURL: "https://app.metword.co/api/collection",
+
+	feedStateURL: "https://app.metword.co/api/feed/state",
+	feedURL: "https://app.metword.co/feed?id=",
+	subscribeURL: "https://app.metword.co/api/feed",
 	homeURL: "https://metword.co/"
 }
 

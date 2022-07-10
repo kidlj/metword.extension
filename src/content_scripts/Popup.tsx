@@ -8,9 +8,10 @@ import config from "../config"
 
 const _rootDiv = document.getElementById("content")
 const homeURL = config.homeURL
+const feedURL = config.feedURL
 
-const stackTokens: IStackTokens = { childrenGap: 40 }
-const subStackTokens: IStackTokens = { childrenGap: 20 }
+const stackTokens: IStackTokens = { childrenGap: 30, padding: 30 }
+const subStackTokens: IStackTokens = { childrenGap: 10 }
 
 ReactDOM.render(
 	<React.StrictMode>
@@ -33,26 +34,36 @@ function Popup() {
 		</Stack>
 	)
 
-	if (!state.inCollection) {
-		return (
-			<Stack verticalAlign="center" horizontalAlign="center" tokens={stackTokens}>
-				<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
-					<Text>页面还未添加到阅读列表</Text>
-					<PrimaryButton text="添加到阅读列表" onClick={() => { addCollection() }}></PrimaryButton>
-				</Stack>
-				<Stack verticalAlign="center" horizontalAlign="center">
-					<Text>Powered by <a href={homeURL}>MetWord</a>.</Text>
-				</Stack>
-			</Stack>
-		)
-	}
-
 	return (
 		<Stack verticalAlign="center" horizontalAlign="center" tokens={stackTokens}>
-			<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
-				<Text>页面已添加到阅读列表</Text>
-				<DefaultButton text="从阅读列表删除" onClick={() => { deleteCollection(state.id) }} style={{ backgroundColor: 'yellow' }} ></DefaultButton>
-			</Stack>
+			{!state.collection.inCollection &&
+				<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
+					<Text>页面还未添加到收藏夹</Text>
+					<PrimaryButton text="添加到收藏夹" onClick={() => { addCollection() }}></PrimaryButton>
+				</Stack>
+			}
+			{state.collection.inCollection &&
+				<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
+					<Text>页面已添加到收藏夹</Text>
+					<DefaultButton text="从收藏夹删除" onClick={() => { deleteCollection(state.collection.id) }} style={{ backgroundColor: "coral" }} ></DefaultButton>
+				</Stack>
+			}
+
+			{state.feed && !state.feed.subscribed &&
+				<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
+					<Text>可订阅更新</Text>
+					<Text variant="small">{state.feed.url}</Text>
+					<PrimaryButton text="开始订阅" onClick={() => { subscribe() }}></PrimaryButton>
+				</Stack>
+			}
+			{state.feed && state.feed.subscribed &&
+				<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
+					<Text>已订阅更新</Text>
+					<Text variant="small">{state.feed.url}</Text>
+					<PrimaryButton text="查看订阅" href={`${feedURL}${state.feed?.id}`} target="_blank"></PrimaryButton>
+				</Stack>
+			}
+
 			<Stack verticalAlign="center" horizontalAlign="center">
 				<Text>Powered by <a href={homeURL}>MetWord</a>.</Text>
 			</Stack>
@@ -60,15 +71,20 @@ function Popup() {
 	)
 
 	async function addCollection() {
-		const { _, errMessage } = await browser.runtime.sendMessage({
+		const { data, errMessage } = await browser.runtime.sendMessage({
 			action: "addCollection",
 		})
 		if (errMessage) {
 			setErrMessage(errMessage)
 			return
 		}
-		// addCollection requests don't response inCollection state
-		setState({ inCollection: true })
+		setState({
+			collection: {
+				inCollection: true,
+				id: data.collection.id,
+			},
+			feed: state?.feed
+		})
 	}
 
 	async function deleteCollection(id: number | undefined) {
@@ -80,8 +96,30 @@ function Popup() {
 			setErrMessage(errMessage)
 			return
 		}
-		// removeCollection requests don't response inCollection state
-		setState({ inCollection: false })
+		setState({
+			collection: {
+				inCollection: false,
+			},
+			feed: state?.feed
+		})
+	}
+
+	async function subscribe() {
+		const { data, errMessage } = await browser.runtime.sendMessage({
+			action: "subscribe",
+		})
+		if (errMessage) {
+			setErrMessage(errMessage)
+			return
+		}
+		setState({
+			collection: state!.collection,
+			feed: {
+				url: state!.feed!.url,
+				subscribed: true,
+				id: data.feed.id,
+			}
+		})
 	}
 }
 

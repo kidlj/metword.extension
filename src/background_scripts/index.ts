@@ -8,6 +8,8 @@ const forgetSceneURL = config.forgetSceneURL
 const knowURL = config.knowURL
 const articleStateURL = config.articleStateURL
 const collectionURL = config.collectionURL
+const feedStateURL = config.feedStateURL
+const subscribeURL = config.subscribeURL
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
@@ -27,6 +29,8 @@ browser.runtime.onMessage.addListener(async (msg) => {
 			return await addCollection()
 		case 'deleteCollection':
 			return await deleteCollection(msg.id)
+		case 'subscribe':
+			return await subscribe()
 	}
 })
 
@@ -36,11 +40,6 @@ export interface Meets {
 
 let meetsCacheValid = false
 let meets: Meets = {}
-
-export interface IArticleState {
-	inCollection: boolean
-	id?: number
-}
 
 interface FetchResult {
 	data: any,
@@ -130,23 +129,39 @@ async function getMeets() {
 	return meets
 }
 
-export interface IArticleState {
+export interface ICollectionState {
 	inCollection: boolean
 	id?: number
 }
 
-export interface IPageMetadata {
-	canonicalURL?: string
+export interface IFeedState {
+	url: string
+	subscribed: boolean
+	id?: number
 }
 
-async function getArticleState(tabURL: string, canonicalURL?: string): Promise<IArticleState> {
-	const url = articleStateURL
+export interface IArticleState {
+	collection: ICollectionState
+	feed?: IFeedState
+}
+
+export interface IFeedMetadata {
+	url?: string
+	title?: string
+}
+
+export interface IPageMetadata {
+	canonicalURL?: string
+	feed?: IFeedMetadata
+}
+
+async function getCollectionState(tabURL?: string, canonicalURL?: string): Promise<ICollectionState> {
 	const body = {
 		url: tabURL,
 		canonicalURL: canonicalURL,
 	}
 	const payload = JSON.stringify(body)
-	const result = await fetchData(url, {
+	const result = await fetchData(articleStateURL, {
 		method: "POST",
 		body: payload,
 	})
@@ -157,23 +172,47 @@ async function getArticleState(tabURL: string, canonicalURL?: string): Promise<I
 	return result.data
 }
 
+async function getFeedState(feedURL: string): Promise<IFeedState> {
+	const body = {
+		url: feedURL,
+	}
+	const payload = JSON.stringify(body)
+	const result = await fetchData(feedStateURL, {
+		method: "POST",
+		body: payload,
+	})
+	if (result.errMessage) {
+		// Do not propogate error message here.
+		return { url: feedURL, subscribed: false }
+	}
+	return { url: feedURL, ...result.data }
+}
+
 async function getArticleStatePopup(): Promise<IArticleState> {
 	try {
 		const tabs = await getActiveTab()
 		// sendMessage may cause exceptions, like when in illegal tab
 		const pageMetadata: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
 		const tabURL = tabs[0].url
-		console.log("tab url:", tabURL)
 		const canonicalURL = pageMetadata.canonicalURL
-		console.log("canonical url:", canonicalURL)
-		if (!tabURL) {
-			// Do not propogate error here; invalid urls will get rejected in further post actions.
-			return { inCollection: false }
+		const feedURL = pageMetadata.feed?.url
+		const collectionState = await getCollectionState(tabURL, canonicalURL)
+		if (!feedURL) {
+			return {
+				collection: collectionState
+			}
 		}
-		const state = await getArticleState(tabURL, canonicalURL)
-		return state
+		const feedState = await getFeedState(feedURL)
+		return {
+			collection: collectionState,
+			feed: feedState,
+		}
 	} catch (err) {
-		return { inCollection: false }
+		return {
+			collection: {
+				inCollection: false
+			}
+		}
 	}
 }
 
@@ -207,4 +246,29 @@ async function deleteCollection(id: number): Promise<FetchResult> {
 		body: payload,
 	})
 	return result
+}
+
+async function subscribe(): Promise<FetchResult> {
+	try {
+		const tabs = await getActiveTab()
+		// sendMessage may cause exceptions, like when in illegal tab
+		const pageMetadata: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
+		const feedURL = pageMetadata.feed?.url
+		const feedTitle = pageMetadata.feed?.title
+		const body = {
+			url: feedURL,
+			title: feedTitle,
+		}
+		const payload = JSON.stringify(body)
+		const result = await fetchData(subscribeURL, {
+			method: "POST",
+			body: payload,
+		})
+		return result
+	} catch (err) {
+		return {
+			errMessage: "不支持的 URL",
+			data: null
+		}
+	}
 }
