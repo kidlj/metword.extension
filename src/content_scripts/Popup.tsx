@@ -2,7 +2,7 @@ import { browser } from "webextension-polyfill-ts"
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import ErrorMessage from "./ErrorMessage"
-import { Spinner, SpinnerSize, PrimaryButton, Stack, IStackTokens, DefaultButton, Text } from "@fluentui/react"
+import { Spinner, SpinnerSize, DefaultButton, Stack, IStackTokens, Text } from "@fluentui/react"
 import { IArticleState } from "../background_scripts"
 import config from "../config"
 
@@ -39,28 +39,28 @@ function Popup() {
 			{!state.collection.inCollection &&
 				<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
 					<Text>页面还未添加到收藏夹</Text>
-					<PrimaryButton text="添加到收藏夹" onClick={() => { addCollection() }}></PrimaryButton>
+					<DefaultButton text="收藏" onClick={() => { addCollection() }}></DefaultButton>
 				</Stack>
 			}
 			{state.collection.inCollection &&
 				<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
 					<Text>页面已添加到收藏夹</Text>
-					<DefaultButton text="从收藏夹删除" onClick={() => { deleteCollection(state.collection.id) }} style={{ backgroundColor: "coral" }} ></DefaultButton>
+					<DefaultButton text="移除" onClick={() => { deleteCollection(state.collection.id) }}></DefaultButton>
 				</Stack>
 			}
 
 			{state.feed && !state.feed.subscribed &&
 				<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
-					<Text>可订阅更新</Text>
+					<Text>可订阅</Text>
 					<Text variant="small">{state.feed.url}</Text>
-					<PrimaryButton text="开始订阅" onClick={() => { subscribe() }}></PrimaryButton>
+					<DefaultButton text="订阅" onClick={() => { subscribe() }}></DefaultButton>
 				</Stack>
 			}
 			{state.feed && state.feed.subscribed &&
 				<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
-					<Text>已订阅更新</Text>
+					<Text>已订阅</Text>
 					<Text variant="small">{state.feed.url}</Text>
-					<PrimaryButton text="查看订阅" href={`${feedURL}${state.feed?.id}`} target="_blank"></PrimaryButton>
+					<DefaultButton text="查看" href={`${feedURL}${state.feed?.id}`} target="_blank"></DefaultButton>
 				</Stack>
 			}
 
