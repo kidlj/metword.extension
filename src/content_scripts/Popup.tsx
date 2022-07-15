@@ -2,7 +2,7 @@ import { browser } from "webextension-polyfill-ts"
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import ErrorMessage from "./ErrorMessage"
-import { Spinner, SpinnerSize, DefaultButton, Stack, IStackTokens, Text } from "@fluentui/react"
+import { Spinner, SpinnerSize, DefaultButton, Stack, IStackTokens, Text, Link } from "@fluentui/react"
 import { IArticleState } from "../background_scripts"
 import config from "../config"
 
@@ -65,7 +65,7 @@ function Popup() {
 			}
 
 			<Stack verticalAlign="center" horizontalAlign="center">
-				<Text>Powered by <a href={homeURL}>MetWord</a>.</Text>
+				<Text>Powered by <Link href={homeURL} target="_blank">MetWord</Link>.</Text>
 			</Stack>
 		</Stack>
 	)
