@@ -31,6 +31,8 @@ browser.runtime.onMessage.addListener(async (msg) => {
 			return await deleteCollection(msg.id)
 		case 'subscribe':
 			return await subscribe()
+		case 'updateBadge':
+			return await updateBadge()
 	}
 })
 
@@ -272,3 +274,32 @@ async function subscribe(): Promise<FetchResult> {
 		}
 	}
 }
+
+// Feed notification
+async function updateBadge() {
+	try {
+		const tabs = await getActiveTab()
+		// sendMessage may cause exceptions, like when in illegal tab
+		const page: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
+		if (page && page.feed) {
+			await browser.browserAction.setBadgeText({ text: "S" })
+			await browser.browserAction.setBadgeBackgroundColor({ color: "greenyellow" })
+		} else {
+			await browser.browserAction.setBadgeText({ text: "" })
+		}
+	} catch (err) {
+		await browser.browserAction.setBadgeText({ text: "" })
+	}
+}
+
+async function updateActiveTab() {
+	await updateBadge()
+}
+
+// tab switch
+browser.tabs.onActivated.addListener(updateActiveTab);
+browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+	if (changeInfo.url && tab.active) {
+		updateActiveTab()
+	}
+})

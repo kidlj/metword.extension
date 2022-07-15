@@ -29,6 +29,12 @@ async function start() {
 	document.addEventListener('mousedown', dismiss)
 }
 
+
+// On page loaded update feed notification
+browser.runtime.sendMessage({
+	"action": "updateBadge",
+})
+
 // waiting a while for client side rendered dom ready
 setTimeout(start, waitDuration)
 
