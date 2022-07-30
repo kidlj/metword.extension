@@ -8,7 +8,7 @@ const forgetSceneURL = config.forgetSceneURL
 const knowURL = config.knowURL
 const articleStateURL = config.articleStateURL
 const collectionURL = config.collectionURL
-const feedStateURL = config.feedStateURL
+const sourceStateURL = config.sourceStateURL
 const subscribeURL = config.subscribeURL
 
 browser.runtime.onMessage.addListener(async (msg) => {
@@ -144,7 +144,7 @@ export interface IFeedState {
 
 export interface IArticleState {
 	collection: ICollectionState
-	feed?: IFeedState
+	source?: IFeedState
 }
 
 export interface IFeedMetadata {
@@ -179,7 +179,7 @@ async function getFeedState(feedURL: string): Promise<IFeedState> {
 		url: feedURL,
 	}
 	const payload = JSON.stringify(body)
-	const result = await fetchData(feedStateURL, {
+	const result = await fetchData(sourceStateURL, {
 		method: "POST",
 		body: payload,
 	})
@@ -207,7 +207,7 @@ async function getArticleStatePopup(): Promise<IArticleState> {
 		const feedState = await getFeedState(feedURL)
 		return {
 			collection: collectionState,
-			feed: feedState,
+			source: feedState,
 		}
 	} catch (err) {
 		return {

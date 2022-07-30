@@ -8,7 +8,7 @@ import config from "../config"
 
 const _rootDiv = document.getElementById("content")
 const homeURL = config.homeURL
-const feedURL = config.feedURL
+const sourceURL = config.sourceURL
 
 const stackTokens: IStackTokens = { childrenGap: 30, padding: 30 }
 const subStackTokens: IStackTokens = { childrenGap: 10 }
@@ -49,18 +49,18 @@ function Popup() {
 				</Stack>
 			}
 
-			{state.feed && !state.feed.subscribed &&
+			{state.source && !state.source.subscribed &&
 				<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
 					<Text>可订阅</Text>
-					<Text variant="small">{state.feed.url}</Text>
+					<Text variant="small">{state.source.url}</Text>
 					<DefaultButton text="订阅" onClick={() => { subscribe() }}></DefaultButton>
 				</Stack>
 			}
-			{state.feed && state.feed.subscribed &&
+			{state.source && state.source.subscribed &&
 				<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
 					<Text>已订阅</Text>
-					<Text variant="small">{state.feed.url}</Text>
-					<DefaultButton text="查看" href={`${feedURL}${state.feed?.id}`} target="_blank"></DefaultButton>
+					<Text variant="small">{state.source.url}</Text>
+					<DefaultButton text="查看" href={`${sourceURL}${state.source?.id}`} target="_blank"></DefaultButton>
 				</Stack>
 			}
 
@@ -83,7 +83,7 @@ function Popup() {
 				inCollection: true,
 				id: data.collection.id,
 			},
-			feed: state?.feed
+			source: state?.source
 		})
 	}
 
@@ -100,7 +100,7 @@ function Popup() {
 			collection: {
 				inCollection: false,
 			},
-			feed: state?.feed
+			source: state?.source
 		})
 	}
 
@@ -114,10 +114,10 @@ function Popup() {
 		}
 		setState({
 			collection: state!.collection,
-			feed: {
-				url: state!.feed!.url,
+			source: {
+				url: state!.source!.url,
 				subscribed: true,
-				id: data.feed.id,
+				id: data.source.id,
 			}
 		})
 	}
