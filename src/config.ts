@@ -7,19 +7,19 @@ export interface Config {
 const env = process.env.NODE_ENV
 
 const development = {
-	meetsURL: "http://app.metword.co:8080/meet/times",
-	queryURL: "http://app.metword.co:8080/word?word=",
-	addSceneURL: "http://app.metword.co:8080/scene",
-	forgetSceneURL: "http://app.metword.co:8080/scene?id=",
-	knowURL: "http://app.metword.co:8080/meet/toggle?id=",
+	meetsURL: "http://localhost:8080/meet/times",
+	queryURL: "http://localhost:8080/word?word=",
+	addSceneURL: "http://localhost:8080/scene",
+	forgetSceneURL: "http://localhost:8080/scene?id=",
+	knowURL: "http://localhost:8080/meet/toggle?id=",
 
-	articleStateURL: "http://app.metword.co:8080/api/collection/state",
-	collectionURL: "http://app.metword.co:8080/api/collection",
+	articleStateURL: "http://localhost:8080/api/collection/state",
+	collectionURL: "http://localhost:8080/api/collection",
 
-	sourceStateURL: "http://app.metword.co:8080/api/source/state",
-	sourceURL: "http://app.metword.co:8080/source?id=",
-	subscribeURL: "http://app.metword.co:8080/api/feed",
-	homeURL: "http://app.metword.co:8080/"
+	sourceStateURL: "http://localhost:8080/api/source/state",
+	sourceURL: "http://localhost:8080/source?id=",
+	subscribeURL: "http://localhost:8080/api/feed",
+	homeURL: "http://localhost:8080/"
 }
 
 const production = {
