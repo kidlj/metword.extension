@@ -8,7 +8,7 @@ const forgetSceneURL = config.forgetSceneURL
 const knowURL = config.knowURL
 const articleStateURL = config.articleStateURL
 const collectionURL = config.collectionURL
-const sourceStateURL = config.sourceStateURL
+const feedStateURL = config.feedStateURL
 const subscribeURL = config.subscribeURL
 
 browser.runtime.onMessage.addListener(async (msg) => {
@@ -144,7 +144,7 @@ export interface IFeedState {
 
 export interface IArticleState {
 	collection: ICollectionState
-	source?: IFeedState
+	feed?: IFeedState
 }
 
 export interface IFeedMetadata {
@@ -179,7 +179,7 @@ async function getFeedState(feedURL: string): Promise<IFeedState> {
 		url: feedURL,
 	}
 	const payload = JSON.stringify(body)
-	const result = await fetchData(sourceStateURL, {
+	const result = await fetchData(feedStateURL, {
 		method: "POST",
 		body: payload,
 	})
@@ -207,7 +207,7 @@ async function getArticleStatePopup(): Promise<IArticleState> {
 		const feedState = await getFeedState(feedURL)
 		return {
 			collection: collectionState,
-			source: feedState,
+			feed: feedState,
 		}
 	} catch (err) {
 		return {
@@ -269,7 +269,7 @@ async function subscribe(): Promise<FetchResult> {
 		return result
 	} catch (err) {
 		return {
-			errMessage: "不支持的 URL",
+			errMessage: "Unsupported URL",
 			data: null
 		}
 	}

@@ -8,7 +8,7 @@ import config from "../config"
 
 const _rootDiv = document.getElementById("content")
 const homeURL = config.homeURL
-const sourceURL = config.sourceURL
+const feedURL = config.feedURL
 
 const stackTokens: IStackTokens = { childrenGap: 30, padding: 30 }
 const subStackTokens: IStackTokens = { childrenGap: 10 }
@@ -49,23 +49,23 @@ function Popup() {
 				</Stack>
 			}
 
-			{state.source && !state.source.subscribed &&
+			{state.feed && !state.feed.subscribed &&
 				<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
 					<Text>可订阅</Text>
-					<Text variant="small">{state.source.url}</Text>
+					<Text variant="small">{state.feed.url}</Text>
 					<DefaultButton text="订阅" onClick={() => { subscribe() }}></DefaultButton>
 				</Stack>
 			}
-			{state.source && state.source.subscribed &&
+			{state.feed && state.feed.subscribed &&
 				<Stack verticalAlign="center" horizontalAlign="center" tokens={subStackTokens}>
 					<Text>已订阅</Text>
-					<Text variant="small">{state.source.url}</Text>
-					<DefaultButton text="查看" href={`${sourceURL}${state.source?.id}`} target="_blank"></DefaultButton>
+					<Text variant="small">{state.feed.url}</Text>
+					<DefaultButton text="查看" href={`${feedURL}${state.feed?.id}`} target="_blank"></DefaultButton>
 				</Stack>
 			}
 
 			<Stack verticalAlign="center" horizontalAlign="center">
-				<Text>Powered by <Link href={homeURL} target="_blank">MetWord</Link>.</Text>
+				<Text>Powered by <Link href={homeURL} target="_blank">MetWord</Link></Text>
 			</Stack>
 		</Stack>
 	)
@@ -83,7 +83,7 @@ function Popup() {
 				inCollection: true,
 				id: data.collection.id,
 			},
-			source: state?.source
+			feed: state?.feed
 		})
 	}
 
@@ -100,7 +100,7 @@ function Popup() {
 			collection: {
 				inCollection: false,
 			},
-			source: state?.source
+			feed: state?.feed
 		})
 	}
 
@@ -114,10 +114,10 @@ function Popup() {
 		}
 		setState({
 			collection: state!.collection,
-			source: {
-				url: state!.source!.url,
+			feed: {
+				url: state!.feed!.url,
 				subscribed: true,
-				id: data.source.id,
+				id: data.feed.id,
 			}
 		})
 	}
