@@ -21,7 +21,7 @@ ReactDOM.render(
 )
 
 function Popup() {
-	const [errMessage, setErrMessage] = useState<string | boolean>(false)
+	const [errMessage, setErrMessage] = useState<string | false>(false)
 	const { state, setState } = useArticleState()
 	if (errMessage) return (
 		<Stack verticalAlign="center" horizontalAlign="center" tokens={stackTokens}>

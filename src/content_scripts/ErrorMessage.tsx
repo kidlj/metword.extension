@@ -1,7 +1,7 @@
-export default function ErrorMessage({ errMessage }: { errMessage: string | boolean }) {
+export default function ErrorMessage({ errMessage }: { errMessage: string }) {
 	return (
-		<div className="metwords-message">
-			{errMessage}
+		<div className="message">
+			<span dangerouslySetInnerHTML={{ __html: errMessage }}></span>
 		</div>
 	)
 }
