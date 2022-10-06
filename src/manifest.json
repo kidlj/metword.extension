@@ -23,7 +23,6 @@
 	"browser_action": {
 		"browser_style": true,
 		"default_title": "MetWord",
-		"default_popup": "popup/popup.html",
 		"default_icon": {
 			"512": "./icons/icon.png"
 		}

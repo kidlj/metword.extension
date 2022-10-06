@@ -1,15 +1,12 @@
 import { browser } from "webextension-polyfill-ts"
 import config from '../config'
+import { fetchData } from "../content_scripts/lib"
 
 const meetsURL = config.meetsURL
 const queryURL = config.queryURL
 const addSceneURL = config.addSceneURL
 const forgetSceneURL = config.forgetSceneURL
 const knowURL = config.knowURL
-const articleStateURL = config.articleStateURL
-const collectionURL = config.collectionURL
-const feedStateURL = config.feedStateURL
-const subscribeURL = config.subscribeURL
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
@@ -23,14 +20,6 @@ browser.runtime.onMessage.addListener(async (msg) => {
 			return await forgetScene(msg.id)
 		case 'toggleKnown':
 			return await toggleKnown(msg.id)
-		case 'getArticleStatePopup':
-			return await getArticleStatePopup()
-		case 'addCollection':
-			return await addCollection()
-		case 'deleteCollection':
-			return await deleteCollection(msg.id)
-		case 'subscribe':
-			return await subscribe()
 		case 'updateBadge':
 			return await updateBadge()
 	}
@@ -46,32 +35,6 @@ let meets: Meets = {}
 interface FetchResult {
 	data: any,
 	errMessage: string | false
-}
-
-async function fetchData(url: string, init: RequestInit): Promise<FetchResult> {
-	const jsonHeaders = new Headers({
-		// Our Go backend implementation needs 'Accept' header to distinguish between requests, like via JSON or Turbo.
-		'Accept': 'application/json',
-		'Content-Type': "application/json"
-	})
-	if (!init.headers) {
-		init.headers = jsonHeaders
-	}
-
-	try {
-		const res = await fetch(encodeURI(url), init)
-		const result = await res.json()
-		return {
-			// We can rely on .message field to distinguish between successful or failed requests, but not on .data field.
-			data: result.data || null,
-			errMessage: result.message || false
-		}
-	} catch (err) {
-		return {
-			data: null,
-			errMessage: "网络连接错误"
-		}
-	}
 }
 
 async function addScene(scene: any) {
@@ -131,21 +94,6 @@ async function getMeets() {
 	return meets
 }
 
-export interface ICollectionState {
-	inCollection: boolean
-	id?: number
-}
-
-export interface IFeedState {
-	url: string
-	subscribed: boolean
-	id?: number
-}
-
-export interface IArticleState {
-	collection: ICollectionState
-	feed?: IFeedState
-}
 
 export interface IFeedMetadata {
 	url?: string
@@ -157,122 +105,8 @@ export interface IPageMetadata {
 	feed?: IFeedMetadata
 }
 
-async function getCollectionState(tabURL?: string, canonicalURL?: string): Promise<ICollectionState> {
-	const body = {
-		url: tabURL,
-		canonicalURL: canonicalURL,
-	}
-	const payload = JSON.stringify(body)
-	const result = await fetchData(articleStateURL, {
-		method: "POST",
-		body: payload,
-	})
-	if (result.errMessage) {
-		// Do not propogate error message here.
-		return { inCollection: false }
-	}
-	return result.data
-}
-
-async function getFeedState(feedURL: string): Promise<IFeedState> {
-	const body = {
-		url: feedURL,
-	}
-	const payload = JSON.stringify(body)
-	const result = await fetchData(feedStateURL, {
-		method: "POST",
-		body: payload,
-	})
-	if (result.errMessage) {
-		// Do not propogate error message here.
-		return { url: feedURL, subscribed: false }
-	}
-	return { url: feedURL, ...result.data }
-}
-
-async function getArticleStatePopup(): Promise<IArticleState> {
-	try {
-		const tabs = await getActiveTab()
-		// sendMessage may cause exceptions, like when in illegal tab
-		const pageMetadata: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
-		const tabURL = tabs[0].url
-		const canonicalURL = pageMetadata.canonicalURL
-		const feedURL = pageMetadata.feed?.url
-		const collectionState = await getCollectionState(tabURL, canonicalURL)
-		if (!feedURL) {
-			return {
-				collection: collectionState
-			}
-		}
-		const feedState = await getFeedState(feedURL)
-		return {
-			collection: collectionState,
-			feed: feedState,
-		}
-	} catch (err) {
-		return {
-			collection: {
-				inCollection: false
-			}
-		}
-	}
-}
-
 async function getActiveTab() {
 	return await browser.tabs.query({ currentWindow: true, active: true })
-}
-
-async function addCollection(): Promise<FetchResult> {
-	const tabs = await getActiveTab()
-	const url = tabs[0].url
-	const title = tabs[0].title
-	const body = {
-		url: url,
-		title: title,
-	}
-	const payload = JSON.stringify(body)
-	const result = await fetchData(collectionURL, {
-		method: "POST",
-		body: payload,
-	})
-	return result
-}
-
-async function deleteCollection(id: number): Promise<FetchResult> {
-	const body = {
-		id: id,
-	}
-	const payload = JSON.stringify(body)
-	const result = await fetchData(collectionURL, {
-		method: "DELETE",
-		body: payload,
-	})
-	return result
-}
-
-async function subscribe(): Promise<FetchResult> {
-	try {
-		const tabs = await getActiveTab()
-		// sendMessage may cause exceptions, like when in illegal tab
-		const pageMetadata: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
-		const feedURL = pageMetadata.feed?.url
-		const feedTitle = pageMetadata.feed?.title
-		const body = {
-			url: feedURL,
-			title: feedTitle,
-		}
-		const payload = JSON.stringify(body)
-		const result = await fetchData(subscribeURL, {
-			method: "POST",
-			body: payload,
-		})
-		return result
-	} catch (err) {
-		return {
-			errMessage: "Unsupported URL",
-			data: null
-		}
-	}
 }
 
 // Feed notification
@@ -282,7 +116,7 @@ async function updateBadge() {
 		// sendMessage may cause exceptions, like when in illegal tab
 		const page: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
 		if (page && page.feed) {
-			await browser.browserAction.setBadgeText({ text: "S" })
+			await browser.browserAction.setBadgeText({ text: "1" })
 			await browser.browserAction.setBadgeBackgroundColor({ color: "greenyellow" })
 		} else {
 			await browser.browserAction.setBadgeText({ text: "" })
@@ -302,4 +136,9 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	if (changeInfo.url && tab.active) {
 		updateActiveTab()
 	}
+})
+
+browser.browserAction.onClicked.addListener(async () => {
+	const tabs = await getActiveTab()
+	await browser.tabs.sendMessage(tabs[0].id!, { action: "openMenu" })
 })

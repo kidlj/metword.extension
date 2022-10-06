@@ -153,3 +153,7 @@ xmet {
 .metwords-message a:visited {
 	color: #551A8B !important;
 }
+
+.message {
+	font-size: 12px;
+}

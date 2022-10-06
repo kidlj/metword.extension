@@ -10,7 +10,6 @@ module.exports = {
 	entry: {
 		content_script: './src/content_scripts/App.tsx',
 		background_script: './src/background_scripts/index.ts',
-		popup: './src/content_scripts/Popup.tsx'
 	},
 	output: {
 		filename: '[name].js',

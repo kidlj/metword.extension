@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import { getSceneSentence, getSelectedElement } from './lib'
-import { mergeStyleSets, Text, IRenderFunction } from '@fluentui/react'
+import { mergeStyles, mergeStyleSets, Text, IRenderFunction } from '@fluentui/react'
 import { ActionButton, IButtonProps } from '@fluentui/react/lib/Button';
 import { AddIcon, RingerIcon, RingerOffIcon } from '@fluentui/react-icons-mdl2';
 import ErrorMessage from './ErrorMessage';
@@ -118,13 +118,23 @@ export function Word({ word, selectText }: WordProps) {
 		return <ErrorMessage errMessage={errMessage}></ErrorMessage>
 	}
 
+	const buttonClass = mergeStyles({
+		height: 40,
+		width: 40,
+	})
+
+	const classNames = mergeStyleSets({
+		deepSkyBlue: [{ color: 'deepskyblue' }, buttonClass],
+		greenYellow: [{ color: 'greenyellow' }, buttonClass],
+	})
+
 	const onRenderIcon: IRenderFunction<IButtonProps> = (props: IButtonProps | undefined) => {
 		if (props == undefined) {
 			return null
 		}
 		switch (props.label) {
 			case 'Add':
-				return <AddIcon title="+1"></AddIcon>
+				return <AddIcon title="+1" className={classNames.deepSkyBlue}></AddIcon>
 			case 'Ringer':
 				return <RingerIcon title="未掌握"></RingerIcon>
 			case 'RingerOff':
