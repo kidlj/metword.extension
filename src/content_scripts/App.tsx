@@ -301,7 +301,9 @@ export function Menu() {
 				}
 
 				<ActionButton onRenderIcon={onRenderIcon} label="Search" href={collectionsURL} />
+
 				<ActionButton onRenderIcon={onRenderIcon} label="Share" onClick={() => share(pageMetadata.url, pageMetadata.title)} />
+
 				<ActionButton onRenderIcon={onRenderIcon} label="Close" onClick={() => closeMenu()} />
 			</Stack>
 		</div>
@@ -389,14 +391,7 @@ export function Menu() {
 			setErrMessage(errMessage)
 			return
 		}
-		setState({
-			collection: {
-				inCollection: true,
-				id: data.collection.id,
-			},
-			feed: state!.feed
-		})
-		return
+		setErrMessage("Success! Thanks for sharing!")
 	}
 
 }
