@@ -210,6 +210,7 @@ function openMenu() {
 				className={styles.menu}
 				role="dialog"
 				gapSpace={0}
+				isBeakVisible={false}
 				target={{ left: left, top: top }}
 			>
 				<Menu></Menu>
