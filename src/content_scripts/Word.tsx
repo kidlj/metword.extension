@@ -118,23 +118,13 @@ export function Word({ word, selectText }: WordProps) {
 		return <ErrorMessage errMessage={errMessage}></ErrorMessage>
 	}
 
-	const buttonClass = mergeStyles({
-		height: 40,
-		width: 40,
-	})
-
-	const classNames = mergeStyleSets({
-		deepSkyBlue: [{ color: 'deepskyblue' }, buttonClass],
-		greenYellow: [{ color: 'greenyellow' }, buttonClass],
-	})
-
 	const onRenderIcon: IRenderFunction<IButtonProps> = (props: IButtonProps | undefined) => {
 		if (props == undefined) {
 			return null
 		}
 		switch (props.label) {
 			case 'Add':
-				return <AddIcon title="+1" className={classNames.deepSkyBlue}></AddIcon>
+				return <AddIcon title="+1"></AddIcon>
 			case 'Ringer':
 				return <RingerIcon title="未掌握"></RingerIcon>
 			case 'RingerOff':
