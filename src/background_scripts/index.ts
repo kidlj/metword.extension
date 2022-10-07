@@ -117,7 +117,7 @@ async function updateBadge() {
 		const page: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
 		if (page && page.feed) {
 			await browser.browserAction.setBadgeText({ text: "1" })
-			await browser.browserAction.setBadgeBackgroundColor({ color: "greenyellow" })
+			await browser.browserAction.setBadgeBackgroundColor({ color: "deepskyblue" })
 		} else {
 			await browser.browserAction.setBadgeText({ text: "" })
 		}
