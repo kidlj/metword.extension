@@ -250,7 +250,7 @@ const onRenderIcon: IRenderFunction<IButtonProps> = (props: IButtonProps | undef
 		case 'Search':
 			return <SearchIcon title="Search collections"></SearchIcon>
 		case 'Share':
-			return <ShareIcon title="Share article"></ShareIcon>
+			return <ShareIcon title="Share to News"></ShareIcon>
 		case 'Close':
 			return <ChromeCloseIcon title="Close"></ChromeCloseIcon>
 	}
