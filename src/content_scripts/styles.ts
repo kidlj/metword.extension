@@ -59,10 +59,11 @@ export const styles = mergeStyleSets({
 			display: "list-item",
 			listStylePosition: "inside",
 			listStyleType: "disc",
-			lineHeight: "1.2em",
+			lineHeight: "1.4em",
 		},
 		'a': {
 			all: "unset",
+			cursor: "pointer",
 			fontWeight: 400,
 			color: "cornflowerblue",
 			textDecoration: "none",
