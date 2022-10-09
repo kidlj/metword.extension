@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import { getSceneSentence, getSelectedElement } from './lib'
-import { Text, IRenderFunction } from '@fluentui/react'
 import { ActionButton, IButtonProps } from '@fluentui/react/lib/Button';
 import { AddIcon, RingerIcon, RingerOffIcon } from '@fluentui/react-icons-mdl2';
 import ErrorMessage from './ErrorMessage';
 import { styles } from "./styles"
+import { Text, Stack, IStackTokens, IRenderFunction } from '@fluentui/react';
 
 interface WordProps {
 	word: IWord
@@ -41,6 +41,8 @@ interface IScene {
 	url: string,
 	create_time: number
 }
+
+const stackTokens: IStackTokens = { childrenGap: 8 }
 
 export function Word({ word, selectText }: WordProps) {
 	const [times, setTimes] = useState(word.edges.meets ? word.edges.meets[0].times : 0)
@@ -135,7 +137,7 @@ export function Word({ word, selectText }: WordProps) {
 	}
 
 	return (
-		<div className={styles.word}>
+		<Stack horizontalAlign="start" tokens={stackTokens}>
 			<div className={styles.head}>
 				<Text className={styles.title}>{word.name}</Text>
 				<ActionButton className={styles.button} onRenderIcon={onRenderIcon} label="Add" disabled={met || known} onClick={() => addScene(word.id, selectText)} />
@@ -173,7 +175,7 @@ export function Word({ word, selectText }: WordProps) {
 						const [pre, met, post] = extractScene(scene.text)
 						return (
 							<li key={scene.id}>
-								<a href={scene.url} className={styles.sceneLink} title={scene.url}>
+								<a href={scene.url} title={scene.url}>
 									{pre}<span dangerouslySetInnerHTML={{ __html: met }}></span>{post}
 								</a>
 								<Text className={styles.sceneButton} onClick={() => forgetScene(scene.id)}>✗</Text>
@@ -182,7 +184,7 @@ export function Word({ word, selectText }: WordProps) {
 					})}
 				</ul>
 			</div>
-		</div>
+		</Stack>
 	)
 }
 

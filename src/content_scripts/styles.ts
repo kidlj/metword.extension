@@ -1,14 +1,6 @@
 import { mergeStyleSets } from '@fluentui/react/lib/Styling';
 
 export const styles = mergeStyleSets({
-	word: {
-		fontFamily: '"Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue"',
-		fontSize: 14,
-		display: "flex",
-		flexDirection: "column",
-		rowGap: 8,
-		alignItems: "start",
-	},
 	head: {
 		marginBottom: 10,
 		display: "flex",
@@ -68,18 +60,19 @@ export const styles = mergeStyleSets({
 			listStylePosition: "inside",
 			listStyleType: "disc",
 			lineHeight: "1.2em",
-		}
-	},
-	sceneLink: {
-		fontWeight: 400,
-		color: "cornflowerblue",
-		textDecoration: "none",
-		':hover': {
-			textDecoration: "none",
 		},
-		':visited': {
+		'a': {
+			all: "unset",
+			fontWeight: 400,
 			color: "cornflowerblue",
-		}
+			textDecoration: "none",
+			':hover': {
+				textDecoration: "none",
+			},
+			':visited': {
+				color: "cornflowerblue",
+			}
+		},
 	},
 	sceneButton: {
 		fontSize: 14,
