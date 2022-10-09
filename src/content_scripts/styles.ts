@@ -39,7 +39,7 @@ export const styles = mergeStyleSets({
 		'ul li': {
 			all: "unset",
 			display: "block",
-			lineHeight: "1.2em",
+			lineHeight: "1.4em",
 		}
 	},
 	times: {
