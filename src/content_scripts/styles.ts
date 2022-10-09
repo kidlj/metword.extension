@@ -15,7 +15,7 @@ export const styles = mergeStyleSets({
 	title: {
 		fontWeight: 200,
 		fontSize: 42,
-		lineHeight: "1.0",
+		lineHeight: "1.0em",
 	},
 	message: {
 		padding: 6,
