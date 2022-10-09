@@ -69,6 +69,7 @@ export const styles = mergeStyleSets({
 			textDecoration: "none",
 			':hover': {
 				textDecoration: "none",
+				color: "#1d67a0",
 			},
 		},
 	},
