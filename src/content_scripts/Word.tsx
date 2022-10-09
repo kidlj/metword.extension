@@ -4,8 +4,7 @@ import { getSceneSentence, getSelectedElement } from './lib'
 import { ActionButton, IButtonProps } from '@fluentui/react/lib/Button';
 import { AddIcon, RingerIcon, RingerOffIcon } from '@fluentui/react-icons-mdl2';
 import ErrorMessage from './ErrorMessage';
-import { styles } from "./styles"
-import { Text, Stack, IStackTokens, IRenderFunction } from '@fluentui/react';
+import { Text, Stack, IStackTokens, IRenderFunction, Link } from '@fluentui/react';
 
 interface WordProps {
 	word: IWord
@@ -138,26 +137,26 @@ export function Word({ word, selectText }: WordProps) {
 
 	return (
 		<Stack horizontalAlign="start" tokens={stackTokens}>
-			<div className={styles.head}>
-				<Text className={styles.title}>{word.name}</Text>
-				<ActionButton className={styles.button} onRenderIcon={onRenderIcon} label="Add" disabled={met || known} onClick={() => addScene(word.id, selectText)} />
+			<div className="metword-head">
+				<Text className="metword-title">{word.name}</Text>
+				<ActionButton className="met-button" onRenderIcon={onRenderIcon} label="Add" disabled={met || known} onClick={() => addScene(word.id, selectText)} />
 				{(times > 0 || known) &&
-					<ActionButton className={styles.button} toggle onRenderIcon={onRenderIcon} label={known ? "RingerOff" : "Ringer"} onClick={() => { toggleKnown(word.id) }} />
+					<ActionButton className="met-button" toggle onRenderIcon={onRenderIcon} label={known ? "RingerOff" : "Ringer"} onClick={() => { toggleKnown(word.id) }} />
 				}
 			</div>
-			<div className={styles.phonetics}>
+			<div className="metword-phonetics">
 				{(word.us_phonetic) &&
 					<span>
-						<Text className={styles.phoneticLabel}>US</Text><Text className={styles.phonetic}>[{word.us_phonetic}]</Text>
+						<Text className="metword-phonetic-label">US</Text><Text className="metword-phonetic">[{word.us_phonetic}]</Text>
 					</span>
 				}
 				{(word.uk_phonetic) &&
 					<span>
-						<Text className={styles.phoneticLabel}>UK</Text><Text className={styles.phonetic}>[{word.uk_phonetic}]</Text>
+						<Text className="metword-phonetic-label">UK</Text><Text className="metword-phonetic">[{word.uk_phonetic}]</Text>
 					</span>
 				}
 			</div>
-			<div className={styles.defs}>
+			<div className="metword-defs">
 				<ul>
 					{word.def_zh.map((def, index) => (
 						<li key={index}><Text>{def}</Text></li>)
@@ -165,11 +164,11 @@ export function Word({ word, selectText }: WordProps) {
 				</ul>
 			</div>
 			{times > 0 &&
-				<div className={styles.times}>
+				<div className="metword-times">
 					<span>标记 {times} 次</span>
 				</div>
 			}
-			<div className={styles.scenes}>
+			<div className="metword-scenes">
 				<ul>
 					{scenes.map((scene) => {
 						const [pre, met, post] = extractScene(scene.text)
@@ -178,7 +177,7 @@ export function Word({ word, selectText }: WordProps) {
 								<a href={scene.url} title={scene.url} target="blanck">
 									{pre}<span dangerouslySetInnerHTML={{ __html: met }}></span>{post}
 								</a>
-								<Text className={styles.sceneButton} onClick={() => forgetScene(scene.id)}>✗</Text>
+								<Text className="metword-forget" onClick={() => forgetScene(scene.id)}>✗</Text>
 							</li>
 						)
 					})}

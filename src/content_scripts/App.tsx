@@ -280,28 +280,28 @@ export function Menu() {
 		<div>
 			<Stack horizontal verticalAlign="center" horizontalAlign="center" tokens={stackTokens}>
 				{!collection.inCollection &&
-					<ActionButton onRenderIcon={onRenderIcon} label="AddCollection" onClick={() => addCollection(pageMetadata.url, pageMetadata.title)} />
+					<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="AddCollection" onClick={() => addCollection(pageMetadata.url, pageMetadata.title)} />
 				}
 
 				{collection.inCollection &&
-					<ActionButton onRenderIcon={onRenderIcon} label="RemoveCollection" onClick={() => deleteCollection(collection.id!)} />
+					<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="RemoveCollection" onClick={() => deleteCollection(collection.id!)} />
 				}
 
 				{!feedMetadata &&
-					<ActionButton onRenderIcon={onRenderIcon} label="Subscribe" disabled />
+					<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="Subscribe" disabled />
 				}
 				{feedMetadata && feed && !feed.subscribed &&
-					<ActionButton onRenderIcon={onRenderIcon} label="Subscribe" onClick={() => subscribe(feedMetadata.url, feedMetadata.title)} />
+					<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="Subscribe" onClick={() => subscribe(feedMetadata.url, feedMetadata.title)} />
 				}
 				{feedMetadata && feed && feed.subscribed &&
-					<ActionButton onRenderIcon={onRenderIcon} label="ViewFeed" href={feedURL + feed.id} />
+					<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="ViewFeed" href={feedURL + feed.id} />
 				}
 
-				<ActionButton onRenderIcon={onRenderIcon} label="Search" href={collectionsURL} />
+				<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="Search" href={collectionsURL} />
 
-				<ActionButton onRenderIcon={onRenderIcon} label="Share" onClick={() => share(pageMetadata.url, pageMetadata.title)} />
+				<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="Share" onClick={() => share(pageMetadata.url, pageMetadata.title)} />
 
-				<ActionButton onRenderIcon={onRenderIcon} label="Close" onClick={() => closeMenu()} />
+				<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="Close" onClick={() => closeMenu()} />
 			</Stack>
 		</div>
 	)
