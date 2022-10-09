@@ -65,14 +65,11 @@ export const styles = mergeStyleSets({
 			all: "unset",
 			cursor: "pointer",
 			fontWeight: 400,
-			color: "cornflowerblue",
+			color: "black",
 			textDecoration: "none",
 			':hover': {
 				textDecoration: "none",
 			},
-			':visited': {
-				color: "cornflowerblue",
-			}
 		},
 	},
 	sceneButton: {

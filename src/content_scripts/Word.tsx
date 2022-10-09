@@ -175,7 +175,7 @@ export function Word({ word, selectText }: WordProps) {
 						const [pre, met, post] = extractScene(scene.text)
 						return (
 							<li key={scene.id}>
-								<a href={scene.url} title={scene.url}>
+								<a href={scene.url} title={scene.url} target="blanck">
 									{pre}<span dangerouslySetInnerHTML={{ __html: met }}></span>{post}
 								</a>
 								<Text className={styles.sceneButton} onClick={() => forgetScene(scene.id)}>✗</Text>
