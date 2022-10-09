@@ -3,6 +3,7 @@ import { mergeStyleSets, FontWeights, Spinner, SpinnerSize } from '@fluentui/rea
 import { Word, IWord } from './Word'
 import { browser } from 'webextension-polyfill-ts'
 import ErrorMessage from './ErrorMessage'
+import { AutoDeploySettingsIcon } from '@fluentui/react-icons-mdl2'
 
 interface TipProps {
 	selectText: string

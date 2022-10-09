@@ -91,11 +91,12 @@ const show = async (e: MouseEvent) => {
 	ReactDOM.render(
 		<React.StrictMode>
 			<Callout
-				id="metwords-tip"
+				id="metword-tip"
 				className={styles.callout}
 				role="alertdialog"
 				gapSpace={0}
 				target={`#metword-selected`}
+				hideOverflow={true}
 			>
 				<Tip word={word} selectText={selectText} />
 			</Callout>
@@ -105,13 +106,8 @@ const show = async (e: MouseEvent) => {
 }
 
 const dismiss = (e: MouseEvent | Event) => {
-	const tip = document.getElementById("metwords-tip")
-	if (!tip) { return }
-	if ((tip as Node).contains(e.target as Node)) { return }
-
 	const selectedElement = getSelectedElement()
-	if (!selectedElement) { return }
-	selectedElement.removeAttribute("id")
+	selectedElement?.removeAttribute("id")
 
 	ReactDOM.unmountComponentAtNode(_rootDiv)
 }

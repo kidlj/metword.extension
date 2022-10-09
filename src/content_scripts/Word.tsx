@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import { getSceneSentence, getSelectedElement } from './lib'
-import { mergeStyles, mergeStyleSets, Text, IRenderFunction } from '@fluentui/react'
+import { Text, IRenderFunction } from '@fluentui/react'
 import { ActionButton, IButtonProps } from '@fluentui/react/lib/Button';
 import { AddIcon, RingerIcon, RingerOffIcon } from '@fluentui/react-icons-mdl2';
 import ErrorMessage from './ErrorMessage';
+import { styles } from "./styles"
 
 interface WordProps {
 	word: IWord
@@ -134,7 +135,7 @@ export function Word({ word, selectText }: WordProps) {
 	}
 
 	return (
-		<div className="metwords-word">
+		<div className={styles.word}>
 			<div className={styles.head}>
 				<Text className={styles.title}>{word.name}</Text>
 				<ActionButton className={styles.button} onRenderIcon={onRenderIcon} label="Add" disabled={met || known} onClick={() => addScene(word.id, selectText)} />
@@ -142,38 +143,40 @@ export function Word({ word, selectText }: WordProps) {
 					<ActionButton className={styles.button} toggle onRenderIcon={onRenderIcon} label={known ? "RingerOff" : "Ringer"} onClick={() => { toggleKnown(word.id) }} />
 				}
 			</div>
-			<div className="metwords-phonetics">
+			<div className={styles.phonetics}>
 				{(word.us_phonetic) &&
 					<span>
-						<Text className="metwords-phonetic-label">US</Text><Text className="metwords-phonetic">[{word.us_phonetic}]</Text>
+						<Text className={styles.phoneticLabel}>US</Text><Text className={styles.phonetic}>[{word.us_phonetic}]</Text>
 					</span>
 				}
 				{(word.uk_phonetic) &&
 					<span>
-						<Text className="metwords-phonetic-label">UK</Text><Text className="metwords-phonetic">[{word.uk_phonetic}]</Text>
+						<Text className={styles.phoneticLabel}>UK</Text><Text className={styles.phonetic}>[{word.uk_phonetic}]</Text>
 					</span>
 				}
 			</div>
-			<div className="metwords-defs">
+			<div className={styles.defs}>
 				<ul>
 					{word.def_zh.map((def, index) => (
-						<li key={index} className="metwords-def"><Text className="metwords-explain">{def}</Text></li>)
+						<li key={index}><Text>{def}</Text></li>)
 					)}
 				</ul>
 			</div>
 			{times > 0 &&
-				<span className="metwords-times">标记 {times} 次</span>
+				<div className={styles.times}>
+					<span>标记 {times} 次</span>
+				</div>
 			}
-			<div className="metwords-scenes">
+			<div className={styles.scenes}>
 				<ul>
 					{scenes.map((scene) => {
 						const [pre, met, post] = extractScene(scene.text)
 						return (
 							<li key={scene.id}>
-								<a href={scene.url} className="mewords-scene" title={new Date(scene.create_time).toLocaleString('zh-CN')}>
+								<a href={scene.url} className={styles.sceneLink} title={scene.url}>
 									{pre}<span dangerouslySetInnerHTML={{ __html: met }}></span>{post}
 								</a>
-								<Text className="metwords-forget" onClick={() => forgetScene(scene.id)}>✗</Text>
+								<Text className={styles.sceneButton} onClick={() => forgetScene(scene.id)}>✗</Text>
 							</li>
 						)
 					})}
@@ -194,22 +197,3 @@ function extractScene(scene: string) {
 	const postIndex = index + met.length
 	return [scene.slice(0, index), met, scene.slice(postIndex)]
 }
-
-const styles = mergeStyleSets({
-	head: {
-		marginBottom: 12,
-		display: "flex",
-		alignItems: "flex-end"
-	},
-	button: {
-		lineHeight: "1.0",
-		width: 24,
-		height: 16,
-		marginLeft: 16,
-	},
-	title: {
-		fontWeight: 200,
-		fontSize: 42,
-		lineHeight: "1.0",
-	},
-})
