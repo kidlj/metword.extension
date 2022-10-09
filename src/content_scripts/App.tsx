@@ -129,6 +129,7 @@ const styles = mergeStyleSets({
 		display: "block !important",
 		width: 256,
 		padding: '10px 20px',
+		backgroundColor: "white",
 	},
 	title: {
 		marginBottom: 12,
