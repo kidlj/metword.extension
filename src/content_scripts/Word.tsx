@@ -101,8 +101,8 @@ export const wordStyles = `
 	padding-left: 0px;
 }
 
-.def ul li {
-	line-height: 1.2em;
+.defs ul li {
+	line-height: 1.4em;
 	display: block;
 }
 
