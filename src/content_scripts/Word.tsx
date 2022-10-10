@@ -155,9 +155,9 @@ xmet {
 }
 `
 
-const addIcon = browser.runtime.getURL("icons_active/plus.png")
+const addIcon = browser.runtime.getURL("icons_normal/plus.png")
 const addDisabledIcon = browser.runtime.getURL("icons_normal/plus-disabled.png")
-const bellIcon = browser.runtime.getURL("icons_active/notification.png")
+const bellIcon = browser.runtime.getURL("icons_normal/notification.png")
 const bellOffIcon = browser.runtime.getURL("icons_normal/notificationoff.png")
 
 
