@@ -20,7 +20,3 @@ xmetword::before {
 	overflow: hidden !important;
 	text-overflow: clip !important;
 }
-
-xmet {
-	font-weight: 600 !important;
-}

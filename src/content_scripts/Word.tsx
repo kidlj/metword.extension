@@ -150,6 +150,9 @@ export const wordStyles = `
 	cursor: pointer;
 }
 
+xmet {
+	font-weight: 600;
+}
 `
 
 const addIcon = browser.runtime.getURL("icons_active/plus.png")
