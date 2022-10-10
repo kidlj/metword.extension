@@ -336,5 +336,7 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 browser.browserAction.onClicked.addListener(async () => {
 	const tabs = await getActiveTab()
-	await browser.tabs.sendMessage(tabs[0].id!, { action: "openMenu" })
+	try {
+		await browser.tabs.sendMessage(tabs[0].id!, { action: "openMenu" })
+	} catch (e) { }
 })

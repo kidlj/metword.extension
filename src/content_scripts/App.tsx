@@ -106,7 +106,9 @@ const dismiss = (e: MouseEvent | Event) => {
 	const selectedElement = getSelectedElement()
 	selectedElement?.removeAttribute("id")
 
-	ReactDOM.unmountComponentAtNode(_rootDiv)
+	try {
+		ReactDOM.unmountComponentAtNode(_rootDiv)
+	} catch (e) { }
 }
 
 const styles = mergeStyleSets({
@@ -236,7 +238,9 @@ function openMenu() {
 }
 
 const closeMenu = () => {
-	ReactDOM.unmountComponentAtNode(_rootDiv)
+	try {
+		ReactDOM.unmountComponentAtNode(_rootDiv)
+	} catch (e) { }
 }
 
 const starIcon = browser.runtime.getURL("icons_normal/star.png")
