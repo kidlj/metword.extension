@@ -156,10 +156,10 @@ xmet {
 `
 
 const addIcon = browser.runtime.getURL("icons_active/plus.png")
-const bellIcon = browser.runtime.getURL("icons_active/bell.png")
-const bellOffIcon = browser.runtime.getURL("icons_normal/belloff.png")
-
 const addDisabledIcon = browser.runtime.getURL("icons_normal/plus-disabled.png")
+const bellIcon = browser.runtime.getURL("icons_active/notification.png")
+const bellOffIcon = browser.runtime.getURL("icons_normal/notificationoff.png")
+
 
 export function Word({ word, selectText }: WordProps) {
 	const [times, setTimes] = useState(word.edges.meets ? word.edges.meets[0].times : 0)
