@@ -328,34 +328,3 @@ export function getWord(selectedText: string): string {
 	}
 	return ""
 }
-
-interface FetchResult {
-	data: any,
-	errMessage: string | false
-}
-
-export async function fetchData(url: string, init: RequestInit): Promise<FetchResult> {
-	const jsonHeaders = new Headers({
-		// Our Go backend implementation needs 'Accept' header to distinguish between requests, like via JSON or Turbo.
-		'Accept': 'application/json',
-		'Content-Type': "application/json"
-	})
-	if (!init.headers) {
-		init.headers = jsonHeaders
-	}
-
-	try {
-		const res = await fetch(encodeURI(url), init)
-		const result = await res.json()
-		return {
-			// We can rely on .message field to distinguish between successful or failed requests, but not on .data field.
-			data: result.data || null,
-			errMessage: result.message || false
-		}
-	} catch (err) {
-		return {
-			data: null,
-			errMessage: "网络连接错误"
-		}
-	}
-}

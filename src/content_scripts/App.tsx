@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Tip from './Tip';
 import './style.css';
-import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement, fetchData } from './lib'
+import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
 import { browser } from 'webextension-polyfill-ts';
 import { Callout } from '@fluentui/react'
-import { mergeStyleSets, FontWeights } from '@fluentui/react/lib/Styling';
-import { Meets } from '../background_scripts/index'
+import { mergeStyleSets } from '@fluentui/react/lib/Styling';
+import { Meets, IArticleState, IFeedMetadata, IPageMetadata } from '../background_scripts/index'
 import config from '../config'
 import ErrorMessage from './ErrorMessage';
 import { ShadowView } from "shadow-view";
@@ -15,13 +15,9 @@ import { wordStyles } from './Word';
 // 1s
 const waitDuration = 1000
 
-const articleStateURL = config.articleStateURL
-const collectionURL = config.collectionURL
-const shareURL = config.shareURL
 const feedURL = config.feedURL
 const collectionsURL = config.collectionsURL
-const feedStateURL = config.feedStateURL
-const subscribeURL = config.subscribeURL
+const wordsURL = config.wordsURL
 
 async function start() {
 	const meets: Meets = await browser.runtime.sendMessage({
@@ -114,9 +110,6 @@ const dismiss = (e: MouseEvent | Event) => {
 }
 
 const styles = mergeStyleSets({
-	button: {
-		width: 130,
-	},
 	callout: {
 		display: "block !important",
 		width: 520,
@@ -127,14 +120,6 @@ const styles = mergeStyleSets({
 		width: 256,
 		padding: '10px 20px',
 		backgroundColor: "white",
-	},
-	title: {
-		marginBottom: 12,
-		fontWeight: FontWeights.semilight,
-	},
-	words: {
-		display: 'block',
-		marginTop: 20,
 	},
 })
 
@@ -257,7 +242,7 @@ const closeMenu = () => {
 const starIcon = browser.runtime.getURL("icons_normal/star.png")
 const rssIcon = browser.runtime.getURL("icons_normal/rss.png")
 const searchIcon = browser.runtime.getURL("icons_normal/search.png")
-const shareIcon = browser.runtime.getURL("icons_normal/share.png")
+const bookIcon = browser.runtime.getURL("icons_normal/book.png")
 const closeIcon = browser.runtime.getURL("icons_normal/close.png")
 
 const starActive = browser.runtime.getURL("icons_active/star.png")
@@ -311,20 +296,20 @@ export function Menu() {
 
 			{!feedMetadata &&
 				<div className='button disabled'>
-					<a title="No Feed Available">
+					<a title="未发现订阅">
 						<img src={rssDisabled}></img>
 					</a>
 				</div>
 			}
 			{feedMetadata && feed && !feed.subscribed &&
 				<div className='button'>
-					<a title='Subscribe Feed' onClick={() => subscribe(feedMetadata.url, feedMetadata.title)}>
+					<a title='订阅' onClick={() => subscribe(feedMetadata.url, feedMetadata.title)}>
 						<img src={rssIcon}></img>
 					</a>
 				</div>
 			}
 			{feedMetadata && feed && feed.subscribed &&
-				<div title='View Feed' className="button">
+				<div title='查看订阅' className="button">
 					<a href={feedURL + feed.id}>
 						<img src={rssActive}></img>
 					</a>
@@ -332,19 +317,19 @@ export function Menu() {
 			}
 
 			<div className="button">
-				<a title="Search Collections" href={collectionsURL}>
+				<a title="搜索" href={collectionsURL}>
 					<img src={searchIcon}></img>
 				</a>
 			</div>
 
 			<div className='button'>
-				<a title="Share To News" onClick={() => share(pageMetadata.url, pageMetadata.title)}>
-					<img src={shareIcon}></img>
+				<a title="单词本" href={wordsURL}>
+					<img src={bookIcon}></img>
 				</a>
 			</div>
 
 			<div className='button'>
-				<a title="Close" onClick={() => closeMenu()}>
+				<a title="关闭" onClick={() => closeMenu()}>
 					<img src={closeIcon}></img>
 				</a>
 			</div>
@@ -352,14 +337,10 @@ export function Menu() {
 	)
 
 	async function addCollection(url: string, title: string) {
-		const body = {
+		const { data, errMessage } = await browser.runtime.sendMessage({
+			action: "addCollection",
 			url: url,
 			title: title,
-		}
-		const payload = JSON.stringify(body)
-		const { data, errMessage } = await fetchData(collectionURL, {
-			method: "POST",
-			body: payload,
 		})
 		if (errMessage) {
 			setErrMessage(errMessage)
@@ -370,18 +351,14 @@ export function Menu() {
 				inCollection: true,
 				id: data.collection.id,
 			},
-			feed: state!.feed
+			feed: state?.feed
 		})
 	}
 
 	async function deleteCollection(id: number) {
-		const body = {
-			id: id,
-		}
-		const payload = JSON.stringify(body)
-		const { data, errMessage } = await fetchData(collectionURL, {
-			method: "DELETE",
-			body: payload,
+		const { _, errMessage } = await browser.runtime.sendMessage({
+			action: "deleteCollection",
+			id: id
 		})
 		if (errMessage) {
 			setErrMessage(errMessage)
@@ -396,14 +373,10 @@ export function Menu() {
 	}
 
 	async function subscribe(feedURL: string, feedTitle: string) {
-		const body = {
-			url: feedURL,
-			title: feedTitle,
-		}
-		const payload = JSON.stringify(body)
-		const { data, errMessage } = await fetchData(subscribeURL, {
-			method: "POST",
-			body: payload,
+		const { data, errMessage } = await browser.runtime.sendMessage({
+			action: "subscribe",
+			feedURL: feedURL,
+			feedTitle: feedTitle,
 		})
 		if (errMessage) {
 			setErrMessage(errMessage)
@@ -418,117 +391,19 @@ export function Menu() {
 			}
 		})
 	}
-
-	async function share(url: string, title: string) {
-		const body = {
-			url: url,
-			title: title,
-		}
-		const payload = JSON.stringify(body)
-		const { data, errMessage } = await fetchData(shareURL, {
-			method: "POST",
-			body: payload,
-		})
-		if (errMessage) {
-			setErrMessage(errMessage)
-			return
-		}
-		setErrMessage("Success! Thanks for sharing!")
-	}
-
-}
-
-export interface ICollectionState {
-	inCollection: boolean
-	id?: number
-}
-
-export interface IFeedState {
-	url: string
-	subscribed: boolean
-	id?: number
-}
-
-export interface IArticleState {
-	collection: ICollectionState
-	feed?: IFeedState
-}
-
-export interface IFeedMetadata {
-	url: string
-	title: string
-}
-
-export interface IPageMetadata {
-	page: {
-		url: string
-		title: string
-		canonicalURL?: string
-	}
-	feed?: IFeedMetadata
 }
 
 function useArticleState() {
 	const [state, setState] = React.useState<IArticleState | null>(null)
 
 	React.useEffect(() => {
-		async function getState() {
-			const data = await getArticleState()
+		async function sendMessage(msg: { action: string }) {
+			const data = await browser.runtime.sendMessage(msg)
 			setState(data)
 		}
 
-		getState()
+		sendMessage({ action: "getArticleStatePopup" })
 	}, [])
 
 	return { state, setState }
-}
-
-async function getCollectionState(tabURL?: string, canonicalURL?: string): Promise<ICollectionState> {
-	const body = {
-		url: tabURL,
-		canonicalURL: canonicalURL,
-	}
-	const payload = JSON.stringify(body)
-	const result = await fetchData(articleStateURL, {
-		method: "POST",
-		body: payload,
-	})
-	if (result.errMessage) {
-		// Do not propogate error message here.
-		return { inCollection: false }
-	}
-	return result.data
-}
-
-async function getFeedState(feedURL: string): Promise<IFeedState> {
-	const body = {
-		url: feedURL,
-	}
-	const payload = JSON.stringify(body)
-	const result = await fetchData(feedStateURL, {
-		method: "POST",
-		body: payload,
-	})
-	if (result.errMessage) {
-		// Do not propogate error message here.
-		return { url: feedURL, subscribed: false }
-	}
-	return { url: feedURL, ...result.data }
-}
-
-async function getArticleState(): Promise<IArticleState> {
-	const pageMetadata = getPageMetadata()
-	const page = pageMetadata.page
-	const feedURL = pageMetadata.feed?.url
-	const collectionState = await getCollectionState(page.url, page.canonicalURL)
-	if (!feedURL) {
-		return {
-			collection: collectionState
-		}
-	}
-	const feedState = await getFeedState(feedURL)
-	return {
-		collection: collectionState,
-		feed: feedState,
-	}
 }

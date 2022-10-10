@@ -12,6 +12,7 @@ const development = {
 	addSceneURL: "http://localhost:8080/scene",
 	forgetSceneURL: "http://localhost:8080/scene?id=",
 	knowURL: "http://localhost:8080/meet/toggle?id=",
+	wordsURL: "http://localhost:8080/",
 
 	articleStateURL: "http://localhost:8080/api/collection/state",
 	collectionURL: "http://localhost:8080/api/collection",
@@ -32,6 +33,7 @@ const production = {
 	addSceneURL: "https://app.metword.co/scene",
 	forgetSceneURL: "https://app.metword.co/scene?id=",
 	knowURL: "https://app.metword.co/meet/toggle?id=",
+	wordsURL: "https://app.metword.co/",
 
 	articleStateURL: "https://app.metword.co/api/collection/state",
 	collectionURL: "https://app.metword.co/api/collection",
