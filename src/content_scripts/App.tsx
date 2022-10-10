@@ -5,13 +5,12 @@ import './style.css';
 import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement, fetchData } from './lib'
 import { browser } from 'webextension-polyfill-ts';
 import { Callout } from '@fluentui/react'
-import { mergeStyles, mergeStyleSets, FontWeights } from '@fluentui/react/lib/Styling';
+import { mergeStyleSets, FontWeights } from '@fluentui/react/lib/Styling';
 import { Meets } from '../background_scripts/index'
-import { IRenderFunction, Spinner, SpinnerSize, Stack, IStackTokens } from '@fluentui/react';
-import { ActionButton, IButtonProps } from '@fluentui/react/lib/Button';
-import { FavoriteStarIcon, GlobeFavoriteIcon, SearchIcon, ShareIcon, ChromeCloseIcon, } from '@fluentui/react-icons-mdl2';
 import config from '../config'
 import ErrorMessage from './ErrorMessage';
+import { ShadowView } from "shadow-view";
+import { wordStyles } from './Word';
 
 // 1s
 const waitDuration = 1000
@@ -98,7 +97,9 @@ const show = async (e: MouseEvent) => {
 				target={`#metword-selected`}
 				hideOverflow={true}
 			>
-				<Tip word={word} selectText={selectText} />
+				<ShadowView styleContent={wordStyles}>
+					<Tip word={word} selectText={selectText} />
+				</ShadowView>
 			</Callout>
 		</React.StrictMode>,
 		_rootDiv
@@ -190,8 +191,38 @@ browser.runtime.onMessage.addListener(async (msg) => {
 	}
 })
 
+const menuStyles = `
+.menu {
+	padding: 4px 10px;
+	display: flex;
+	flex-direction: row;
+	column-gap: 12px;
+	vertical-align: center;
+	justify-content: space-evenly;
+}
+
+.button {
+	cursor: pointer;
+}
+
+.button img {
+	height: 18px;
+	width: 18px;
+}
+
+.disabled {
+	cursor: default;
+}
+
+.message {
+	display: flex;
+	flex-direction: row;
+	vertical-align: center;
+	justify-content: space-between;
+}
+`
+
 function openMenu() {
-	console.log("openMenu")
 	const left = window.innerWidth - 10
 	const top = 10
 
@@ -210,9 +241,11 @@ function openMenu() {
 				isBeakVisible={false}
 				target={{ left: left, top: top }}
 			>
-				<Menu></Menu>
+				<ShadowView styleContent={menuStyles}>
+					<Menu></Menu>
+				</ShadowView>
 			</Callout>
-		</React.StrictMode>,
+		</React.StrictMode >,
 		_rootDiv
 	)
 }
@@ -221,53 +254,35 @@ const closeMenu = () => {
 	ReactDOM.unmountComponentAtNode(_rootDiv)
 }
 
-// useless, no effect to ActionButton.
-const buttonClass = mergeStyles({
-	height: 20,
-	width: 20,
-})
+const starIcon = browser.runtime.getURL("icons_normal/star.png")
+const rssIcon = browser.runtime.getURL("icons_normal/rss.png")
+const searchIcon = browser.runtime.getURL("icons_normal/search.png")
+const shareIcon = browser.runtime.getURL("icons_normal/share.png")
+const closeIcon = browser.runtime.getURL("icons_normal/close.png")
 
-const classNames = mergeStyleSets({
-	deepSkyBlue: [{ color: 'deepskyblue' }, buttonClass],
-})
+const starActive = browser.runtime.getURL("icons_active/star.png")
+const rssActive = browser.runtime.getURL("icons_active/rss.png")
 
-const onRenderIcon: IRenderFunction<IButtonProps> = (props: IButtonProps | undefined) => {
-	if (props == undefined) {
-		return null
-	}
-	switch (props.label) {
-		case 'AddCollection':
-			return <FavoriteStarIcon title="Add to collections"></FavoriteStarIcon>
-		case 'RemoveCollection':
-			return <FavoriteStarIcon title="Remove from collections" className={classNames.deepSkyBlue}></FavoriteStarIcon>
-		case 'Subscribe':
-			return <GlobeFavoriteIcon title="Subscribe feed"></GlobeFavoriteIcon>
-		case 'ViewFeed':
-			return <GlobeFavoriteIcon title="View feed" className={classNames.deepSkyBlue}></GlobeFavoriteIcon>
-		case 'Search':
-			return <SearchIcon title="Search collections"></SearchIcon>
-		case 'Share':
-			return <ShareIcon title="Share to News"></ShareIcon>
-		case 'Close':
-			return <ChromeCloseIcon title="Close"></ChromeCloseIcon>
-	}
-	return null
-}
-
-const stackTokens: IStackTokens = { childrenGap: 16 }
+const rssDisabled = browser.runtime.getURL("icons_normal/rss-disabled.png")
 
 export function Menu() {
 	const [errMessage, setErrMessage] = React.useState<string | false>(false)
 	const { state, setState } = useArticleState()
 
 	if (errMessage) return (
-		<Stack horizontal horizontalAlign='space-between' verticalAlign='center' tokens={stackTokens}>
+		<div className='message'>
 			<ErrorMessage errMessage={errMessage}></ErrorMessage>
-			<ActionButton onRenderIcon={onRenderIcon} label="Close" onClick={() => closeMenu()} />
-		</Stack>
+			<div className='button'>
+				<a onClick={() => closeMenu()}>
+					<img src={closeIcon}></img>
+				</a>
+			</div>
+		</div>
 	)
 	if (!state) return (
-		<Spinner size={SpinnerSize.medium}></Spinner>
+		<div className='message'>
+			<ErrorMessage errMessage={"Loading..."}></ErrorMessage>
+		</div>
 	)
 
 	const metadata = getPageMetadata()
@@ -277,32 +292,62 @@ export function Menu() {
 	const feed = state.feed
 
 	return (
-		<div>
-			<Stack horizontal verticalAlign="center" horizontalAlign="center" tokens={stackTokens}>
-				{!collection.inCollection &&
-					<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="AddCollection" onClick={() => addCollection(pageMetadata.url, pageMetadata.title)} />
-				}
+		<div className='menu'>
+			{!collection.inCollection &&
+				<div className='button'>
+					<a title="Add To Collections" onClick={() => addCollection(pageMetadata.url, pageMetadata.title)}>
+						<img src={starIcon}></img>
+					</a>
+				</div>
+			}
 
-				{collection.inCollection &&
-					<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="RemoveCollection" onClick={() => deleteCollection(collection.id!)} />
-				}
+			{collection.inCollection &&
+				<div className='button'>
+					<a title='Remove From Collections' onClick={() => deleteCollection(collection.id!)}>
+						<img src={starActive}></img>
+					</a>
+				</div>
+			}
 
-				{!feedMetadata &&
-					<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="Subscribe" disabled />
-				}
-				{feedMetadata && feed && !feed.subscribed &&
-					<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="Subscribe" onClick={() => subscribe(feedMetadata.url, feedMetadata.title)} />
-				}
-				{feedMetadata && feed && feed.subscribed &&
-					<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="ViewFeed" href={feedURL + feed.id} />
-				}
+			{!feedMetadata &&
+				<div className='button disabled'>
+					<a title="No Feed Available">
+						<img src={rssDisabled}></img>
+					</a>
+				</div>
+			}
+			{feedMetadata && feed && !feed.subscribed &&
+				<div className='button'>
+					<a title='Subscribe Feed' onClick={() => subscribe(feedMetadata.url, feedMetadata.title)}>
+						<img src={rssIcon}></img>
+					</a>
+				</div>
+			}
+			{feedMetadata && feed && feed.subscribed &&
+				<div title='View Feed' className="button">
+					<a href={feedURL + feed.id}>
+						<img src={rssActive}></img>
+					</a>
+				</div>
+			}
 
-				<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="Search" href={collectionsURL} />
+			<div className="button">
+				<a title="Search Collections" href={collectionsURL}>
+					<img src={searchIcon}></img>
+				</a>
+			</div>
 
-				<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="Share" onClick={() => share(pageMetadata.url, pageMetadata.title)} />
+			<div className='button'>
+				<a title="Share To News" onClick={() => share(pageMetadata.url, pageMetadata.title)}>
+					<img src={shareIcon}></img>
+				</a>
+			</div>
 
-				<ActionButton className='met-button' onRenderIcon={onRenderIcon} label="Close" onClick={() => closeMenu()} />
-			</Stack>
+			<div className='button'>
+				<a title="Close" onClick={() => closeMenu()}>
+					<img src={closeIcon}></img>
+				</a>
+			</div>
 		</div>
 	)
 

@@ -41,5 +41,9 @@
 			],
 			"run_at": "document_idle"
 		}
+	],
+	"web_accessible_resources": [
+		"icons_active/*.png",
+		"icons_normal/*.png"
 	]
 }

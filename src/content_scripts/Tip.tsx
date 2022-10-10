@@ -1,9 +1,7 @@
 import * as React from 'react'
-import { mergeStyleSets, FontWeights, Spinner, SpinnerSize } from '@fluentui/react'
 import { Word, IWord } from './Word'
 import { browser } from 'webextension-polyfill-ts'
 import ErrorMessage from './ErrorMessage'
-import { AutoDeploySettingsIcon } from '@fluentui/react-icons-mdl2'
 
 interface TipProps {
 	selectText: string
@@ -13,27 +11,25 @@ interface TipProps {
 export default function Tip(props: TipProps) {
 	const { words, errMessage } = useWords({ key: props.word, msg: { action: 'query', word: props.word } })
 
-	if (errMessage) return <ErrorMessage errMessage={errMessage}></ErrorMessage>
-	if (!words) return <Spinner size={SpinnerSize.medium}></Spinner>
+	if (errMessage) return (
+		<div className='message'>
+			<ErrorMessage errMessage={errMessage}></ErrorMessage>
+		</div>
+	)
+	if (!words) return (
+		<div className='message'>
+			<ErrorMessage errMessage={"Loading..."}></ErrorMessage>
+		</div>
+	)
 
 	return (
-		<div className={styles.words}>
+		<div>
 			{
 				words.map((w) => (<Word key={w.id} word={w} selectText={props.selectText} />))
 			}
 		</div>
 	)
 }
-
-const styles = mergeStyleSets({
-	title: {
-		marginBottom: 12,
-		fontWeight: FontWeights.semilight,
-	},
-	words: {
-		display: 'block',
-	},
-})
 
 interface QueryWordsProps {
 	key: string

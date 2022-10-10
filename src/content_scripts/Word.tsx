@@ -1,10 +1,7 @@
 import { useState } from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import { getSceneSentence, getSelectedElement } from './lib'
-import { ActionButton, IButtonProps } from '@fluentui/react/lib/Button';
-import { AddIcon, RingerIcon, RingerOffIcon } from '@fluentui/react-icons-mdl2';
 import ErrorMessage from './ErrorMessage';
-import { Text, Stack, IStackTokens, IRenderFunction, Link } from '@fluentui/react';
 
 interface WordProps {
 	word: IWord
@@ -41,7 +38,125 @@ interface IScene {
 	create_time: number
 }
 
-const stackTokens: IStackTokens = { childrenGap: 8 }
+export const wordStyles = `
+.word {
+	padding: 4px;
+	display: flex;
+	flex-direction: column;
+	align-items: start;
+	font-size: 14px;
+}
+
+.button {
+	cursor: pointer;
+	margin-left: 20px;
+	height: 18px;
+	width: 18px;
+}
+
+.button img {
+	height: 18px;
+	width: 18px;
+}
+
+.disabled {
+	cursor: default;
+}
+
+.message {
+	display: flex;
+	flex-direction: row;
+	vertical-align: center;
+	justify-content: space-between;
+}
+
+.head {
+	margin-bottom: 10px;
+	display: flex;
+	flex-direction: row;
+	align-items: flex-end;
+}
+
+.title {
+	font-weight: 200;
+	font-size: 42px;
+	line-height: 1.0em;
+}
+
+.phonetics {
+	line-height: 1.4em;
+}
+
+.phonetic-label {
+	margin-right: 6px;
+}
+
+.phonetic {
+	margin-right: 8px;
+}
+
+.defs ul {
+	list-style-type: none;
+	max-width: max-content;
+	padding-left: 0px;
+}
+
+.def ul li {
+	line-height: 1.2em;
+	display: block;
+}
+
+.times {
+	line-height: 1.2em;
+	background-color: black;
+	color: white;
+}
+
+.scenes {
+	padding-left: 1px;
+	font-weight: 400;
+}
+
+.scenes ul {
+	padding-left: 0px;
+}
+
+.scenes ul li {
+	list-style-position: inside;
+	list-style-type: disc;
+	line-height: 1.2em;
+	margin: 4px 0px;
+}
+
+.scenes a {
+	text-decoration: none;
+	color: black;
+}
+
+.scenes a:hover {
+	text-decoration: none;
+	color: #1d67a0;
+}
+
+.forgetButton {
+	opacity: 0;
+	font-size: 14px;
+	padding: 1px 10px;
+	cursor: pointer;
+}
+
+.forgetButton:hover {
+	opacity: 100;
+	cursor: pointer;
+}
+
+`
+
+const addIcon = browser.runtime.getURL("icons_active/plus.png")
+const bellIcon = browser.runtime.getURL("icons_active/bell.png")
+const bellOffIcon = browser.runtime.getURL("icons_normal/belloff.png")
+
+const addDisabledIcon = browser.runtime.getURL("icons_normal/plus-disabled.png")
 
 export function Word({ word, selectText }: WordProps) {
 	const [times, setTimes] = useState(word.edges.meets ? word.edges.meets[0].times : 0)
@@ -49,6 +164,87 @@ export function Word({ word, selectText }: WordProps) {
 	const [met, setMet] = useState(false)
 	const [known, setKnown] = useState(word.edges.meets && word.edges.meets[0].state == 10 ? true : false)
 	const [errMessage, setErrMessage] = useState<string | false>(false)
+
+	if (errMessage) return (
+		<div className='message'>
+			<ErrorMessage errMessage={errMessage}></ErrorMessage>
+		</div>
+	)
+
+	return (
+		<div className='word'>
+			<div className="head">
+				<span className="title">{word.name}</span>
+				{(met || known) &&
+					<div className='button disabled'>
+						<a>
+							<img src={addDisabledIcon}></img>
+						</a>
+					</div>
+				}
+				{!(met || known) &&
+					<div className='button'>
+						<a title="+1" onClick={() => addScene(word.id, selectText)}>
+							<img src={addIcon}></img>
+						</a>
+					</div>
+				}
+				{(times > 0 && !known) &&
+					<div className='button'>
+						<a title="未掌握" onClick={() => toggleKnown(word.id)}>
+							<img src={bellIcon}></img>
+						</a>
+					</div>
+				}
+				{(times > 0 && known) &&
+					<div className='button'>
+						<a title="已掌握" onClick={() => toggleKnown(word.id)}>
+							<img src={bellOffIcon}></img>
+						</a>
+					</div>
+				}
+			</div>
+			<div className="phonetics">
+				{(word.us_phonetic) &&
+					<div className='phonetic'>
+						<span className="phonetic-label">US</span><span>[{word.us_phonetic}]</span>
+					</div>
+				}
+				{(word.uk_phonetic) &&
+					<div className='phonetic'>
+						<span className="phonetic-label">UK</span><span>[{word.uk_phonetic}]</span>
+					</div>
+				}
+			</div>
+			<div className="defs">
+				<ul>
+					{word.def_zh.map((def, index) => (
+						<li key={index}><span>{def}</span></li>)
+					)}
+				</ul>
+			</div>
+			{times > 0 &&
+				<div className="times">
+					<span>标记 {times} 次</span>
+				</div>
+			}
+			<div className="scenes">
+				<ul>
+					{scenes.map((scene) => {
+						const [pre, met, post] = extractScene(scene.text)
+						return (
+							<li key={scene.id}>
+								<a href={scene.url} title={scene.url} target="blanck">
+									{pre}<span dangerouslySetInnerHTML={{ __html: met }}></span>{post}
+								</a>
+								<span className="forgetButton" onClick={() => forgetScene(scene.id)}>✗</span>
+							</li>
+						)
+					})}
+				</ul>
+			</div>
+		</div>
+	)
 
 	async function addScene(id: number, selectText: string) {
 		const text = getSceneSentence(selectText)
@@ -115,76 +311,6 @@ export function Word({ word, selectText }: WordProps) {
 		setScenes(newScenes)
 		setTimes(times - 1)
 	}
-
-	if (errMessage) {
-		return <ErrorMessage errMessage={errMessage}></ErrorMessage>
-	}
-
-	const onRenderIcon: IRenderFunction<IButtonProps> = (props: IButtonProps | undefined) => {
-		if (props == undefined) {
-			return null
-		}
-		switch (props.label) {
-			case 'Add':
-				return <AddIcon title="+1"></AddIcon>
-			case 'Ringer':
-				return <RingerIcon title="未掌握"></RingerIcon>
-			case 'RingerOff':
-				return <RingerOffIcon title="已掌握"></RingerOffIcon>
-		}
-		return null
-	}
-
-	return (
-		<Stack horizontalAlign="start" tokens={stackTokens}>
-			<div className="metword-head">
-				<Text className="metword-title">{word.name}</Text>
-				<ActionButton className="met-button" onRenderIcon={onRenderIcon} label="Add" disabled={met || known} onClick={() => addScene(word.id, selectText)} />
-				{(times > 0 || known) &&
-					<ActionButton className="met-button" toggle onRenderIcon={onRenderIcon} label={known ? "RingerOff" : "Ringer"} onClick={() => { toggleKnown(word.id) }} />
-				}
-			</div>
-			<div className="metword-phonetics">
-				{(word.us_phonetic) &&
-					<span>
-						<Text className="metword-phonetic-label">US</Text><Text className="metword-phonetic">[{word.us_phonetic}]</Text>
-					</span>
-				}
-				{(word.uk_phonetic) &&
-					<span>
-						<Text className="metword-phonetic-label">UK</Text><Text className="metword-phonetic">[{word.uk_phonetic}]</Text>
-					</span>
-				}
-			</div>
-			<div className="metword-defs">
-				<ul>
-					{word.def_zh.map((def, index) => (
-						<li key={index}><Text>{def}</Text></li>)
-					)}
-				</ul>
-			</div>
-			{times > 0 &&
-				<div className="metword-times">
-					<span>标记 {times} 次</span>
-				</div>
-			}
-			<div className="metword-scenes">
-				<ul>
-					{scenes.map((scene) => {
-						const [pre, met, post] = extractScene(scene.text)
-						return (
-							<li key={scene.id}>
-								<a href={scene.url} title={scene.url} target="blanck">
-									{pre}<span dangerouslySetInnerHTML={{ __html: met }}></span>{post}
-								</a>
-								<Text className="metword-forget" onClick={() => forgetScene(scene.id)}>✗</Text>
-							</li>
-						)
-					})}
-				</ul>
-			</div>
-		</Stack>
-	)
 }
 
 function extractScene(scene: string) {
