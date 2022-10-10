@@ -280,7 +280,7 @@ export function Menu() {
 		<div className='menu'>
 			{!collection.inCollection &&
 				<div className='button'>
-					<a title="Add To Collections" onClick={() => addCollection(pageMetadata.url, pageMetadata.title)}>
+					<a title="添加到收藏" onClick={() => addCollection(pageMetadata.url, pageMetadata.title)}>
 						<img src={starIcon}></img>
 					</a>
 				</div>
@@ -288,7 +288,7 @@ export function Menu() {
 
 			{collection.inCollection &&
 				<div className='button'>
-					<a title='Remove From Collections' onClick={() => deleteCollection(collection.id!)}>
+					<a title='从收藏移除' onClick={() => deleteCollection(collection.id!)}>
 						<img src={starActive}></img>
 					</a>
 				</div>

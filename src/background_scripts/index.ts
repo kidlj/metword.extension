@@ -139,7 +139,7 @@ async function fetchData(url: string, init: RequestInit): Promise<FetchResult> {
 	} catch (err) {
 		return {
 			data: null,
-			errMessage: "Network Error"
+			errMessage: "网络异常"
 		}
 	}
 }
