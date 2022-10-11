@@ -2,24 +2,25 @@
 	"name": "遇见单词",
 	"description": "不背单词，遇见单词。遇见单词是一个划词翻译扩展，标记你不认识的单词，在下次遇见时获得提醒。",
 	"version": "2.0.0",
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"homepage_url": "https://metword.co",
 	"icons": {
 		"512": "./icons/icon.png"
 	},
 	"permissions": [
 		"activeTab",
-		"tabs",
+		"tabs"
+	],
+	"host_permissions": [
 		"http://127.0.0.1/*",
 		"http://localhost/*",
 		"http://app.metword.co/*"
 	],
 	"background": {
-		"scripts": [
-			"./dist/background_script.js"
-		]
+		"service_worker": "./dist/background_script.js",
+		"type": "module"
 	},
-	"browser_action": {
+	"action": {
 		"browser_style": true,
 		"default_title": "MetWord",
 		"default_icon": {
@@ -42,7 +43,14 @@
 		}
 	],
 	"web_accessible_resources": [
-		"icons_active/*.png",
-		"icons_normal/*.png"
+		{
+			"resources": [
+				"icons_active/*.png",
+				"icons_normal/*.png"
+			],
+			"matches": [
+				"*://*/*"
+			]
+		}
 	]
 }

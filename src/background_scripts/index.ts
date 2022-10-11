@@ -312,13 +312,13 @@ async function updateBadge() {
 		// sendMessage may cause exceptions, like when in illegal tab
 		const page: IPageMetadata = await browser.tabs.sendMessage(tabs[0].id!, { action: "queryPageMetadata" })
 		if (page && page.feed) {
-			await browser.browserAction.setBadgeText({ text: "1" })
-			await browser.browserAction.setBadgeBackgroundColor({ color: "deepskyblue" })
+			await chrome.action.setBadgeText({ text: "1" })
+			await chrome.action.setBadgeBackgroundColor({ color: "deepskyblue" })
 		} else {
-			await browser.browserAction.setBadgeText({ text: "" })
+			await chrome.action.setBadgeText({ text: "" })
 		}
 	} catch (err) {
-		await browser.browserAction.setBadgeText({ text: "" })
+		await chrome.action.setBadgeText({ text: "" })
 	}
 }
 
@@ -334,7 +334,7 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 	}
 })
 
-browser.browserAction.onClicked.addListener(async () => {
+chrome.action.onClicked.addListener(async () => {
 	const tabs = await getActiveTab()
 	try {
 		await browser.tabs.sendMessage(tabs[0].id!, { action: "openMenu" })
