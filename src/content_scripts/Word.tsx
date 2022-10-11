@@ -45,6 +45,7 @@ export const wordStyles = `
 	flex-direction: column;
 	align-items: start;
 	font-size: 14px;
+	row-gap: 1em;
 }
 
 .button {
@@ -71,7 +72,6 @@ export const wordStyles = `
 }
 
 .head {
-	margin-bottom: 10px;
 	display: flex;
 	flex-direction: row;
 	align-items: flex-end;
@@ -83,31 +83,18 @@ export const wordStyles = `
 	line-height: 1.0em;
 }
 
-.phonetics {
-	line-height: 1.4em;
-}
-
 .phonetic-label {
 	margin-right: 6px;
-}
-
-.phonetic {
-	margin-right: 8px;
 }
 
 .defs ul {
 	list-style-type: none;
 	max-width: max-content;
 	padding-left: 0px;
-}
-
-.defs ul li {
-	line-height: 1.4em;
-	display: block;
+	margin: 0px;
 }
 
 .times {
-	line-height: 1.2em;
 	background-color: black;
 	color: white;
 }
@@ -119,13 +106,12 @@ export const wordStyles = `
 
 .scenes ul {
 	padding-left: 0px;
+	margin: 0px;
 }
 
 .scenes ul li {
 	list-style-position: inside;
 	list-style-type: disc;
-	line-height: 1.2em;
-	margin: 4px 0px;
 }
 
 .scenes a {
