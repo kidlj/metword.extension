@@ -300,7 +300,7 @@ export function Menu() {
 
 			{!feedMetadata &&
 				<div className='button disabled'>
-					<a title="未发现订阅">
+					<a title="未发现可用订阅">
 						<img src={rssDisabled}></img>
 					</a>
 				</div>
@@ -321,7 +321,7 @@ export function Menu() {
 			}
 
 			<div className="button">
-				<a title="搜索" href={collectionsURL}>
+				<a title="搜索收藏" href={collectionsURL}>
 					<img src={searchIcon}></img>
 				</a>
 			</div>
