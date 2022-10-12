@@ -12,7 +12,7 @@
 		"tabs",
 		"http://127.0.0.1/*",
 		"http://localhost/*",
-		"http://app.metword.co/*"
+		"https://*.metword.co/*"
 	],
 	"background": {
 		"scripts": [

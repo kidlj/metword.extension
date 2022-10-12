@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import { getSceneSentence, getSelectedElement } from './lib'
 import ErrorMessage from './ErrorMessage';
+import config from '../config'
+import { stringify } from 'querystring';
 
 interface WordProps {
 	word: IWord
@@ -83,8 +85,18 @@ export const wordStyles = `
 	line-height: 1.0em;
 }
 
-.phonetic-label {
-	margin-right: 6px;
+.phonetic {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: start;
+	column-gap: 1.0em;
+	line-height: 1.4em;
+}
+
+img.play {
+	width: 16px;
+	height: 16px;
 }
 
 .defs ul {
@@ -145,6 +157,7 @@ const addIcon = browser.runtime.getURL("icons_normal/plus.png")
 const addDisabledIcon = browser.runtime.getURL("icons_normal/plus-disabled.png")
 const bellIcon = browser.runtime.getURL("icons_normal/notification.png")
 const bellOffIcon = browser.runtime.getURL("icons_normal/notificationoff.png")
+const playIcon = browser.runtime.getURL("icons_normal/play.png")
 
 
 export function Word({ word, selectText }: WordProps) {
@@ -196,12 +209,12 @@ export function Word({ word, selectText }: WordProps) {
 			<div className="phonetics">
 				{(word.us_phonetic) &&
 					<div className='phonetic'>
-						<span className="phonetic-label">US</span><span>[{word.us_phonetic}]</span>
+						<span>US</span><span>[{word.us_phonetic}]</span><img className="play" src={playIcon} onClick={() => playAudio("us", word.name, word.id)}></img>
 					</div>
 				}
 				{(word.uk_phonetic) &&
 					<div className='phonetic'>
-						<span className="phonetic-label">UK</span><span>[{word.uk_phonetic}]</span>
+						<span>UK</span><span>[{word.uk_phonetic}]</span><img className="play" src={playIcon} onClick={() => playAudio("uk", word.name, word.id)}></img>
 					</div>
 				}
 			</div>
@@ -234,6 +247,12 @@ export function Word({ word, selectText }: WordProps) {
 			</div>
 		</div>
 	)
+
+	function playAudio(label: string, name: string, id: number) {
+		const fileName = name + "-" + id + ".mp3"
+		const fileURL = `${config.audioURL}/${label}/${fileName}`
+		new Audio(fileURL).play()
+	}
 
 	async function addScene(id: number, selectText: string) {
 		const text = getSceneSentence(selectText)
