@@ -24,7 +24,9 @@ const development = {
 
 	shareURL: "http://localhost:8080/api/share",
 
-	homeURL: "http://localhost:8080/"
+	homeURL: "http://localhost:8080/",
+
+	audioURL: "https://static.metword.co/audio"
 }
 
 const production = {
@@ -45,7 +47,9 @@ const production = {
 
 	shareURL: "http://app.metword.co/api/share",
 
-	homeURL: "https://metword.co/"
+	homeURL: "https://metword.co/",
+
+	audioURL: "https://static.metword.co/audio"
 }
 
 const config: Config = {
