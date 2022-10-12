@@ -99,6 +99,10 @@ img.play {
 	height: 16px;
 }
 
+.defs {
+	line-height: 1.4em;
+}
+
 .defs ul {
 	list-style-type: none;
 	max-width: max-content;
@@ -107,6 +111,7 @@ img.play {
 }
 
 .times {
+	line-height: 1.4em;
 	background-color: black;
 	color: white;
 }
@@ -124,6 +129,8 @@ img.play {
 .scenes ul li {
 	list-style-position: inside;
 	list-style-type: disc;
+	line-height: 1.2em;
+	margin: 4px 0;
 }
 
 .scenes a {
