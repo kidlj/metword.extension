@@ -56,6 +56,8 @@ interface FetchResult {
 }
 
 async function addScene(scene: any) {
+	meetsCacheValid = false
+
 	const body = {
 		id: scene.id,
 		url: scene.url,
@@ -70,6 +72,8 @@ async function addScene(scene: any) {
 }
 
 async function toggleKnown(id: number) {
+	meetsCacheValid = false
+
 	const url = knowURL + id
 	const result = await fetchData(url, {
 		method: "POST",
@@ -78,6 +82,8 @@ async function toggleKnown(id: number) {
 }
 
 async function forgetScene(id: number) {
+	meetsCacheValid = false
+
 	const url = forgetSceneURL + id
 	const result = await fetchData(url, {
 		method: "DELETE",
@@ -86,11 +92,6 @@ async function forgetScene(id: number) {
 }
 
 async function queryWord(word: string) {
-	// any query invalidate meets cache for better user experience:
-	// we use asynchronous model, after users have makred a word(which invalidates the cache on server side asynchronously),
-	// they may refresh the page to see whether results persist, if the old cache hasn't been purged at the right moment, 
-	// another word query will fetch the new cache.
-	meetsCacheValid = false
 	const url = queryURL + word
 	const result = await fetchData(url, {})
 	return result

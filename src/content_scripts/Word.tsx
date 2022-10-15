@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import { browser } from 'webextension-polyfill-ts'
-import { getSceneSentence, getSelectedElement } from './lib'
+import { markWords } from './lib'
 import ErrorMessage from './ErrorMessage';
 import config from '../config'
-import { stringify } from 'querystring';
 
 interface WordProps {
 	word: IWord
-	selectText: string
+	sceneText: string
 }
 
 export interface IWord {
@@ -167,7 +166,7 @@ const bellOffIcon = browser.runtime.getURL("icons_normal/notificationoff.png")
 const playIcon = browser.runtime.getURL("icons_normal/play.png")
 
 
-export function Word({ word, selectText }: WordProps) {
+export function Word({ word, sceneText }: WordProps) {
 	const [times, setTimes] = useState(word.edges.meets ? word.edges.meets[0].times : 0)
 	const [scenes, setScenes] = useState(word.edges.meets && word.edges.meets[0].edges.scenes ? word.edges.meets[0].edges.scenes : [])
 	const [met, setMet] = useState(false)
@@ -193,7 +192,7 @@ export function Word({ word, selectText }: WordProps) {
 				}
 				{!(met || known) &&
 					<div className='button'>
-						<a title="+1" onClick={() => addScene(word.id, selectText)}>
+						<a title="+1" onClick={() => addScene(word.id, sceneText)}>
 							<img src={addIcon}></img>
 						</a>
 					</div>
@@ -261,14 +260,12 @@ export function Word({ word, selectText }: WordProps) {
 		new Audio(fileURL).play()
 	}
 
-	async function addScene(id: number, selectText: string) {
-		const text = getSceneSentence(selectText)
-
+	async function addScene(id: number, sceneText: string) {
 		const url = window.location.href
 		const payload = {
 			id: id,
 			url: url,
-			text: text
+			text: sceneText
 		}
 		const { data, errMessage } = await browser.runtime.sendMessage({
 			action: "addScene",
@@ -281,12 +278,11 @@ export function Word({ word, selectText }: WordProps) {
 
 		const scene = data as IScene
 
-		const selectedElement = getSelectedElement()!
-		selectedElement.setAttribute("data-times", "-".repeat(times + 1))
-
 		setTimes(times + 1)
 		setMet(true)
 		setScenes(scenes.concat(scene))
+
+		await markWords()
 	}
 
 	async function toggleKnown(id: number) {
@@ -301,14 +297,12 @@ export function Word({ word, selectText }: WordProps) {
 		if (state == 10) {
 			// known
 			setKnown(true)
-			const selectedElement = getSelectedElement()!
-			selectedElement.setAttribute("data-times", "-".repeat(0))
 		} else if (state == 1) {
 			// active
 			setKnown(false)
-			const selectedElement = getSelectedElement()!
-			selectedElement.setAttribute("data-times", "-".repeat(times))
 		}
+
+		await markWords()
 	}
 
 	async function forgetScene(id: number) {
@@ -320,11 +314,11 @@ export function Word({ word, selectText }: WordProps) {
 			setErrMessage(errMessage)
 			return
 		}
-		const selectedElement = getSelectedElement()!
-		selectedElement.setAttribute("data-times", "-".repeat(times - 1))
 		const newScenes = scenes.filter(scene => scene.id != id)
 		setScenes(newScenes)
 		setTimes(times - 1)
+
+		await markWords()
 	}
 }
 

@@ -1,3 +1,6 @@
+import { browser } from 'webextension-polyfill-ts';
+import { Meets } from '../background_scripts/index'
+
 export interface WordRange {
 	name: string
 	times: number,
@@ -117,14 +120,32 @@ export function getWordIndexes(s: string): Array<WordIndex> {
 	return indexes
 }
 
-const selectedID = "metword-selected"
+export async function markWords() {
+	const meets: Meets = await browser.runtime.sendMessage({
+		action: "getMeets"
+	})
 
-export function markWord(range: WordRange, selected: boolean) {
-	let ele = document.createElement("xmetword")
-	if (selected) {
-		ele.setAttribute("id", selectedID)
+	// reset old marks
+	const marks = document.getElementsByTagName("xmetword")
+	for (const mark of marks) {
+		mark.setAttribute("data-times", "")
 	}
+
+	let ranges = new Array<WordRange>()
+	ranges = getWordRanges(document.getRootNode(), ranges)
+	ranges.forEach((r, i) => {
+		if (meets[r.name] > 0) {
+			r.times = meets[r.name]
+			markWord(r)
+		} else {
+			delete ranges[i]
+		}
+	})
+}
+
+export function markWord(range: WordRange) {
 	const color = "red"
+	const ele = document.createElement("xmetword")
 	try {
 		// To surround range contents with the mark element.
 		// The surroundContent() may fail when a range spreads across Node element boundries:
@@ -137,28 +158,6 @@ export function markWord(range: WordRange, selected: boolean) {
 	}
 	ele.style.setProperty("--met-color", color)
 	ele.setAttribute("data-times", "-".repeat(range.times))
-}
-
-export function markSelected(range: Range, selectedText: string) {
-	const parent = range.startContainer.parentNode!
-	if (isMarkedNode(parent, selectedText)) {
-		(parent as HTMLElement).setAttribute("id", selectedID)
-		return
-	}
-
-	markWord({ name: selectedID, range: range, times: 0 }, true)
-}
-
-function isMarkedNode(n: Node, selectedText: string): boolean {
-	// use getText() instead of comparing Node text with selectedText:
-	// marked nodes may contain child nodes.
-	const selectedElement = getSelectedElement()
-	return (n.nodeType == Node.ELEMENT_NODE && n.nodeName == "XMETWORD" &&
-		getText(n, "", selectedElement) == selectedText)
-}
-
-export function getSelectedElement(): HTMLElement | null {
-	return document.getElementById(selectedID)
 }
 
 function isWordCharacter(s: string): boolean {
@@ -179,15 +178,11 @@ const space = /^[\s]$/
 // This is a 'good enough' algorithm that gets the sentence a 'selection' resides in.
 // It only relies on sentence delimiters, so in some cases periods like in 'Mellon C. Collie' produce wrong sentence.
 // This is a known bug and results are acceptable to me. To keep code simple, I choose not to fix it.
-export function getSceneSentence(selectText: string): string {
-	const word = paddingLeft + selectText + paddingRight
-	const selectedElement = getSelectedElement()
-	console.log("selectedText is:", selectText)
-	if (!selectedElement) return ""
-	const parent = getEnclosingNode(selectedElement)
-	console.log("parent is:", parent)
-	const text = getText(parent, "", selectedElement)
-	console.log("text is:", text)
+export function getSceneSentence(range: Range): string {
+	const selectedText = range.startContainer.nodeValue!.slice(range.startOffset, range.endOffset)
+	const word = paddingLeft + selectedText + paddingRight
+	const parent = getEnclosingNode(range.startContainer)
+	const text = getText(parent, "", range)
 	let start = 0
 	let end = text.length
 	let found = false
@@ -282,15 +277,13 @@ function getEnclosingNode(n: Node): Node {
 const paddingLeft = "<xmet>"
 const paddingRight = "</xmet>"
 
-function getText(n: Node, text: string, selectedElement: HTMLElement | null): string {
-	// selection marked element
-	if (n == selectedElement) {
-		// marked element may have an ElementNode child, like <em>selectedText</em>.
-		var selectText = ""
-		for (let c = n.firstChild; c != null; c = c.nextSibling) {
-			selectText = getText(c, selectText, selectedElement)
-		}
-		return text + paddingLeft + selectText + paddingRight
+function getText(n: Node, text: string, range: Range): string {
+	// asserted: range.startContainer == range.endContainer && range.startContainer.nodeType == Node.TEXT_NODE
+	if (n == range.startContainer) {
+		const prefix = range.startContainer.nodeValue!.slice(0, range.startOffset)
+		const selected = range.startContainer.nodeValue!.slice(range.startOffset, range.endOffset)
+		const postfix = range.startContainer.nodeValue!.slice(range.endOffset)
+		return text + prefix + paddingLeft + selected + paddingRight + postfix
 	}
 
 	if (n.nodeType == Node.TEXT_NODE) {
@@ -302,7 +295,7 @@ function getText(n: Node, text: string, selectedElement: HTMLElement | null): st
 	}
 
 	for (let c = n.firstChild; c != null; c = c.nextSibling) {
-		text = getText(c, text, selectedElement)
+		text = getText(c, text, range)
 	}
 
 	// post decorations
