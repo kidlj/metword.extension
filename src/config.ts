@@ -7,21 +7,21 @@ export interface Config {
 const env = process.env.NODE_ENV
 
 const development = {
-	meetsURL: "http://localhost:8080/api/meet/times",
-	knowURL: "http://localhost:8080/api/meet/toggle?id=",
-	queryURL: "http://localhost:8080/api/word?word=",
-	addSceneURL: "http://localhost:8080/api/scene",
-	forgetSceneURL: "http://localhost:8080/api/scene?id=",
+	meetsURL: "http://localhost:8090/api/meet/times",
+	knowURL: "http://localhost:8090/api/meet/toggle?id=",
+	queryURL: "http://localhost:8090/api/word?word=",
+	addSceneURL: "http://localhost:8090/api/scene",
+	forgetSceneURL: "http://localhost:8090/api/scene?id=",
 
-	articleStateURL: "http://localhost:8080/api/collection/state",
-	collectionURL: "http://localhost:8080/api/collection",
+	articleStateURL: "http://localhost:8090/api/collection/state",
+	collectionURL: "http://localhost:8090/api/collection",
 
-	feedStateURL: "http://localhost:8080/api/feed/state",
-	subscribeURL: "http://localhost:8080/api/feed",
+	feedStateURL: "http://localhost:8090/api/feed/state",
+	subscribeURL: "http://localhost:8090/api/feed",
 
-	wordsURL: "http://localhost:8080/",
-	collectionsURL: "http://localhost:8080/collection/",
-	feedURL: "http://localhost:8080/feed?id=",
+	wordsURL: "http://localhost:8090/",
+	collectionsURL: "http://localhost:8090/collection/",
+	feedURL: "http://localhost:8090/feed?id=",
 	audioURL: "https://media.metword.co/audio"
 }
 

@@ -11,7 +11,6 @@ const articleStateURL = config.articleStateURL
 const collectionURL = config.collectionURL
 const feedStateURL = config.feedStateURL
 const subscribeURL = config.subscribeURL
-const shareURL = config.shareURL
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {
@@ -36,8 +35,6 @@ browser.runtime.onMessage.addListener(async (msg) => {
 			return await deleteCollection(msg.id)
 		case 'subscribe':
 			return await subscribe(msg.feedURL, msg.feedTitle)
-		case 'share':
-			return await share(msg.url, msg.title)
 		case 'updateBadge':
 			return await updateBadge()
 	}
@@ -273,26 +270,6 @@ async function subscribe(feedURL: string, feedTitle: string): Promise<FetchResul
 		}
 		const payload = JSON.stringify(body)
 		const result = await fetchData(subscribeURL, {
-			method: "POST",
-			body: payload,
-		})
-		return result
-	} catch (err) {
-		return {
-			errMessage: "Unsupported URL",
-			data: null
-		}
-	}
-}
-
-async function share(url: string, title: string): Promise<FetchResult> {
-	try {
-		const body = {
-			url: url,
-			title: title,
-		}
-		const payload = JSON.stringify(body)
-		const result = await fetchData(shareURL, {
 			method: "POST",
 			body: payload,
 		})
