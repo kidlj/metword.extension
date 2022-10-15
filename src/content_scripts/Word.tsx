@@ -129,7 +129,7 @@ img.play {
 	list-style-position: inside;
 	list-style-type: disc;
 	line-height: 1.2em;
-	margin: 4px 0;
+	margin-bottom: 4px;
 }
 
 .scenes a {
