@@ -4,8 +4,8 @@ import { browser } from 'webextension-polyfill-ts'
 import ErrorMessage from './ErrorMessage'
 
 interface TipProps {
-	selectText: string
 	word: string
+	sceneText: string
 }
 
 export default function Tip(props: TipProps) {
@@ -25,7 +25,7 @@ export default function Tip(props: TipProps) {
 	return (
 		<div>
 			{
-				words.map((w) => (<Word key={w.id} word={w} selectText={props.selectText} />))
+				words.map((w) => (<Word key={w.id} word={w} sceneText={props.sceneText} />))
 			}
 		</div>
 	)

@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Tip from './Tip';
 import './style.css';
-import { getWord, getWordRanges, WordRange, markWord, markSelected, getSelectedElement } from './lib'
+import { getWord, getSceneSentence, markWords } from './lib'
 import { browser } from 'webextension-polyfill-ts';
 import { Callout } from '@fluentui/react'
 import { mergeStyleSets } from '@fluentui/react/lib/Styling';
-import { Meets, IArticleState, IFeedMetadata, IPageMetadata } from '../background_scripts/index'
+import { IArticleState, IFeedMetadata, IPageMetadata } from '../background_scripts/index'
 import config from '../config'
 import ErrorMessage from './ErrorMessage';
 import { ShadowView } from "shadow-view";
@@ -20,19 +20,7 @@ const collectionsURL = config.collectionsURL
 const wordsURL = config.wordsURL
 
 async function start() {
-	const meets: Meets = await browser.runtime.sendMessage({
-		action: "getMeets"
-	})
-	let ranges = new Array<WordRange>()
-	ranges = getWordRanges(document.getRootNode(), ranges)
-	ranges.forEach((r, i) => {
-		if (meets[r.name] > 0) {
-			r.times = meets[r.name]
-			markWord(r, false)
-		} else {
-			delete ranges[i]
-		}
-	})
+	await markWords()
 
 	document.addEventListener('mouseup', show)
 	document.addEventListener('mousedown', dismiss)
@@ -52,6 +40,7 @@ let _rootDiv: HTMLElement
 const show = async (e: MouseEvent) => {
 	const selection = window.getSelection()
 	if (selection == null) return
+	if (selection.isCollapsed) return
 
 	if (selection.type != "Range") return
 	if (selection.rangeCount != 1) return
@@ -59,8 +48,8 @@ const show = async (e: MouseEvent) => {
 	if (range.collapsed) {
 		return
 	}
-	// don't trim here.
-	const selectText = selection.toString()
+
+	const selectText = selection.toString().trim()
 	const word = getWord(selectText)
 	if (word == "") {
 		return
@@ -70,13 +59,12 @@ const show = async (e: MouseEvent) => {
 		return
 	}
 
-	// range changed here.
-	markSelected(range, selectText)
+	if (range.startContainer != range.endContainer) {
+		console.log("Selection not supported: range startContainer != endContainer")
+		return
+	}
 
-	// range has changed, add the new range to selection.
-	// this fixes Safari selection collapsed issue.
-	selection.removeAllRanges()
-	selection.addRange(range)
+	const sceneText = getSceneSentence(range)
 
 	if (!_rootDiv) {
 		_rootDiv = document.createElement('div')
@@ -90,11 +78,11 @@ const show = async (e: MouseEvent) => {
 				className={styles.callout}
 				role="alertdialog"
 				gapSpace={0}
-				target={`#metword-selected`}
+				target={range.getBoundingClientRect()}
 				hideOverflow={true}
 			>
 				<ShadowView styleContent={wordStyles}>
-					<Tip word={word} selectText={selectText} />
+					<Tip word={word} sceneText={sceneText} />
 				</ShadowView>
 			</Callout>
 		</React.StrictMode>,
@@ -103,9 +91,6 @@ const show = async (e: MouseEvent) => {
 }
 
 const dismiss = (e: MouseEvent | Event) => {
-	const selectedElement = getSelectedElement()
-	selectedElement?.removeAttribute("id")
-
 	try {
 		ReactDOM.unmountComponentAtNode(_rootDiv)
 	} catch (e) { }
