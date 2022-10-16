@@ -45,6 +45,7 @@ const show = async (e: MouseEvent) => {
 	if (selection.type != "Range") return
 	if (selection.rangeCount != 1) return
 	const range = selection.getRangeAt(0)
+	console.log("range is:", range)
 	if (range.collapsed) {
 		return
 	}
@@ -55,14 +56,14 @@ const show = async (e: MouseEvent) => {
 		return
 	}
 
-	if (range.startContainer.nodeType != Node.TEXT_NODE) {
+	if (range.startContainer.nodeType != Node.TEXT_NODE || range.endContainer.nodeType != Node.TEXT_NODE) {
+		console.log("Selection not supported: range startContainer or endContainer is not text node")
 		return
 	}
 
-	if (range.startContainer != range.endContainer) {
-		console.log("Selection not supported: range startContainer != endContainer")
-		return
-	}
+	// if (range.startContainer != range.endContainer) {
+	// 	return
+	// }
 
 	const sceneText = getSceneSentence(range)
 
