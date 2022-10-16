@@ -179,7 +179,12 @@ const space = /^[\s]$/
 // It only relies on sentence delimiters, so in some cases periods like in 'Mellon C. Collie' produce wrong sentence.
 // This is a known bug and results are acceptable to me. To keep code simple, I choose not to fix it.
 export function getSceneSentence(range: Range): string {
-	const selectedText = range.startContainer.nodeValue!.slice(range.startOffset, range.endOffset)
+	let selectedText = ""
+	if (range.startContainer == range.endContainer) {
+		selectedText = range.startContainer.nodeValue!.slice(range.startOffset, range.endOffset)
+	} else {
+		selectedText = range.startContainer.nodeValue!.slice(range.startOffset) + range.endContainer.nodeValue!.slice(0, range.endOffset)
+	}
 	const word = paddingLeft + selectedText + paddingRight
 	const parent = getEnclosingNode(range.startContainer)
 	const text = getText(parent, "", range)
@@ -278,12 +283,25 @@ const paddingLeft = "<xmet>"
 const paddingRight = "</xmet>"
 
 function getText(n: Node, text: string, range: Range): string {
-	// asserted: range.startContainer == range.endContainer && range.startContainer.nodeType == Node.TEXT_NODE
+	// asserted: range.startContainer and range.endContainer both are text nodes
 	if (n == range.startContainer) {
-		const prefix = range.startContainer.nodeValue!.slice(0, range.startOffset)
-		const selected = range.startContainer.nodeValue!.slice(range.startOffset, range.endOffset)
-		const postfix = range.startContainer.nodeValue!.slice(range.endOffset)
-		return text + prefix + paddingLeft + selected + paddingRight + postfix
+		if (range.startContainer == range.endContainer) {
+			const prefix = range.startContainer.nodeValue!.slice(0, range.startOffset)
+			const selected = range.startContainer.nodeValue!.slice(range.startOffset, range.endOffset)
+			const postfix = range.startContainer.nodeValue!.slice(range.endOffset)
+			return text + prefix + paddingLeft + selected + paddingRight + postfix
+		} else {
+			const prefix = range.startContainer.nodeValue!.slice(0, range.startOffset)
+			const selected = range.startContainer.nodeValue!.slice(range.startOffset)
+			return text + prefix + paddingLeft + selected
+		}
+	}
+
+	if (n == range.endContainer) {
+		// n must not equal range.startContainer
+		const selected = range.endContainer.nodeValue!.slice(0, range.endOffset)
+		const postfix = range.endContainer.nodeValue!.slice(range.endOffset)
+		return text + selected + paddingRight + postfix
 	}
 
 	if (n.nodeType == Node.TEXT_NODE) {
