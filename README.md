@@ -1,25 +1,20 @@
-### About MetWords
+### Browser extensions for MetWord
 
-https://www.metwords.com
+https://metword.co
 
-MetWords is a browser extension that translates an English word into Chinese while users select one on any webpage. 
+标记你不认识的单词，在下次遇见时获得提醒。还可以将网页加到个人收藏，稍后再读，全文搜索。浏览网页时自动探测可用 RSS 订阅，一键添加到订阅。
 
-「遇见单词」是一个浏览器划词翻译插件，可以标记你不认识的单词，在下次遇见时获得提示。
+### Branches
 
-### About The Code
+Branch `main` is of Manifest V2, serving for Firefox and Safari.
+Branch `manifest_v3` is of Manifest V3, serving for Chrome and Edge.
 
-The codebase serves as MetWords Extensions for all mainline browsers, including Chrome, Firefox, Edge, and Safari(with a little Swift code).
+### Build
 
-### For Extension Review Process
+	$ npm install
+	$ npm run watch
 
-Hello dear reviewers, thanks for your time!
+### Release
 
-Here is how to build the extension:
-
-```shell
-$ npm install
-$ npm run prod
-```
-
-That's all.
-
+	$ npm install
+	$ npm run prod
