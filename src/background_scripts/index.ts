@@ -100,15 +100,10 @@ async function getMeets() {
 	if (meetsCacheValid) {
 		return meets
 	}
-	try {
-		const resp = await fetch(meetsURL, {})
-		const result = JSON.parse(await resp.text())
-		meets = result.data || {}
-		meetsCacheValid = true
-	} catch (err) {
-		meets = {}
-		meetsCacheValid = false
-	}
+
+	const result = await fetchData(meetsURL, {})
+	meets = result.data || {}
+	meetsCacheValid = true
 	return meets
 }
 
