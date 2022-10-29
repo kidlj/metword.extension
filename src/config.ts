@@ -23,8 +23,6 @@ const development = {
 	collectionsURL: "http://localhost:8090/collection/",
 	feedURL: "http://localhost:8090/feed?id=",
 
-	homeURL: "http://localhost:8090/",
-
 	audioURL: "https://media.metword.co/audio"
 }
 
@@ -44,8 +42,6 @@ const production = {
 	wordsURL: "https://app.metword.co/",
 	collectionsURL: "https://app.metword.co/collection/",
 	feedURL: "https://app.metword.co/feed?id=",
-
-	homeURL: "https://app.metword.co/",
 
 	audioURL: "https://media.metword.co/audio"
 }
