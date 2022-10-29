@@ -1,6 +1,8 @@
 import { browser } from "webextension-polyfill-ts"
 import config from '../config'
 
+const ua = 'MetWord-Extension/2.0.2'
+
 const meetsURL = config.meetsURL
 const queryURL = config.queryURL
 const addSceneURL = config.addSceneURL
@@ -117,7 +119,8 @@ async function fetchData(url: string, init: RequestInit): Promise<FetchResult> {
 	const jsonHeaders = new Headers({
 		// Our Go backend implementation needs 'Accept' header to distinguish between requests, like via JSON or Turbo.
 		'Accept': 'application/json',
-		'Content-Type': "application/json"
+		'Content-Type': "application/json",
+		'X-UA': ua
 	})
 	if (!init.headers) {
 		init.headers = jsonHeaders
