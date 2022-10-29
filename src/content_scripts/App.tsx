@@ -300,20 +300,20 @@ export function Menu() {
 			}
 			{feedMetadata && feed && feed.subscribed &&
 				<div title='查看订阅' className="button">
-					<a href={feedURL + feed.id}>
+					<a href={feedURL + feed.id} target="_blank">
 						<img src={rssActive}></img>
 					</a>
 				</div>
 			}
 
 			<div className="button">
-				<a title="搜索收藏" href={collectionsURL}>
+				<a title="搜索收藏" href={collectionsURL} target="_blank">
 					<img src={searchIcon}></img>
 				</a>
 			</div>
 
 			<div className='button'>
-				<a title="单词本" href={wordsURL}>
+				<a title="单词本" href={wordsURL} target="_blank">
 					<img src={bookIcon}></img>
 				</a>
 			</div>
