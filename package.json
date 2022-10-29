@@ -1,7 +1,7 @@
 {
-	"name": "metwords-extensions",
-	"version": "1.0.0",
-	"description": "Metwords",
+	"name": "word-extension",
+	"version": "2.0.0",
+	"description": "Browser extensions for MetWord",
 	"private": true,
 	"scripts": {
 		"watch": "npm run development -- --watch",
@@ -12,14 +12,14 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/metwords/metaphor.git"
+		"url": "git+https://github.com/metnews/word-extension.git"
 	},
 	"author": "Jian Li",
 	"license": "Metaphor",
 	"bugs": {
-		"url": "https://github.com/metwords/extensions/issues"
+		"url": "https://github.com/metnews/word-extension/issues"
 	},
-	"homepage": "https://github.com/metwords/extensions#readme",
+	"homepage": "https://github.com/metnews/word-extension#readme",
 	"dependencies": {
 		"@fluentui/react": "^8.23.5",
 		"react": "^17.0.2",
