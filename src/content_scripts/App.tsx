@@ -61,10 +61,6 @@ const show = async (e: MouseEvent) => {
 		return
 	}
 
-	// if (range.startContainer != range.endContainer) {
-	// 	return
-	// }
-
 	const sceneText = getSceneSentence(range)
 
 	if (!_rootDiv) {

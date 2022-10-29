@@ -283,7 +283,7 @@ const paddingLeft = "<xmet>"
 const paddingRight = "</xmet>"
 
 function getText(n: Node, text: string, range: Range): string {
-	// asserted: range.startContainer and range.endContainer both are text nodes
+	// asserted: range.startContainer and range.endContainer are text nodes and are same node or siblings. 
 	if (n == range.startContainer) {
 		if (range.startContainer == range.endContainer) {
 			const prefix = range.startContainer.nodeValue!.slice(0, range.startOffset)
