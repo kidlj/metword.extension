@@ -45,7 +45,6 @@ const show = async (e: MouseEvent) => {
 	if (selection.type != "Range") return
 	if (selection.rangeCount != 1) return
 	const range = selection.getRangeAt(0)
-	console.log("range is:", range)
 	if (range.collapsed) {
 		return
 	}
@@ -73,7 +72,7 @@ const show = async (e: MouseEvent) => {
 			<Callout
 				id="metword-tip"
 				className={styles.callout}
-				role="alertdialog"
+				role="dialog"
 				gapSpace={0}
 				target={range.getBoundingClientRect()}
 				hideOverflow={true}
