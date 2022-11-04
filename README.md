@@ -6,8 +6,8 @@ https://metword.co
 
 ### Branches
 
-Branch `main` is of Manifest V2, serving for Firefox and Safari.
-Branch `manifest_v3` is of Manifest V3, serving for Chrome and Edge.
+- Branch `main` is of Manifest V2, serving for Firefox and Safari.
+- Branch `manifest_v3` is of Manifest V3, serving for Chrome and Edge.
 
 ### Build
 
