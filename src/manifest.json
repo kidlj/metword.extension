@@ -45,8 +45,8 @@
 	"web_accessible_resources": [
 		{
 			"resources": [
-				"icons_active/*.png",
-				"icons_normal/*.png"
+				"icons_active/*",
+				"icons_normal/*"
 			],
 			"matches": [
 				"*://*/*"

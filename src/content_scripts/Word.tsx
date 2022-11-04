@@ -163,7 +163,7 @@ const addIcon = browser.runtime.getURL("icons_normal/plus.png")
 const addDisabledIcon = browser.runtime.getURL("icons_normal/plus-disabled.png")
 const bellIcon = browser.runtime.getURL("icons_normal/notification.png")
 const bellOffIcon = browser.runtime.getURL("icons_normal/notificationoff.png")
-const playIcon = browser.runtime.getURL("icons_normal/play.png")
+const playIcon = browser.runtime.getURL("icons_active/play.svg")
 
 
 export function Word({ word, sceneText }: WordProps) {
