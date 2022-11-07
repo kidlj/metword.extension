@@ -2,6 +2,7 @@ import { browser } from "webextension-polyfill-ts"
 import config from '../config'
 
 const ua = 'MetWord-Extension/2.0.2'
+const meetsStorageKey = "meets"
 
 const meetsURL = config.meetsURL
 const queryURL = config.queryURL
@@ -46,17 +47,12 @@ export interface Meets {
 	[key: string]: number
 }
 
-let meetsCacheValid = false
-let meets: Meets = {}
-
 interface FetchResult {
 	data: any,
 	errMessage: string | false
 }
 
 async function addScene(scene: any) {
-	meetsCacheValid = false
-
 	const body = {
 		id: scene.id,
 		url: scene.url,
@@ -67,26 +63,31 @@ async function addScene(scene: any) {
 		method: "POST",
 		body: payload,
 	})
+	if (!result.errMessage) {
+		await purgeMeetsCache()
+	}
 	return result
 }
 
 async function toggleKnown(id: number) {
-	meetsCacheValid = false
-
 	const url = knowURL + id
 	const result = await fetchData(url, {
 		method: "POST",
 	})
+	if (!result.errMessage) {
+		await purgeMeetsCache()
+	}
 	return result
 }
 
 async function forgetScene(id: number) {
-	meetsCacheValid = false
-
 	const url = forgetSceneURL + id
 	const result = await fetchData(url, {
 		method: "DELETE",
 	})
+	if (!result.errMessage) {
+		await purgeMeetsCache()
+	}
 	return result
 }
 
@@ -97,16 +98,19 @@ async function queryWord(word: string) {
 }
 
 async function getMeets() {
-	if (meetsCacheValid) {
-		return meets
-	}
+	const store = await browser.storage.local.get()
+	let meets = store[meetsStorageKey]
+	if (meets) return meets
 
 	const result = await fetchData(meetsURL, {})
 	meets = result.data || {}
-	meetsCacheValid = true
+	await browser.storage.local.set({ [meetsStorageKey]: meets })
 	return meets
 }
 
+async function purgeMeetsCache() {
+	await browser.storage.local.remove(meetsStorageKey)
+}
 
 interface FetchResult {
 	data: any,
