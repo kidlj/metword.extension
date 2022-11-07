@@ -10,6 +10,7 @@
 	"permissions": [
 		"activeTab",
 		"tabs",
+		"storage",
 		"http://127.0.0.1/*",
 		"http://localhost/*",
 		"https://*.metword.co/*"
