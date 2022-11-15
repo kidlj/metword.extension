@@ -170,7 +170,7 @@ export function Word({ word, sceneText }: WordProps) {
 	const [times, setTimes] = useState(word.edges.meets ? word.edges.meets[0].times : 0)
 	const [scenes, setScenes] = useState(word.edges.meets && word.edges.meets[0].edges.scenes ? word.edges.meets[0].edges.scenes : [])
 	const [met, setMet] = useState(false)
-	const [known, setKnown] = useState(word.edges.meets && word.edges.meets[0].state == 10 ? true : false)
+	const [known, setKnown] = useState(word.edges.meets && word.edges.meets[0].state == 10)
 	const [errMessage, setErrMessage] = useState<string | false>(false)
 
 	if (errMessage) return (
