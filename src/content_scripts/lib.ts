@@ -145,16 +145,11 @@ export async function markWords() {
 
 export function markWord(range: WordRange) {
 	const color = "red"
-	const ele = document.createElement("xmetword")
-	try {
-		// To surround range contents with the mark element.
-		// The surroundContent() may fail when a range spreads across Node element boundries:
-		// See: https://developer.mozilla.org/en-US/docs/Web/API/Range/surroundContents
+	// test if range already wrapped in <xmetword>
+	let ele = range.range.commonAncestorContainer.parentNode as HTMLElement
+	if (ele.nodeName != "XMETWORD") {
+		ele = document.createElement("xmetword")
 		range.range.surroundContents(ele)
-	} catch {
-		// Use the extractContent() + insertNode() equivalent instead in case of error:
-		ele.appendChild(range.range.extractContents())
-		range.range.insertNode(ele)
 	}
 	ele.style.setProperty("--met-color", color)
 	ele.setAttribute("data-times", "-".repeat(range.times))
