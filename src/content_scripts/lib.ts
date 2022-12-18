@@ -149,7 +149,10 @@ export function markWord(range: WordRange) {
 	let ele = range.range.commonAncestorContainer.parentNode as HTMLElement
 	if (ele.nodeName != "XMETWORD") {
 		ele = document.createElement("xmetword")
-		range.range.surroundContents(ele)
+		try {
+			// this may fail
+			range.range.surroundContents(ele)
+		} catch (e) { }
 	}
 	ele.style.setProperty("--met-color", color)
 	ele.setAttribute("data-times", "-".repeat(range.times))
