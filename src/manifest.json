@@ -21,8 +21,7 @@
 		"service_worker": "./dist/background_script.js",
 		"type": "module"
 	},
-	"action": {
-		"browser_style": true,
+	"browser_action": {
 		"default_title": "MetWord",
 		"default_icon": {
 			"512": "./icons/icon.png"
