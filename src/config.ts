@@ -13,16 +13,7 @@ const development = {
 	addSceneURL: "http://localhost:8090/api/scene",
 	forgetSceneURL: "http://localhost:8090/api/scene?id=",
 
-	articleStateURL: "http://localhost:8090/api/collection/state",
-	collectionURL: "http://localhost:8090/api/collection",
-
-	feedStateURL: "http://localhost:8090/api/feed/state",
-	subscribeURL: "http://localhost:8090/api/feed",
-
-	wordsURL: "http://localhost:8090/",
-	collectionsURL: "http://localhost:8090/collection/",
-	feedURL: "http://localhost:8090/feed?id=",
-
+	homeURL: "http://localhost:8090/",
 	audioURL: "https://media.metword.co/audio"
 }
 
@@ -33,16 +24,7 @@ const production = {
 	addSceneURL: "https://app.metword.co/api/scene",
 	forgetSceneURL: "https://app.metword.co/api/scene?id=",
 
-	articleStateURL: "https://app.metword.co/api/collection/state",
-	collectionURL: "https://app.metword.co/api/collection",
-
-	feedStateURL: "https://app.metword.co/api/feed/state",
-	subscribeURL: "https://app.metword.co/api/feed",
-
-	wordsURL: "https://app.metword.co/",
-	collectionsURL: "https://app.metword.co/collection/",
-	feedURL: "https://app.metword.co/feed?id=",
-
+	homeURL: "https://app.metword.co/",
 	audioURL: "https://media.metword.co/audio"
 }
 
