@@ -96,6 +96,7 @@ export const wordStyles = `
 img.play {
 	width: 16px;
 	height: 16px;
+	cursor: pointer;
 }
 
 .defs {
