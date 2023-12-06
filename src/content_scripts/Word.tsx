@@ -160,11 +160,11 @@ xmet {
 }
 `
 
-const addIcon = browser.runtime.getURL("icons_normal/plus.png")
-const addDisabledIcon = browser.runtime.getURL("icons_normal/plus-disabled.png")
-const bellIcon = browser.runtime.getURL("icons_normal/notification.png")
-const bellOffIcon = browser.runtime.getURL("icons_normal/notificationoff.png")
-const playIcon = browser.runtime.getURL("icons_active/play.svg")
+const addIcon = browser.runtime.getURL("icons/add.svg")
+const addDisabledIcon = browser.runtime.getURL("icons/add_off.svg")
+const bellIcon = browser.runtime.getURL("icons/ring.svg")
+const bellOffIcon = browser.runtime.getURL("icons/ring_off.svg")
+const playIcon = browser.runtime.getURL("icons/speaker.svg")
 
 
 export function Word({ word, sceneText }: WordProps) {
