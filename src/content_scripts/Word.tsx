@@ -94,8 +94,8 @@ export const wordStyles = `
 }
 
 img.play {
-	width: 16px;
-	height: 16px;
+	width: 14px;
+	height: 14px;
 	cursor: pointer;
 }
 
@@ -140,7 +140,7 @@ img.play {
 
 .scenes a:hover {
 	text-decoration: none;
-	color: #1d67a0;
+	color: #479ef5;
 }
 
 .forgetButton {
@@ -173,6 +173,7 @@ export function Word({ word, sceneText }: WordProps) {
 	const [met, setMet] = useState(false)
 	const [known, setKnown] = useState(word.edges.meets && word.edges.meets[0].state == 10)
 	const [errMessage, setErrMessage] = useState<string | false>(false)
+	const addTitle = times == 0 ? "将单词加入生词本，在下次遇见时获得提醒" : "+1"
 
 	if (errMessage) return (
 		<div className='message'>
@@ -193,14 +194,14 @@ export function Word({ word, sceneText }: WordProps) {
 				}
 				{!(met || known) &&
 					<div className='button'>
-						<a title="+1" onClick={() => addScene(word.id, sceneText)}>
+						<a title={addTitle} onClick={() => addScene(word.id, sceneText)}>
 							<img src={addIcon}></img>
 						</a>
 					</div>
 				}
 				{(times > 0 && !known) &&
 					<div className='button'>
-						<a title="未掌握" onClick={() => toggleKnown(word.id)}>
+						<a title="标记中" onClick={() => toggleKnown(word.id)}>
 							<img src={bellIcon}></img>
 						</a>
 					</div>
