@@ -44,7 +44,7 @@ export const wordStyles = `
 	padding: 4px;
 	display: flex;
 	flex-direction: column;
-	align-items: start;
+	align-items: flex-start;
 	font-size: 14px;
 	row-gap: 1em;
 }
@@ -88,7 +88,7 @@ export const wordStyles = `
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	justify-content: start;
+	justify-content: flex-start;
 	column-gap: 1.0em;
 	line-height: 1.4em;
 }
@@ -162,8 +162,8 @@ xmet {
 
 const addIcon = browser.runtime.getURL("icons/add.svg")
 const addDisabledIcon = browser.runtime.getURL("icons/add_off.svg")
-const bellIcon = browser.runtime.getURL("icons/ring.svg")
-const bellOffIcon = browser.runtime.getURL("icons/ring_off.svg")
+const bellIcon = browser.runtime.getURL("icons/altert.svg")
+const bellOffIcon = browser.runtime.getURL("icons/alert_off.svg")
 const playIcon = browser.runtime.getURL("icons/speaker.svg")
 
 
@@ -244,7 +244,7 @@ export function Word({ word, sceneText }: WordProps) {
 						const [pre, met, post] = extractScene(scene.text)
 						return (
 							<li key={scene.id}>
-								<a href={scene.url} title={scene.url} target="blanck">
+								<a href={scene.url} title={scene.url}>
 									{pre}<span dangerouslySetInnerHTML={{ __html: met }}></span>{post}
 								</a>
 								<span className="forgetButton" onClick={() => forgetScene(scene.id)}>✗</span>
