@@ -241,11 +241,10 @@ export function Word({ word, sceneText }: WordProps) {
 			<div className="scenes">
 				<ul>
 					{scenes.map((scene) => {
-						const [pre, met, post] = extractScene(scene.text)
 						return (
 							<li key={scene.id}>
-								<a href={scene.url} title={scene.url}>
-									{pre}<span dangerouslySetInnerHTML={{ __html: met }}></span>{post}
+								<a href={scene.url} title={new Date(scene.create_time).toLocaleString()}>
+									<span dangerouslySetInnerHTML={{ __html: scene.text }}></span>
 								</a>
 								<span className="forgetButton" onClick={() => forgetScene(scene.id)}>✗</span>
 							</li>
@@ -322,16 +321,4 @@ export function Word({ word, sceneText }: WordProps) {
 
 		await markWords()
 	}
-}
-
-function extractScene(scene: string) {
-	const re = /<xmet>.+<\/xmet>/
-	const match = re.exec(scene)
-	if (!match) {
-		return ["", scene, ""]
-	}
-	const met = match[0]
-	const index = match["index"]
-	const postIndex = index + met.length
-	return [scene.slice(0, index), met, scene.slice(postIndex)]
 }
