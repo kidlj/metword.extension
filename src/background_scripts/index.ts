@@ -1,7 +1,7 @@
 import { browser } from "webextension-polyfill-ts"
 import config from '../config'
 
-const ua = 'MetWord-Extension/2.1.0'
+const ua = 'MetWord-Extension/2.2.0'
 const meetsStorageKey = "meets"
 
 const meetsURL = config.meetsURL
@@ -10,7 +10,7 @@ const addSceneURL = config.addSceneURL
 const forgetSceneURL = config.forgetSceneURL
 const knowURL = config.knowURL
 
-const homeURL = config.homeURL
+const homeURL = "https://app.metword.co/"
 
 browser.runtime.onMessage.addListener(async (msg) => {
 	switch (msg.action) {

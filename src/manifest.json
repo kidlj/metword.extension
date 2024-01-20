@@ -1,6 +1,6 @@
 {
 	"name": "遇见单词 MetWord",
-	"description": "不背单词，遇见单词。遇见单词是一个划词翻译扩展，标记你不认识的单词，在下次遇见时获得提醒。",
+	"description": "遇见单词是一个划词翻译扩展，标记你不认识的单词，在下次遇见时获得提醒。",
 	"version": "2.2.0",
 	"manifest_version": 2,
 	"homepage_url": "https://metword.co",
