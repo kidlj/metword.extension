@@ -67,17 +67,18 @@ export const wordStyles = `
 	justify-content: flex-start;
 	gap: 30px;
 
-	a {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		cursor: pointer;
+}
 
-		img {
-			width: 18px;
-			height: 18px;
-		}
-	}
+.head a {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	cursor: pointer;
+}
+
+.head img {
+	width: 18px;
+	height: 18px;
 }
 
 .title {
