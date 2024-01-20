@@ -49,18 +49,6 @@ export const wordStyles = `
 	row-gap: 1em;
 }
 
-.button {
-	cursor: pointer;
-	margin-left: 20px;
-	height: 18px;
-	width: 18px;
-}
-
-.button img {
-	height: 18px;
-	width: 18px;
-}
-
 .disabled {
 	cursor: default;
 }
@@ -76,6 +64,20 @@ export const wordStyles = `
 	display: flex;
 	flex-direction: row;
 	align-items: flex-end;
+	justify-content: flex-start;
+	gap: 30px;
+
+	a {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		cursor: pointer;
+
+		img {
+			width: 18px;
+			height: 18px;
+		}
+	}
 }
 
 .title {
@@ -186,32 +188,24 @@ export function Word({ word, sceneText }: WordProps) {
 			<div className="head">
 				<span className="title">{word.name}</span>
 				{(met || known) &&
-					<div className='button disabled'>
-						<a>
-							<img src={addDisabledIcon}></img>
-						</a>
-					</div>
+					<a>
+						<img src={addDisabledIcon} className='disabled'></img>
+					</a>
 				}
 				{!(met || known) &&
-					<div className='button'>
-						<a title={addTitle} onClick={() => addScene(word.id, sceneText)}>
-							<img src={addIcon}></img>
-						</a>
-					</div>
+					<a title={addTitle} onClick={() => addScene(word.id, sceneText)}>
+						<img src={addIcon}></img>
+					</a>
 				}
 				{(times > 0 && !known) &&
-					<div className='button'>
-						<a title="标记中" onClick={() => toggleKnown(word.id)}>
-							<img src={bellIcon}></img>
-						</a>
-					</div>
+					<a title="标记中" onClick={() => toggleKnown(word.id)}>
+						<img src={bellIcon}></img>
+					</a>
 				}
 				{(times > 0 && known) &&
-					<div className='button'>
-						<a title="已掌握" onClick={() => toggleKnown(word.id)}>
-							<img src={bellOffIcon}></img>
-						</a>
-					</div>
+					<a title="已掌握" onClick={() => toggleKnown(word.id)}>
+						<img src={bellOffIcon}></img>
+					</a>
 				}
 			</div>
 			<div className="phonetics">
