@@ -146,10 +146,15 @@ img.play {
 	color: #479ef5;
 }
 
+.hostname {
+	color: #666;
+	padding-left: 10px;
+}
+
 .forgetButton {
 	opacity: 0;
 	font-size: 14px;
-	padding: 1px 10px;
+	padding-left: 10px;
 	cursor: pointer;
 }
 
@@ -241,6 +246,7 @@ export function Word({ word, sceneText }: WordProps) {
 								<a href={scene.url} title={new Date(scene.create_time).toLocaleString()}>
 									<span dangerouslySetInnerHTML={{ __html: scene.text }}></span>
 								</a>
+								<span className="hostname">({new URL(scene.url).hostname})</span>
 								<span className="forgetButton" onClick={() => forgetScene(scene.id)}>✗</span>
 							</li>
 						)
