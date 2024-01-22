@@ -1,7 +1,7 @@
 import { browser } from "webextension-polyfill-ts"
 import config from '../config'
 
-const ua = 'MetWord-Extension/2.2.0'
+const ua = 'MetWord-Extension/2.2.1'
 const meetsStorageKey = "meets"
 
 const meetsURL = config.meetsURL
