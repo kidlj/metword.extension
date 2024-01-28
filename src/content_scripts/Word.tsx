@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { browser } from 'webextension-polyfill-ts'
 import { markWords } from './lib'
 import ErrorMessage from './ErrorMessage';
@@ -15,6 +15,7 @@ export interface IWord {
 	us_phonetic: string,
 	uk_phonetic: string,
 	def_zh: string[],
+	def_en: string[],
 	edges: IWordEdges,
 }
 
@@ -113,15 +114,23 @@ img.play {
 	margin: 0px;
 }
 
+.en {
+	max-height: 160px;
+	overflow-y: scroll;
+}
+
+.en i {
+	font-weight: bold;
+}
+
+.indicator {
+	line-height: 1.0em;
+}
+
 .times {
 	line-height: 1.4em;
 	background-color: black;
 	color: white;
-}
-
-.scenes {
-	padding-left: 1px;
-	font-weight: 400;
 }
 
 .scenes ul {
@@ -171,7 +180,7 @@ img.play {
 }
 
 xmet {
-	font-weight: 600;
+	font-weight: bold;
 }
 `
 
@@ -189,6 +198,14 @@ export function Word({ word, sceneText }: WordProps) {
 	const [known, setKnown] = useState(word.edges.meets && word.edges.meets[0].state == 10 ? true : false)
 	const [errMessage, setErrMessage] = useState<string | false>(false)
 	const addTitle = times == 0 ? "将单词加入生词本，在下次遇见时获得提醒" : "+1"
+	const targetElementRef = useRef<HTMLDivElement | null>(null);
+	const [isExceedingHeight, setIsExceedingHeight] = useState(false);
+
+	useEffect(() => {
+		const elementHeight = targetElementRef.current?.clientHeight || 0;
+		const thresholdHeight = 160;
+		setIsExceedingHeight(elementHeight >= thresholdHeight);
+	}, [word])
 
 	if (errMessage) return (
 		<div className='message'>
@@ -233,16 +250,29 @@ export function Word({ word, sceneText }: WordProps) {
 					</div>
 				}
 			</div>
-			<div className="defs">
+			{/* <div className="defs zh">
 				<ul>
-					{word.def_zh.map((def, index) => (
+					{word.def_zh?.map((def, index) => (
 						<li key={index}><span>{def}</span></li>)
 					)}
 				</ul>
+			</div> */}
+			<div className="defs en" ref={targetElementRef}>
+				<ul>
+					{word.def_en?.map((def, index) => (
+						<li key={index}><span dangerouslySetInnerHTML={{ __html: def }}></span></li>)
+					)}
+				</ul>
 			</div>
+			{isExceedingHeight &&
+				<span className='indicator'>
+					•••
+				</span>
+			}
 			{times > 0 &&
 				<div className="times">
-					<span>标记 {times} 次</span>
+					{/* <span>标记 {times} 次</span> */}
+					<span>MET {times} TIMES</span>
 				</div>
 			}
 			<div className="scenes">
