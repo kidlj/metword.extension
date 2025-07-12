@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import Tip from './Tip';
 import './style.css';
 import { getWord, getSceneSentence, markWords } from './lib'
-import { browser } from 'webextension-polyfill-ts';
 import { Callout } from '@fluentui/react'
 import { mergeStyleSets } from '@fluentui/react/lib/Styling';
 import { ShadowView } from "shadow-view";
@@ -18,12 +17,6 @@ async function start() {
 	document.addEventListener('mouseup', show)
 	document.addEventListener('mousedown', dismiss)
 }
-
-
-// On page loaded update feed notification
-browser.runtime.sendMessage({
-	"action": "updateBadge",
-})
 
 // waiting a while for client side rendered dom ready
 setTimeout(start, waitDuration)
