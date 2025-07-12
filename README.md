@@ -18,3 +18,7 @@ https://metword.co
 
 	$ npm install
 	$ npm run prod
+
+### Source Code
+
+100% handmade code.

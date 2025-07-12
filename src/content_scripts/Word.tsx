@@ -40,6 +40,10 @@ interface IScene {
 }
 
 export const wordStyles = `
+:host {
+	visibility: visible !important;
+}
+
 .word {
 	padding: 4px;
 	display: flex;
